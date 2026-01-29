@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المركز المالي المتطور - معمل الجمهورية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            border-bottom: 5px solid var(--primary);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-val {
+            display: block;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .finance-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-title {
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: inherit;
+            color: white;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 12px;
+            text-align: right;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .profit-green {
+            color: var(--success);
+            font-weight: 900;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>💰 المركز المالي والمحاسبي</h1>
+        <button class="btn" style="width:auto; background:#64748b;" onclick="location.href='dashboard.html'">لوحة
+            التحكم</button>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <span class="stat-val" id="totalIncome">0</span>
+            <span class="stat-label">إجمالي الإيرادات (ج.م)</span>
+        </div>
+        <div class="stat-card" style="border-color: var(--danger);">
+            <span class="stat-val" id="totalExpenses">0</span>
+            <span class="stat-label">إجمالي المصروفات (ج.م)</span>
+        </div>
+        <div class="stat-card" style="border-color: #fbbf24;">
+            <span class="stat-val" id="corporateDues">0</span>
+            <span class="stat-label">مستحقات التعاقدات</span>
+        </div>
+        <div class="stat-card" style="border-color: var(--success);">
+            <span class="stat-val" id="netProfit">0</span>
+            <span class="stat-label">صافي الربح الفعلي</span>
+        </div>
+    </div>
+
+    <div class="finance-grid">
+        <!-- 1. Expenses Tracker -->
+        <div class="card">
+            <h3 class="card-title">💸 تسجيل المصروفات (إيجار، كهرباء، مرتبات...)</h3>
+            <div class="form-group">
+                <label>نوع المصروف:</label>
+                <input type="text" id="expType" placeholder="مثلاً: مرتبات فبراير">
+            </div>
+            <div class="form-group">
+                <label>المبلغ:</label>
+                <input type="number" id="expAmount" placeholder="0.00">
+            </div>
+            <button class="btn btn-danger" onclick="addExpense()">إضافة مصروف ➖</button>
+
+            <table id="expTable">
+                <thead>
+                    <tr>
+                        <th>البيان</th>
+                        <th>المبلغ</th>
+                        <th>التاريخ</th>
+                    </tr>
+                </thead>
+                <tbody id="expBody"></tbody>
+            </table>
+        </div>
+
+        <!-- 2. Corporate Contracts Control -->
+        <div class="card">
+            <h3 class="card-title">🤝 عقود التعاقدات والخصومات</h3>
+            <div style="background: #eff6ff; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                <p><strong>سياسة الخصم التلقائي:</strong></p>
+                <ul style="margin:0; padding-right:20px; font-size:0.9rem;">
+                    <li>نقابة المهندسين: 20% خصم</li>
+                    <li>نقابة المعلمين: 15% خصم</li>
+                    <li>مصر للتأمين: خصم تعاقدي 25%</li>
+                </ul>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>الجهة</th>
+                        <th>حالات الشهر</th>
+                        <th>قيمة الفواتير</th>
+                    </tr>
+                </thead>
+                <tbody id="corpBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const CORPORATE_RATES = {
+            "المهندسين": 0.20,
+            "المعلمين": 0.15,
+            "مصر للتأمين": 0.25,
+            "نقدي": 0
+        };
+
+        document.addEventListener('DOMContentLoaded', refreshFinance);
+
+        function refreshFinance() {
+            const db = JSON.parse(localStorage.getItem('patientsDatabase')) || [];
+            const expenses = JSON.parse(localStorage.getItem('labExpenses')) || [];
+
+            let income = 0;
+            let corpSums = {};
+
+            // Calculate Income and Corporate Status
+            db.forEach(p => {
+                const rawVal = parseFloat(p.totalPrice || 0);
+                const discountRate = CORPORATE_RATES[p.corporate] || 0;
+                const finalVal = rawVal * (1 - discountRate);
+
+                income += finalVal;
+
+                if (p.corporate !== 'نقدي') {
+                    if (!corpSums[p.corporate]) corpSums[p.corporate] = { count: 0, val: 0 };
+                    corpSums[p.corporate].count++;
+                    corpSums[p.corporate].val += finalVal;
+                }
+            });
+
+            // Sum Expenses
+            let expTotal = expenses.reduce((acc, curr) => acc + curr.amount, 0);
+
+            // Update UI Stats
+            document.getElementById('totalIncome').textContent = income.toLocaleString();
+            document.getElementById('totalExpenses').textContent = expTotal.toLocaleString();
+            document.getElementById('netProfit').textContent = (income - expTotal).toLocaleString() + " ج.م";
+
+            let corpDues = 0;
+            Object.values(corpSums).forEach(c => corpDues += c.val);
+            document.getElementById('corporateDues').textContent = corpDues.toLocaleString();
+
+            // Render Expenses Table
+            document.getElementById('expBody').innerHTML = expenses.reverse().slice(0, 10).map(e => `
+                <tr><td>${e.type}</td><td>${e.amount}</td><td>${e.date}</td></tr>
+            `).join('');
+
+            // Render Corporate Table
+            document.getElementById('corpBody').innerHTML = Object.keys(corpSums).map(name => `
+                <tr>
+                    <td><strong>${name}</strong></td>
+                    <td>${corpSums[name].count} حالة</td>
+                    <td>${corpSums[name].val.toLocaleString()} ج.م</td>
+                </tr>
+            `).join('');
+        }
+
+        function addExpense() {
+            const type = document.getElementById('expType').value;
+            const amount = parseFloat(document.getElementById('expAmount').value);
+            if (!type || !amount) return;
+
+            const expenses = JSON.parse(localStorage.getItem('labExpenses')) || [];
+            expenses.push({ type, amount, date: new Date().toLocaleDateString() });
+            localStorage.setItem('labExpenses', JSON.stringify(expenses));
+
+            refreshFinance();
+            alert("تم تسجيل المصروف");
+        }
+    </script>
+</body>
+
+</html>

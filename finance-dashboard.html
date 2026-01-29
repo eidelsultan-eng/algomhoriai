@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Dashboard - Al-Gomhouria Lab</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --primary: #006ce7;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+
+        body {
+            background-color: var(--light);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .finance-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 30px;
+        }
+
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .transaction-table th {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 2px solid #f1f5f9;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .transaction-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+        }
+
+        .amount-positive {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .amount-pending {
+            color: var(--warning);
+            font-weight: 700;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--dark);
+            color: white;
+            padding: 30px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-brand {
+            padding: 0 30px 40px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #38bdf8;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+            color: #94a3b8;
+        }
+
+        .sidebar-menu li:hover,
+        .sidebar-menu li.active {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border-left: 4px solid var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="sidebar-brand">Gomhouria Lab</div>
+        <ul class="sidebar-menu">
+            <li onclick="location.href='dashboard.html'">🏠 Overview</li>
+            <li onclick="location.href='patient-registration.html'">👤 Registration</li>
+            <li onclick="location.href='patients-inventory.html'">📂 Inventory</li>
+            <li onclick="location.href='cash-tally.html'">💰 Cash Tally</li>
+            <li class="active">💰 Finance</li>
+            <li onclick="location.href='index.html'">⚙️ Settings</li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <header style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 style="font-weight: 700; font-size: 2rem;">Finance Overview</h1>
+                <p style="color: #64748b;">Monitoring revenue and lab transactions</p>
+            </div>
+            <button class="primary-btn" onclick="exportFinanceReport()">Download Excel</button>
+        </header>
+
+        <div class="finance-grid">
+            <div class="stat-card">
+                <span class="stat-label">Total Revenue (Gross)</span>
+                <div class="stat-value" id="totalRevenue">0.00</div>
+                <div style="color: var(--success); font-size: 0.8rem; font-weight: 600;">↑ 14% vs Last Month</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Pending Payments</span>
+                <div class="stat-value" id="pendingPayments" style="color: var(--warning);">0.00</div>
+                <div style="color: #64748b; font-size: 0.8rem;">Uncollected Fees</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Contract Revenue (Corporate)</span>
+                <div class="stat-value" id="contractRevenue">0.00</div>
+                <div style="color: var(--primary); font-size: 0.8rem;">Insurance & Companies</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Average Order Value</span>
+                <div class="stat-value" id="avgOrder">0.00</div>
+                <div style="color: #64748b; font-size: 0.8rem;">Per Patient</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3 style="margin-bottom: 20px;">Recent Transactions</h3>
+            <table class="transaction-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Patient Name</th>
+                        <th>Billed Items</th>
+                        <th>Status</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionBody">
+                    <!-- Dynamic -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="tests-data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const db = JSON.parse(localStorage.getItem('patientsDatabase')) || [];
+            const body = document.getElementById('transactionBody');
+            let total = 0;
+            let pending = 0;
+
+            db.forEach(p => {
+                let orderTotal = 0;
+                if (p.tests) {
+                    p.tests.forEach(tId => {
+                        const test = medicalTests[tId];
+                        orderTotal += (test && test.price) ? test.price : 150.00;
+                    });
+                }
+
+                if (p.status === 'Completed') total += orderTotal;
+                else pending += orderTotal;
+
+                const row = `
+                    <tr>
+                        <td>${p.date}</td>
+                        <td style="font-weight: 600;">${p.name}</td>
+                        <td>${p.tests ? p.tests.length : 0} Tests</td>
+                        <td><span class="badge ${p.status === 'Completed' ? 'badge-green' : 'badge-grey'}">${p.status}</span></td>
+                        <td class="${p.status === 'Completed' ? 'amount-positive' : 'amount-pending'}">${orderTotal.toFixed(2)} EGP</td>
+                    </tr>
+                `;
+                body.insertAdjacentHTML('beforeend', row);
+            });
+
+            document.getElementById('totalRevenue').textContent = total.toLocaleString() + ' EGP';
+            document.getElementById('pendingPayments').textContent = pending.toLocaleString() + ' EGP';
+            document.getElementById('avgOrder').textContent = (total / (db.filter(p => p.status === 'Completed').length || 1)).toFixed(2) + ' EGP';
+        });
+
+        function exportFinanceReport() {
+            alert("Exporting financial data to Excel... (Simulation)");
+        }
+    </script>
+</body>
+
+</html>

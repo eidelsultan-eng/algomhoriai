@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المخزون والمواد الكيميائية - معمل الجمهورية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --danger: #ef4444;
+            --success: #10b981;
+            --bg: #f8fafc;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #475569;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: inherit;
+        }
+
+        .btn-add {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-add:hover {
+            filter: brightness(1.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            background: #f1f5f9;
+            padding: 15px;
+            text-align: right;
+            color: var(--primary);
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-warning {
+            background: #ffedd5;
+            color: #9a3412;
+        }
+
+        .alert-bar {
+            background: #fff1f2;
+            padding: 15px;
+            border-radius: 10px;
+            border-right: 5px solid var(--danger);
+            margin-bottom: 25px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>📦 إدارة المخازن والمحاليل (Reagents)</h1>
+        <button class="btn" style="width: auto; background: #64748b; color: white;"
+            onclick="location.href='dashboard.html'">الرجوع للرئيسية</button>
+    </div>
+
+    <div id="alertBar" class="alert-bar">
+        <strong>⚠️ تنبيه هام:</strong> هناك مواد أوشكت على النفاد أو قاربت صلاحيتها على الانتهاء!
+    </div>
+
+    <div class="inventory-grid">
+        <div class="card">
+            <h3 style="margin-top:0;">➕ إضافة مادة/محلول جديد</h3>
+            <div class="form-group">
+                <label>إسم المادة:</label>
+                <input type="text" id="itemName" placeholder="مثلاً: CBC Reagent, Alcohol...">
+            </div>
+            <div class="form-group">
+                <label>الكمية الحالية (Units):</label>
+                <input type="number" id="itemQty" placeholder="0">
+            </div>
+            <div class="form-group">
+                <label>حد الأمان (Minimum):</label>
+                <input type="number" id="itemMin" placeholder="تنبهني لو وصلت لـ...">
+            </div>
+            <div class="form-group">
+                <label>تاريخ انتهاء الصلاحية:</label>
+                <input type="date" id="itemExpiry">
+            </div>
+            <button class="btn btn-add" onclick="addItem()">إضافة للمخزن ✅</button>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-top:0;">📋 قائمة الأصناف المتوفرة</h3>
+            <table id="inventoryTable">
+                <thead>
+                    <tr>
+                        <th>المادة</th>
+                        <th>الكمية</th>
+                        <th>الصلاحية</th>
+                        <th>الحالة</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', renderInventory);
+
+        function addItem() {
+            const name = document.getElementById('itemName').value;
+            const qty = parseInt(document.getElementById('itemQty').value);
+            const min = parseInt(document.getElementById('itemMin').value);
+            const expiry = document.getElementById('itemExpiry').value;
+
+            if (!name || !qty || !expiry) { alert("يرجى إكمال البيانات"); return; }
+
+            const inventory = JSON.parse(localStorage.getItem('labInventory')) || [];
+            inventory.push({ id: Date.now(), name, qty, min, expiry });
+            localStorage.setItem('labInventory', JSON.stringify(inventory));
+
+            renderInventory();
+            alert("تم إضافة الصنف بنجاح!");
+        }
+
+        function renderInventory() {
+            const inventory = JSON.parse(localStorage.getItem('labInventory')) || [];
+            const tbody = document.getElementById('inventoryBody');
+            const alertBar = document.getElementById('alertBar');
+            let hasAlert = false;
+
+            tbody.innerHTML = inventory.map(item => {
+                const isLow = item.qty <= item.min;
+                const isExpired = new Date(item.expiry) < new Date();
+
+                if (isLow || isExpired) hasAlert = true;
+
+                return `
+                    <tr>
+                        <td><strong>${item.name}</strong></td>
+                        <td>${item.qty} وحدة</td>
+                        <td style="color: ${isExpired ? 'red' : 'green'}; font-weight:700;">${item.expiry}</td>
+                        <td>
+                            <span class="status-badge ${isExpired ? 'badge-danger' : (isLow ? 'badge-warning' : 'badge-success')}">
+                                ${isExpired ? 'منتهي الصلاحية' : (isLow ? 'كمية منخفضة' : 'متوفر')}
+                            </span>
+                        </td>
+                        <td>
+                            <button onclick="deleteItem(${item.id})" style="background:none; border:none; color:red; cursor:pointer; font-weight:900;">🗑️ حذف</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            alertBar.style.display = hasAlert ? 'block' : 'none';
+        }
+
+        function deleteItem(id) {
+            if (!confirm("هل أنت متأكد من الحذف؟")) return;
+            let inventory = JSON.parse(localStorage.getItem('labInventory')) || [];
+            inventory = inventory.filter(i => i.id !== id);
+            localStorage.setItem('labInventory', JSON.stringify(inventory));
+            renderInventory();
+        }
+    </script>
+</body>
+
+</html>

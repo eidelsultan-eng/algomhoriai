@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Collection Room - Al-Gomhouria Lab</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: #f0f2f5;
+            color: #1e293b;
+        }
+
+        .nav-blue {
+            background: #006ce7;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .main-container {
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tube-suggestion {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .tube-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 10px solid #ddd;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .tube-card.Yellow {
+            border-left-color: #fde047;
+        }
+
+        .tube-card.Purple {
+            border-left-color: #a855f7;
+        }
+
+        .tube-card.Blue {
+            border-left-color: #3b82f6;
+        }
+
+        .tube-card.Grey {
+            border-left-color: #94a3b8;
+        }
+
+        .tube-card h3 {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            color: #334155;
+        }
+
+        .tube-card ul {
+            list-style: none;
+            padding: 0;
+            font-size: 0.95rem;
+            color: #64748b;
+        }
+
+        .tube-card li {
+            margin-bottom: 8px;
+        }
+
+        .tube-card .barcode {
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+            text-align: center;
+            font-family: monospace;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: #fff7ed;
+            color: #ea580c;
+            border: 1px solid #fdba74;
+        }
+
+        .status-collected {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .btn-collect {
+            background: #006ce7;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            transition: all 0.2s;
+        }
+
+        .btn-collect:hover:not(:disabled) {
+            background: #0056b8;
+            transform: translateY(-2px);
+        }
+
+        .btn-collect:disabled {
+            background: #94a3b8;
+            cursor: default;
+        }
+
+        .patient-banner {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .patient-id-badge {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="nav-blue">
+        <h2 style="font-weight: 700;">Gomhouria Lab | Collection Room</h2>
+        <div>Logged in: Ph. Ahmed | Unit A</div>
+    </nav>
+
+    <div class="main-container">
+        <div class="patient-banner">
+            <div id="visitBadge" class="patient-id-badge">VISIT: #---</div>
+            <div>
+                <h2 id="patientName" style="margin: 0; font-size: 1.6rem; color: #0f172a;">---</h2>
+                <span id="patientMeta" style="color: #64748b; font-size: 1rem;">---</span>
+            </div>
+            <div style="margin-left: auto;">
+                <button class="primary-btn" onclick="location.href='dashboard.html'"
+                    style="background: transparent; color: #64748b; border: 1px solid #cbd5e1;">✕ Exit</button>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; color: #334155;">Tube Splitting System</h3>
+            <span id="globalStatus" class="status-badge status-pending">Status: Pending</span>
+        </div>
+
+        <div class="tube-suggestion" id="tubeContainer">
+            <!-- Dynamically Rendered -->
+        </div>
+    </div>
+
+    <script src="tests-data.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const pId = params.get('id');
+        let currentPatient = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const db = JSON.parse(localStorage.getItem('patientsDatabase')) || [];
+            currentPatient = db.find(p => p.id === pId);
+
+            if (!currentPatient) {
+                alert("Patient not found!");
+                location.href = 'dashboard.html';
+                return;
+            }
+
+            // Update Header
+            document.getElementById('visitBadge').textContent = `VISIT: #${currentPatient.id}`;
+            document.getElementById('patientName').textContent = currentPatient.name;
+            document.getElementById('patientMeta').textContent = `Gender: ${currentPatient.gender} | Age: ${currentPatient.ageY}Y | Branch: Main Laboratory`;
+
+            const currentStatus = currentPatient.collectionStatus || 'Pending Collection';
+            const badge = document.getElementById('globalStatus');
+            badge.textContent = `Status: ${currentStatus}`;
+
+            if (currentStatus === 'Collected') {
+                badge.className = 'status-badge status-collected';
+            }
+
+            renderTubes();
+        });
+
+        function renderTubes() {
+            const container = document.getElementById('tubeContainer');
+            container.innerHTML = '';
+
+            const testIds = currentPatient.requestedTests || [];
+            const groups = getTubeGrouping(testIds);
+
+            const groupKeys = Object.keys(groups);
+            if (groupKeys.length === 0) {
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 60px; background: #fff; border-radius: 12px; border: 2px dashed #e2e8f0; color: #64748b;">No samples required for this visit (Check Request Entry).</div>';
+                return;
+            }
+
+            groupKeys.forEach((key, index) => {
+                const group = groups[key];
+                const tubeHtml = `
+                    <div class="tube-card ${group.tubeCap}">
+                        <span style="position: absolute; right: 20px; top: 20px; font-size: 0.8rem; color: #94a3b8;">Tube ${index + 1}/${groupKeys.length}</span>
+                        <h3>${group.sampleType} (${group.tubeCap} Cap)</h3>
+                        <ul>
+                            ${group.tests.map(t => `<li>• ${t}</li>`).join('')}
+                        </ul>
+                        <div class="barcode">||||||||||||| ACC: ${currentPatient.id}-${key}</div>
+                        <button class="btn-collect" id="btn_${key}" onclick="confirmCollection('${key}')">✔ Mark as Collected</button>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', tubeHtml);
+            });
+        }
+
+        function confirmCollection(key) {
+            const btn = document.getElementById(`btn_${key}`);
+            btn.textContent = "✔ Collected (" + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) + ")";
+            btn.style.background = "#059669";
+            btn.disabled = true;
+
+            const allBtns = document.querySelectorAll('.btn-collect');
+            const allCollected = Array.from(allBtns).every(b => b.disabled);
+
+            if (allCollected) {
+                updatePatientStatus('Collected');
+            }
+        }
+
+        function updatePatientStatus(status) {
+            const db = JSON.parse(localStorage.getItem('patientsDatabase')) || [];
+            const index = db.findIndex(p => p.id === pId);
+            if (index !== -1) {
+                db[index].collectionStatus = status;
+                db[index].status = 'In Lab';
+                localStorage.setItem('patientsDatabase', JSON.stringify(db));
+
+                const badge = document.getElementById('globalStatus');
+                badge.textContent = `Status: ${status}`;
+                badge.className = 'status-badge status-collected';
+
+                alert("✨ All samples collected. Patient record updated to 'In Lab'.");
+            }
+        }
+    </script>
+</body>
+
+</html>

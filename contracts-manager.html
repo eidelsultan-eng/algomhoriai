@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة التعاقدات - معمل الجمهورية</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Cairo:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #6366f1;
+            --bg: #f1f5f9;
+            --text-dark: #1e293b;
+            --card-bg: #ffffff;
+            --radius-xl: 20px;
+        }
+
+        body {
+            background-color: var(--bg);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+            font-family: 'Cairo', 'Outfit', sans-serif;
+            color: var(--text-dark);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--card-bg);
+            border-left: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 0;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .brand {
+            padding: 0 30px 40px;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        .menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu li {
+            padding: 15px 30px;
+            font-weight: 700;
+            color: #64748b;
+            cursor: pointer;
+            transition: 0.3s;
+            border-right: 5px solid transparent;
+        }
+
+        .menu li:hover,
+        .menu li.active {
+            background: #eff6ff;
+            color: var(--primary);
+            border-right-color: var(--primary);
+        }
+
+        /* Main */
+        .main {
+            margin-right: 280px;
+            padding: 40px;
+            width: 100%;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-right: 0;
+                padding: 15px;
+            }
+
+            .header-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        /* Contract Grid */
+        .contracts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .contract-card {
+            background: white;
+            padding: 25px;
+            border-radius: var(--radius-xl);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
+        }
+
+        .contract-card h3 {
+            margin: 0 0 10px 0;
+            color: var(--primary);
+        }
+
+        .contract-meta {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: var(--radius-xl);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .test-list-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            min-width: 600px;
+        }
+
+        .test-list-table th,
+        .test-list-table td {
+            padding: 12px;
+            text-align: right;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .test-list-table th {
+            background: #f8fafc;
+            font-size: 0.8rem;
+        }
+
+        .price-input {
+            width: 100px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+    <aside class="sidebar">
+        <div class="brand">معمل الجمهورية</div>
+        <ul class="menu">
+            <li onclick="location.href='dashboard.html'">📊 Dashboard</li>
+            <li onclick="location.href='patient-registration.html'">➕ New Patient</li>
+            <li onclick="location.href='patients-inventory.html'">🗄️ Inventory</li>
+            <li onclick="location.href='cash-tally.html'">💰 Cash Tally</li>
+            <li onclick="location.href='expenses-manager.html'">💸 Expenses</li>
+            <li onclick="location.href='l2l-manager.html'">🧪 Lab to Lab</li>
+            <li class="active">🤝 Contracts</li>
+            <li onclick="location.href='results-entry.html'">📝 Results Entry</li>
+        </ul>
+    </aside>
+
+    <main class="main">
+        <div class="header-row">
+            <div style="display:flex; align-items:center; gap:15px;">
+                <button onclick="location.href='cash-tally.html'"
+                    style="background:#f59e0b; border:none; padding:8px 15px; border-radius:8px; font-weight:800; cursor:pointer;">←
+                    Back</button>
+                <h1 style="margin:0">🤝 Contracts Manager</h1>
+            </div>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <div class="zoom-controls"
+                    style="display: flex; gap: 5px; background: rgba(0,0,0,0.05); padding: 5px 12px; border-radius: 20px;">
+                    <button onclick="changeZoom(-0.1)"
+                        style="background:none; border:none; color:var(--dark); font-size:1.2rem; font-weight:bold; cursor:pointer;">-</button>
+                    <span id="zoomLevel" style="font-weight:bold; min-width:45px; text-align:center;">100%</span>
+                    <button onclick="changeZoom(0.1)"
+                        style="background:none; border:none; color:var(--dark); font-size:1.2rem; font-weight:bold; cursor:pointer;">+</button>
+                </div>
+                <button class="btn btn-primary" onclick="openContractModal()">+ إنشاء تعاقد جديد</button>
+            </div>
+        </div>
+
+        <div class="contracts-grid" id="contractsList">
+            <!-- Contracts appear here -->
+        </div>
+    </main>
+
+    <!-- Contract Modal -->
+    <div id="contractModal" class="modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h2 id="modalTitle">أنشئ تعاقد جديد</h2>
+                <button class="btn-danger" style="padding: 5px 15px;" onclick="closeContractModal()">إغلاق ×</button>
+            </div>
+
+            <div class="form-group">
+                <label>اسم التعاقد (مثلاً: تعاقد مع أحمد عمرو)</label>
+                <input type="text" id="contractName" placeholder="أدخل اسم الجهة أو التعاقد">
+            </div>
+
+            <h3 style="margin-top: 30px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">🧪 قائمة التحاليل
+                والأسعار المخصصة</h3>
+            <p style="font-size: 0.8rem; color: #64748b;">اترك السعر فارغاً لاستخدام السعر الافتراضي للمعمل</p>
+
+            <div class="table-wrapper">
+                <table class="test-list-table">
+                    <thead>
+                        <tr>
+                            <th>التحليل</th>
+                            <th>التصنيف</th>
+                            <th>السعر الافتراضي</th>
+                            <th>السعر في التعاقد (ج.م)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="testsTableBody">
+                        <!-- Dynamic tests -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 30px; display: flex; gap: 15px;">
+                <button class="btn btn-success" style="flex:1" onclick="saveContract()">حفظ نظام التعاقد 💾</button>
+                <button class="btn" style="background:#eee;" onclick="closeContractModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="tests-data.js"></script>
+    <script>
+        let currentZoom = 1;
+        function changeZoom(delta) {
+            currentZoom = Math.min(Math.max(0.5, currentZoom + delta), 2);
+            document.body.style.setProperty('--app-zoom', currentZoom);
+            document.body.classList.add('zoomed');
+            document.getElementById('zoomLevel').textContent = Math.round(currentZoom * 100) + '%';
+            if (currentZoom === 1) document.body.classList.remove('zoomed');
+        }
+
+        let currentEditId = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderContracts();
+            prepareTestsTable();
+            changeZoom(0); // Initialize zoom level display
+        });
+
+        function renderContracts() {
+            const contracts = JSON.parse(localStorage.getItem('labContracts')) || [];
+            const container = document.getElementById('contractsList');
+
+            if (contracts.length === 0) {
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 50px; background: white; border-radius: 20px;">لا يوجد تعاقدات مسجلة حالياً.</div>';
+                return;
+            }
+
+            container.innerHTML = contracts.map((c, index) => `
+                <div class="contract-card">
+                    <h3>${c.name}</h3>
+                    <div class="contract-meta">
+                        عدد الأسعار المخصصة: ${Object.keys(c.prices).length}<br>
+                        تاريخ الإنشاء: ${c.createdAt || '---'}
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn" style="background:#eff6ff; color:var(--primary); flex:1" onclick="editContract(${index})">تعديل ✏️</button>
+                        <button class="btn" style="background:#fef2f2; color:#ef4444;" onclick="deleteContract(${index})">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function prepareTestsTable() {
+            const body = document.getElementById('testsTableBody');
+            body.innerHTML = Object.entries(medicalTests).map(([id, t]) => `
+                <tr>
+                    <td><strong>${t.name}</strong></td>
+                    <td style="color:#64748b">${t.category}</td>
+                    <td>${t.price ? t.price.toFixed(2) : '150.00'}</td>
+                    <td>
+                        <input type="number" class="price-input" data-test-id="${id}" placeholder="---">
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openContractModal() {
+            currentEditId = null;
+            document.getElementById('modalTitle').textContent = "أنشئ تعاقد جديد";
+            document.getElementById('contractName').value = "";
+            document.querySelectorAll('.price-input').forEach(input => input.value = "");
+            document.getElementById('contractModal').style.display = 'flex';
+        }
+
+        function closeContractModal() {
+            document.getElementById('contractModal').style.display = 'none';
+        }
+
+        function saveContract() {
+            const name = document.getElementById('contractName').value;
+            if (!name) return alert("يرجى إدخال اسم التعاقد");
+
+            const prices = {};
+            document.querySelectorAll('.price-input').forEach(input => {
+                if (input.value) {
+                    prices[input.dataset.testId] = parseFloat(input.value);
+                }
+            });
+
+            const contracts = JSON.parse(localStorage.getItem('labContracts')) || [];
+            const contractData = {
+                name,
+                prices,
+                createdAt: new Date().toLocaleDateString('ar-EG')
+            };
+
+            if (currentEditId !== null) {
+                contracts[currentEditId] = contractData;
+            } else {
+                contracts.push(contractData);
+            }
+
+            localStorage.setItem('labContracts', JSON.stringify(contracts));
+            alert("تم حفظ التعاقد بنجاح ✅");
+            closeContractModal();
+            renderContracts();
+        }
+
+        function editContract(index) {
+            const contracts = JSON.parse(localStorage.getItem('labContracts')) || [];
+            const c = contracts[index];
+            currentEditId = index;
+
+            document.getElementById('modalTitle').textContent = "تعديل تعاقد: " + c.name;
+            document.getElementById('contractName').value = c.name;
+
+            document.querySelectorAll('.price-input').forEach(input => {
+                const testId = input.dataset.testId;
+                input.value = c.prices[testId] || "";
+            });
+
+            document.getElementById('contractModal').style.display = 'flex';
+        }
+
+        function deleteContract(index) {
+            if (!confirm("هل أنت متأكد من حذف هذا التعاقد؟")) return;
+            const contracts = JSON.parse(localStorage.getItem('labContracts')) || [];
+            contracts.splice(index, 1);
+            localStorage.setItem('labContracts', JSON.stringify(contracts));
+            renderContracts();
+        }
+    </script>
+</body>
+
+</html>

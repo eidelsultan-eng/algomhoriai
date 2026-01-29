@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة Lab to Lab - معمل الجمهورية</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Cairo:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #4f46e5;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --radius: 16px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background-color: var(--bg);
+            margin: 0;
+            font-family: 'Cairo', 'Outfit', sans-serif;
+            color: var(--text);
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: white;
+            height: 100vh;
+            border-left: 1px solid #e2e8f0;
+            position: fixed;
+            padding: 30px 0;
+        }
+
+        .menu-item {
+            padding: 15px 30px;
+            font-weight: 700;
+            color: #64748b;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            color: var(--primary);
+            background: #f5f3ff;
+            border-right: 4px solid var(--primary);
+        }
+
+        /* Main Content */
+        .main {
+            margin-right: 260px;
+            padding: 40px;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-right: 0;
+                padding: 15px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border-bottom: 4px solid var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 700;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin-top: 5px;
+            color: var(--primary);
+        }
+
+        /* Forms and Tables */
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+
+        .report-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            min-width: 700px;
+        }
+
+        th {
+            text-align: right;
+            padding: 12px;
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 0.8rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+        }
+
+        .badge-lab {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+    </style>
+</head>
+
+<body>
+    <aside class="sidebar">
+        <div style="padding:0 30px 40px; font-weight:900; font-size:1.5rem; color:var(--primary)">معمل الجمهورية</div>
+        <div class="menu-item" onclick="location.href='dashboard.html'">📊 Dashboard</div>
+        <div class="menu-item" onclick="location.href='patient-registration.html'">➕ New Patient</div>
+        <div class="menu-item" onclick="location.href='patients-inventory.html'">🗄️ Inventory</div>
+        <div class="menu-item" onclick="location.href='cash-tally.html'">💰 Cash Tally</div>
+        <div class="menu-item active">🧪 Lab to Lab</div>
+        <div class="menu-item" onclick="location.href='expenses-manager.html'">💸 Expenses</div>
+        <div class="menu-item" onclick="location.href='contracts-manager.html'">🤝 Contracts</li>
+            <div class="menu-item" onclick="location.href='results-entry.html'">📝 Results Entry</div>
+    </aside>
+
+    <main class="main">
+        <div class="header">
+            <div style="display:flex; align-items:center; gap:15px;">
+                <button onclick="location.href='cash-tally.html'"
+                    style="background:#f59e0b; border:none; padding:8px 15px; border-radius:8px; font-weight:800; cursor:pointer;">←
+                    Back</button>
+                <h1 style="margin:0">🧪 Lab to Lab</h1>
+            </div>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <div class="zoom-controls"
+                    style="display: flex; gap: 5px; background: rgba(0,0,0,0.05); padding: 5px 12px; border-radius: 20px;">
+                    <button onclick="changeZoom(-0.1)"
+                        style="background:none; border:none; color:var(--dark); font-size:1.2rem; font-weight:bold; cursor:pointer;">-</button>
+                    <span id="zoomLevel" style="font-weight:bold; min-width:45px; text-align:center;">100%</span>
+                    <button onclick="changeZoom(0.1)"
+                        style="background:none; border:none; color:var(--dark); font-size:1.2rem; font-weight:bold; cursor:pointer;">+</button>
+                </div>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <input type="date" id="reportDate" class="input-field"
+                    style="padding:10px; border-radius:10px; border:1px solid #ddd;">
+                <button class="btn btn-primary" style="width:auto" onclick="refreshL2L()">تحديث البيانات</button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">إجمالي تكلفة اليوم</div>
+                <div class="stat-value" id="statsToday">0.00</div>
+            </div>
+            <div class="stat-card" style="border-color: #10b981;">
+                <div class="stat-label">عدد العينات المرسلة</div>
+                <div class="stat-value" id="statsCount">0</div>
+            </div>
+            <div class="stat-card" style="border-color: #f59e0b;">
+                <div class="stat-label">المعمل الأكثر تعاملاً</div>
+                <div class="stat-value" id="statsTopLab" style="font-size:1.2rem; margin-top:15px;">---</div>
+            </div>
+            <div class="stat-card" style="border-color: #ef4444;">
+                <div class="stat-label">إجمالي الشهر الحالي</div>
+                <div class="stat-value" id="statsMonth">0.00</div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <!-- Form Card -->
+            <div class="card">
+                <h3 style="margin-top:0">➕ تسجيل عينة مرسلة</h3>
+                <div class="form-group">
+                    <label>المعمل المستلم (Lab Partner)</label>
+                    <select id="labPartner">
+                        <option value="">اختر المعمل...</option>
+                        <option>معمل البرج</option>
+                        <option>معمل المختبر</option>
+                        <option>معمل كايرو سكان</option>
+                        <option>معمل رويال</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>اسم التحليل</label>
+                    <input type="text" id="testName" placeholder="مثلاً: Vitamin D, PCR...">
+                </div>
+                <div class="form-group">
+                    <label>سعر التكلفة (Cost Amount)</label>
+                    <input type="number" id="testCost" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>اسم المريض (اختياري)</label>
+                    <input type="text" id="patientName" placeholder="لربط العينة بمريض معين">
+                </div>
+                <button class="btn btn-primary" onclick="saveL2L()">حفظ وخصم من الخزنة 💸</button>
+            </div>
+
+            <!-- Charts Card -->
+            <div class="card">
+                <h3 style="margin-top:0">📈 إحصائيات التوزيع</h3>
+                <canvas id="l2lChart" height="250"></canvas>
+            </div>
+        </div>
+
+        <!-- History Table -->
+        <div class="card report-wrapper">
+            <h3 style="margin-top:0">🕒 سجل الإرسالات اليومية</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>التوقيت</th>
+                        <th>المعمل</th>
+                        <th>التحليل</th>
+                        <th>المريض</th>
+                        <th>التكلفة</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="l2lTable">
+                    <!-- Data -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        let l2lChart = null;
+
+        let currentZoom = 1;
+        function changeZoom(delta) {
+            currentZoom = Math.min(Math.max(0.5, currentZoom + delta), 2);
+            document.body.style.setProperty('--app-zoom', currentZoom);
+            document.body.classList.add('zoomed');
+            document.getElementById('zoomLevel').textContent = Math.round(currentZoom * 100) + '%';
+            if (currentZoom === 1) document.body.classList.remove('zoomed');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('reportDate').value = new Date().toISOString().split('T')[0];
+            refreshL2L();
+        });
+
+        function saveL2L() {
+            const lab = document.getElementById('labPartner').value;
+            const test = document.getElementById('testName').value;
+            const cost = parseFloat(document.getElementById('testCost').value);
+            const patient = document.getElementById('patientName').value || '---';
+
+            if (!lab || !test || !cost) return alert("يرجى إكمال البيانات الأساسية");
+
+            const data = JSON.parse(localStorage.getItem('labToLabExpenses')) || [];
+            data.push({
+                labName: lab,
+                service: test,
+                amount: cost,
+                patient: patient,
+                date: document.getElementById('reportDate').value,
+                timestamp: new Date().toLocaleTimeString('ar-EG')
+            });
+
+            localStorage.setItem('labToLabExpenses', JSON.stringify(data));
+
+            // Reset form
+            document.getElementById('testName').value = "";
+            document.getElementById('testCost').value = "";
+            document.getElementById('patientName').value = "";
+
+            alert("تم الحفظ والتسجيل بنجاح ✅");
+            refreshL2L();
+        }
+
+        function refreshL2L() {
+            const selectedDate = document.getElementById('reportDate').value;
+            const allData = JSON.parse(localStorage.getItem('labToLabExpenses')) || [];
+            const dailyData = allData.filter(d => d.date === selectedDate);
+
+            // Update Stats
+            let todayTotal = 0;
+            let labCounts = {};
+            dailyData.forEach(d => {
+                todayTotal += d.amount;
+                labCounts[d.labName] = (labCounts[d.labName] || 0) + 1;
+            });
+
+            document.getElementById('statsToday').textContent = todayTotal.toLocaleString() + " ج.م";
+            document.getElementById('statsCount').textContent = dailyData.length;
+
+            let topLab = "---";
+            let max = 0;
+            for (let key in labCounts) {
+                if (labCounts[key] > max) { max = labCounts[key]; topLab = key; }
+            }
+            document.getElementById('statsTopLab').textContent = topLab;
+
+            // Render Table
+            const table = document.getElementById('l2lTable');
+            table.innerHTML = dailyData.reverse().map((d, i) => `
+                <tr>
+                    <td>${d.timestamp}</td>
+                    <td><span class="badge badge-lab">${d.labName}</span></td>
+                    <td><strong>${d.service}</strong></td>
+                    <td>${d.patient}</td>
+                    <td style="font-weight:900; color:#ef4444;">${d.amount.toFixed(2)}</td>
+                    <td><button onclick="deleteEntry(${allData.indexOf(d)})" style="background:none; border:none; cursor:pointer;">🗑️</button></td>
+                </tr>
+            `).join('');
+
+            updateChart(labCounts);
+        }
+
+        function deleteEntry(index) {
+            if (!confirm("هل تريد حذف هذا السجل؟")) return;
+            const data = JSON.parse(localStorage.getItem('labToLabExpenses')) || [];
+            data.splice(index, 1);
+            localStorage.setItem('labToLabExpenses', JSON.stringify(data));
+            refreshL2L();
+        }
+
+        function updateChart(labCounts) {
+            const ctx = document.getElementById('l2lChart').getContext('2d');
+            if (myChart) myChart.destroy();
+
+            myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(labCounts),
+                    datasets: [{
+                        data: Object.values(labCounts),
+                        backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#64748b']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

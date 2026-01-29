@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al-Gomhouria Lab - Smart Diagnostic System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body,
+        html {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url('scientific_lab_background_1769535368253.png');
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            filter: blur(2px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hero-bg"></div>
+    <div class="app-container" style="display: flex; height: 100vh; align-items: center; justify-content: center;">
+        <div class="glass animate-fade"
+            style="padding: 40px; border-radius: 20px; text-align: center; background: white;">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#006ce7" stroke-width="2">
+                <path
+                    d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z" />
+                <path d="M9 3V21M3 9H21" />
+            </svg>
+            <h1 style="margin-top: 20px; color: #006ce7;">Al-Gomhouria Lab</h1>
+            <p style="color: #666; margin-top: 10px;">Starting Smart Diagnostic System...</p>
+            <div
+                style="border: 4px solid #f3f3f3; border-top: 4px solid #006ce7; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto;">
+            </div>
+        </div>
+    </div>
+    <style>
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <script>
+        localStorage.setItem('labUser', 'Admin');
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+    </script>
+</body>
+
+</html>
+
+

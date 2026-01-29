@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Total Cash Report - DataLab.M.S Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #0ea5e9;
+            --secondary: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            color: var(--dark);
+        }
+
+        /* Top Navbar */
+        .navbar {
+            background: #2563eb;
+            color: white;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .btn-back {
+            background: #f59e0b;
+            color: black;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 6px;
+            font-weight: 800;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+        }
+
+        /* Header Title */
+        .page-header {
+            background: #2563eb;
+            color: white;
+            padding: 15px 30px;
+            border-radius: var(--radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Filters Section */
+        .filters-card {
+            background: white;
+            padding: 25px;
+            border-radius: var(--radius);
+            margin-bottom: 25px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid #e2e8f0;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr) auto;
+            gap: 15px;
+            align-items: end;
+        }
+
+        @media (max-width: 1024px) {
+            .filters-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .btn-filter {
+                grid-column: span 3;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .filters-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .btn-filter {
+                grid-column: span 2;
+            }
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        .btn-filter {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            height: 40px;
+        }
+
+        /* Action Buttons Row */
+        .action-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 600px) {
+            .btn-action {
+                flex: 1 1 40%;
+                justify-content: center;
+                font-size: 0.8rem;
+            }
+        }
+
+        .btn-action {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .btn-refund {
+            background: #ef4444;
+        }
+
+        .btn-income {
+            background: #10b981;
+        }
+
+        .btn-history {
+            background: #64748b;
+            padding: 10px 12px;
+        }
+
+        .btn-l2l {
+            background: #6366f1;
+        }
+
+        .btn-action:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-grid[style*="grid-template-columns: repeat(5, 1fr)"],
+            .stats-grid[style*="grid-template-columns: repeat(4, 1fr)"] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+
+        .stat-card {
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            border-left: 5px solid transparent;
+            position: relative;
+            overflow: hidden;
+            background: white;
+        }
+
+        .stat-card.yellow {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .stat-card.blue {
+            border-left-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .stat-card.purple {
+            border-left-color: #8b5cf6;
+            background: #f5f3ff;
+        }
+
+        .stat-card.green {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .stat-card.red {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .stat-card.grey {
+            border-left-color: #64748b;
+            background: #f8fafc;
+        }
+
+        .stat-card.olive {
+            border-left-color: #84cc16;
+            background: #f7fee7;
+        }
+
+        .stat-card.dark-green {
+            border-left-color: #15803d;
+            background: #ecfdf5;
+            color: white;
+            background: #065f46;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1e293b;
+        }
+
+        .stat-value.dark-green {
+            color: white;
+        }
+
+        /* Report Table */
+        .report-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            padding: 0;
+            overflow-x: auto;
+            border: 1px solid #e2e8f0;
+        }
+
+        .table-header {
+            background: #2563eb;
+            color: white;
+            display: grid;
+            grid-template-columns: 100px 200px 150px 150px 100px 100px;
+            padding: 15px 25px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            min-width: 800px;
+        }
+
+        .table-body {
+            max-height: 500px;
+            overflow-y: auto;
+            min-width: 800px;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 100px 200px 150px 150px 100px 100px;
+            padding: 15px 25px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.85rem;
+            align-items: center;
+            transition: 0.2s;
+        }
+
+        .table-row:hover {
+            background: #f8fafc;
+        }
+
+        .method-badge {
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .method-cash {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .method-card {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .method-insta {
+            background: #f5f3ff;
+            color: #5b21b6;
+        }
+
+        .method-vodafone {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        /* KPI Visual Section */
+        .kpi-visual-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 400px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-save {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            flex: 1;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .btn-close {
+            background: #eee;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            flex: 1;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        /* AIA Analysis Float */
+        .ai-analysis {
+            background: #1e293b;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div style="display:flex; align-items:center; gap:20px;">
+            <a class="btn-back" href="dashboard.html">← Back</a>
+            <span style="font-weight: 800; font-size: 1.1rem;">DataLab.M.S Pro</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:25px;">
+            <div class="zoom-controls"
+                style="display: flex; gap: 5px; background: rgba(255,255,255,0.1); padding: 2px 10px; border-radius: 20px;">
+                <button onclick="changeZoom(-0.1)"
+                    style="background:none; border:none; color:white; font-size:1.2rem; font-weight:bold; cursor:pointer;">-</button>
+                <span id="zoomLevel" style="font-weight:bold; min-width:45px; text-align:center;">100%</span>
+                <button onclick="changeZoom(0.1)"
+                    style="background:none; border:none; color:white; font-size:1.2rem; font-weight:bold; cursor:pointer;">+</button>
+            </div>
+            <div style="cursor:pointer;" onclick="location.href='dashboard.html'">📊 Dashboard</div>
+            <div style="cursor:pointer;" onclick="location.href='patient-registration.html'">➕ New Patient</div>
+            <div style="cursor:pointer; font-weight:bold; color:#fff" onclick="updateReport()">🔄 Refresh</div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1>💵 Total Cash Report</h1>
+            <div class="ai-analysis">
+                <span>🤖</span> AI Analysis
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-card">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label>From Date</label>
+                    <input type="date" id="fromDate">
+                </div>
+                <div class="filter-group">
+                    <label>To Date</label>
+                    <input type="date" id="toDate">
+                </div>
+                <div class="filter-group">
+                    <label>From Time</label>
+                    <input type="time" id="fromTime">
+                </div>
+                <div class="filter-group">
+                    <label>To Time</label>
+                    <input type="time" id="toTime">
+                </div>
+                <div class="filter-group">
+                    <label>Branch</label>
+                    <select id="branchSelect">
+                        <option>All Branches</option>
+                        <option>Al-Gomhouria</option>
+                        <option>Downtown</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Referred By</label>
+                    <select id="doctorSelect">
+                        <option>All Doctors</option>
+                    </select>
+                </div>
+                <button class="btn-filter" onclick="updateReport()">Filter Orders</button>
+            </div>
+        </div>
+
+        <!-- Action Row -->
+        <div class="action-row">
+            <button class="btn-action btn-refund"><span>+</span> Refund</button>
+            <button class="btn-action btn-history">🕒</button>
+            <button class="btn-action btn-income" onclick="location.href='expenses-manager.html'"><span>💸</span>
+                Expenses</button>
+            <button class="btn-action btn-history" onclick="location.href='expenses-manager.html'">🕒</button>
+            <button class="btn-action btn-l2l" onclick="location.href='l2l-manager.html'"><span>🧪</span> Lab to
+                Lab</button>
+            <button class="btn-action btn-history" onclick="location.href='l2l-manager.html'">🕒</button>
+        </div>
+
+        <!-- Row 1: Basic KPIs -->
+        <div class="stats-grid">
+            <div class="stat-card yellow">
+                <span class="stat-label">Total Orders</span>
+                <div class="stat-value" id="totalOrders">0</div>
+            </div>
+            <div class="stat-card blue">
+                <span class="stat-label">Total Amount</span>
+                <div class="stat-value" id="totalAmount">0.00 EGP</div>
+            </div>
+            <div class="stat-card purple">
+                <span class="stat-label">Total Discount</span>
+                <div class="stat-value" id="totalDiscount">0.00 EGP</div>
+            </div>
+            <div class="stat-card green">
+                <span class="stat-label">Total Paid</span>
+                <div class="stat-value" id="totalPaid">0.00 EGP</div>
+            </div>
+            <div class="stat-card red">
+                <span class="stat-label">Total Remaining</span>
+                <div class="stat-value" id="totalRemaining">0.00 EGP</div>
+            </div>
+        </div>
+
+        <!-- Row 2: Payment Methods Breakdown -->
+        <div class="stats-grid">
+            <div class="stat-card blue">
+                <span class="stat-label">Vodafone Cash</span>
+                <div class="stat-value" id="paidVodafone">0.00 EGP</div>
+            </div>
+            <div class="stat-card purple">
+                <span class="stat-label">InstaPay</span>
+                <div class="stat-value" id="paidInsta">0.00 EGP</div>
+            </div>
+            <div class="stat-card yellow">
+                <span class="stat-label">Credit Card</span>
+                <div class="stat-value" id="paidCredit">0.00 EGP</div>
+            </div>
+            <div class="stat-card green">
+                <span class="stat-label">Visa</span>
+                <div class="stat-value" id="paidVisa">0.00 EGP</div>
+            </div>
+            <div class="stat-card grey">
+                <span class="stat-label">Cash</span>
+                <div class="stat-value" id="paidCash">0.00 EGP</div>
+            </div>
+        </div>
+
+        <!-- Row 3: Adjustments -->
+        <div class="stats-grid" style="grid-template-columns: repeat(5, 1fr);">
+            <div class="stat-card yellow">
+                <span class="stat-label">Total Refund</span>
+                <div class="stat-value" id="totalRefund">0.00 EGP</div>
+            </div>
+            <div class="stat-card blue">
+                <span class="stat-label">Lab to Lab (Out)</span>
+                <div class="stat-value" id="totalL2L">0.00 EGP</div>
+            </div>
+            <div class="stat-card red">
+                <span class="stat-label">General Expenses</span>
+                <div class="stat-value" id="totalExpenses">0.00 EGP</div>
+            </div>
+            <div class="stat-card olive">
+                <span class="stat-label">Subtotal After Adj.</span>
+                <div class="stat-value" id="subAfterAdj">0.00 EGP</div>
+            </div>
+            <div class="stat-card dark-green">
+                <span class="stat-label" style="color:rgba(255,255,255,0.8)">Final Net Balance</span>
+                <div class="stat-value" id="finalSubtotal" style="color:white">0.00 EGP</div>
+            </div>
+        </div>
+
+        <!-- Table Row -->
+        <div class="report-card">
+            <div class="table-header">
+                <div>Order ID</div>
+                <div>Patient Name</div>
+                <div>Patient ID</div>
+                <div>Date</div>
+                <div>Paid Amount</div>
+                <div>Method</div>
+            </div>
+            <div class="table-body" id="reportTableBody">
+                <!-- Data goes here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Lab to Lab Modal -->
+    <div id="l2lModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🧪 تسجيل تحويل Lab to Lab</h3>
+                <button type="button" style="background:none; border:none; font-size:1.5rem; cursor:pointer;"
+                    onclick="closeL2LModal()">×</button>
+            </div>
+            <div class="form-group">
+                <label>اسم المعمل المحول إليه</label>
+                <input type="text" id="l2lLabName" placeholder="مثلاً: معمل البرج">
+            </div>
+            <div class="form-group">
+                <label>اسم التحليل / الخدمة</label>
+                <input type="text" id="l2lService" placeholder="CBC, PCR, etc.">
+            </div>
+            <div class="form-group">
+                <label>المبلغ المدفوع (ج.م)</label>
+                <input type="number" id="l2lAmount" placeholder="0.00">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-close" onclick="closeL2LModal()">إلغاء</button>
+                <button class="btn-save" onclick="saveL2L()">حفظ وخصم 🛒</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="tests-data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fromDate').value = today;
+            document.getElementById('toDate').value = today;
+            // updateReport(); // Moved to after renderTable
+        });
+
+        function updateReport() {
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            const fromTime = document.getElementById('fromTime').value;
+            const toTime = document.getElementById('toTime').value;
+
+            const db = JSON.parse(localStorage.getItem('patientsDatabase')) || [];
+
+            // Filtering logic
+            const filtered = db.filter(p => {
+                const pDate = p.date;
+                if (fromDate && pDate < fromDate) return false;
+                if (toDate && pDate > toDate) return false;
+                // Add time filtering if precision needed
+                return true;
+            });
+
+            renderStats(filtered);
+            renderTable(filtered);
+        }
+
+        function renderStats(data) {
+            let totals = {
+                orders: data.length,
+                amount: 0,
+                discount: 0,
+                paid: 0,
+                remaining: 0,
+                cash: 0,
+                insta: 0,
+                vodafone: 0,
+                credit: 0,
+                visa: 0
+            };
+
+            data.forEach(p => {
+                // Calculate order total based on tests
+                let orderTotal = 0;
+                if (p.tests) {
+                    p.tests.forEach(tid => {
+                        const test = medicalTests[tid];
+                        orderTotal += (test && test.price) ? test.price : 150.00;
+                    });
+                }
+
+                // If patient object already has totalPrice/paidAmount (as used in other files)
+                const pTotal = parseFloat(p.totalPrice || orderTotal);
+                const pPaid = parseFloat(p.paidAmount || (p.status === 'Completed' ? pTotal : 0));
+                const pRemaining = pTotal - pPaid;
+
+                totals.amount += pTotal;
+                totals.paid += pPaid;
+                totals.remaining += pRemaining;
+
+                // For demo, assume "Cash" if not specified
+                // In a real system, we'd have p.paymentMethod
+                if (p.paymentMethod === 'Vodafone') totals.vodafone += pPaid;
+                else if (p.paymentMethod === 'InstaPay') totals.insta += pPaid;
+                else if (p.paymentMethod === 'Credit') totals.credit += pPaid;
+                else if (p.paymentMethod === 'Visa') totals.visa += pPaid;
+                else totals.cash += pPaid;
+            });
+
+            document.getElementById('totalOrders').textContent = totals.orders;
+            document.getElementById('totalAmount').textContent = totals.amount.toFixed(2) + ' EGP';
+            document.getElementById('totalDiscount').textContent = totals.discount.toFixed(2) + ' EGP';
+            document.getElementById('totalPaid').textContent = totals.paid.toFixed(2) + ' EGP';
+            document.getElementById('totalRemaining').textContent = totals.remaining.toFixed(2) + ' EGP';
+
+            document.getElementById('paidCash').textContent = totals.cash.toFixed(2) + ' EGP';
+            document.getElementById('paidInsta').textContent = totals.insta.toFixed(2) + ' EGP';
+            document.getElementById('paidVodafone').textContent = totals.vodafone.toFixed(2) + ' EGP';
+            document.getElementById('paidCredit').textContent = totals.credit.toFixed(2) + ' EGP';
+            document.getElementById('paidVisa').textContent = totals.visa.toFixed(2) + ' EGP';
+
+            // Calculations for adjustments
+            const refund = 0;
+            const l2l = calculateDailyL2L();
+            const genExpenses = calculateDailyExpenses();
+            const outbound = 0;
+
+            const subAfterAdj = totals.paid - refund - l2l - genExpenses;
+            const final = subAfterAdj + outbound;
+
+            document.getElementById('totalRefund').textContent = refund.toFixed(2) + ' EGP';
+            document.getElementById('totalL2L').textContent = l2l.toFixed(2) + ' EGP';
+            document.getElementById('totalExpenses').textContent = genExpenses.toFixed(2) + ' EGP';
+            document.getElementById('subAfterAdj').textContent = subAfterAdj.toFixed(2) + ' EGP';
+            document.getElementById('finalSubtotal').textContent = final.toFixed(2) + ' EGP';
+        }
+
+        // Helper to calculate Daily L2L from storage
+        function calculateDailyL2L() {
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            const l2lData = JSON.parse(localStorage.getItem('labToLabExpenses')) || [];
+
+            let total = 0;
+            l2lData.forEach(item => {
+                if (fromDate && item.date < fromDate) return;
+                if (toDate && item.date > toDate) return;
+                total += item.amount;
+            });
+            return total;
+        }
+
+        // Helper to calculate Daily General Expenses from storage
+        function calculateDailyExpenses() {
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            const expenses = JSON.parse(localStorage.getItem('generalExpenses')) || [];
+
+            let total = 0;
+            expenses.forEach(item => {
+                if (fromDate && item.date < fromDate) return;
+                if (toDate && item.date > toDate) return;
+                total += item.amount;
+            });
+            return total;
+        }
+
+        function renderTable(data) {
+            const body = document.getElementById('reportTableBody');
+            body.innerHTML = data.reverse().map(p => {
+                let orderTotal = 0;
+                if (p.tests) {
+                    p.tests.forEach(tid => {
+                        const test = medicalTests[tid];
+                        orderTotal += (test && test.price) ? test.price : 150.00;
+                    });
+                }
+                const pTotal = parseFloat(p.totalPrice || orderTotal);
+                const pPaid = parseFloat(p.paidAmount || (p.status === 'Completed' ? pTotal : 0));
+                const method = p.paymentMethod || 'Cash';
+                const methodClass = 'method-' + method.toLowerCase().split(' ')[0];
+
+                return `
+                    <div class="table-row">
+                        <div style="font-weight:700">order_${p.id.toLowerCase().substring(0, 6)}</div>
+                        <div style="font-weight:700">${p.name}</div>
+                        <div style="color:#64748b">${p.id}</div>
+                        <div>${p.date}</div>
+                        <div style="font-weight:800; color:#1e40af">${pPaid.toFixed(2)} EGP</div>
+                        <div><span class="method-badge ${methodClass}">${method}</span></div>
+                    </div>
+                `;
+            }).join('');
+        }
+        // Initialize report
+        updateReport();
+
+        let currentZoom = 1;
+        function changeZoom(delta) {
+            currentZoom = Math.min(Math.max(0.5, currentZoom + delta), 2);
+            document.body.style.setProperty('--app-zoom', currentZoom);
+            document.body.classList.add('zoomed');
+            document.getElementById('zoomLevel').textContent = Math.round(currentZoom * 100) + '%';
+            if (currentZoom === 1) document.body.classList.remove('zoomed');
+        }
+    </script>
+</body>
+
+</html>

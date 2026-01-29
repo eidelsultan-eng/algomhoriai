@@ -1,0 +1,17 @@
+[
+  {
+    "id": "GOM-ST1001",
+    "name": "Sample Patient",
+    "ageY": "35",
+    "gender": "Male",
+    "mobile": "01000000000",
+    "visits": [
+      {
+        "visitId": "DL-20260127-XYZ1",
+        "date": "2026-01-27T21:14:57",
+        "tests": ["CBC", "LiverProfile"],
+        "status": "Collected"
+      }
+    ]
+  }
+]

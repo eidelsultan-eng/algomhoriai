@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة المريض - معمل الجمهورية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --bg: #0f172a;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .loader-container {
+            text-align: center;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Hidden Template - for drawing the image */
+        #hiddenReportTemplate {
+            position: fixed;
+            left: -5000px;
+            width: 800px;
+            background: white;
+            padding: 40px;
+            color: black;
+            direction: rtl;
+        }
+
+        #finalImagePreview {
+            max-width: 95%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            display: none;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .action-bar {
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            display: none;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .btn-download {
+            background: #3b82f6;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="loader" class="loader-container">
+        <div class="spinner"></div>
+        <p>جاري توليد تقريرك الرسمي... 🧬</p>
+    </div>
+
+    <!-- The Image will show here -->
+    <img id="finalImagePreview" alt="تقرير معمل الجمهورية">
+
+    <!-- Action Bar -->
+    <div class="action-bar" id="actionBar">
+        <a href="#" id="downloadLink" class="btn btn-download" download="Report.png">حفظ الصورة تلقائياً 💾</a>
+    </div>
+
+    <!-- Hidden Template (The same design as the official report) -->
+    <div id="hiddenReportTemplate">
+        <div
+            style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #1e3a8a; padding-bottom:15px; margin-bottom:20px;">
+            <div style="font-weight:900; color:#1e3a8a; font-size:1.8rem;">معمل الجمهورية</div>
+            <div style="text-align:left; font-family:Outfit; color:#64748b;">GOMHOURIA LAB</div>
+        </div>
+        <div style="margin-bottom:25px; font-size:0.9rem;">
+            <p>إسم المريض: <strong id="hName">---</strong></p>
+            <p>التاريخ: <strong id="hDate">---</strong> | الكود: <strong id="hId">---</strong></p>
+        </div>
+        <table style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr style="background:#1e3a8a; color:white;">
+                    <th style="padding:12px; text-align:right;">الفحص</th>
+                    <th style="padding:12px; text-align:center;">النتيجة</th>
+                </tr>
+            </thead>
+            <tbody id="hResults"></tbody>
+        </table>
+        <div
+            style="margin-top:40px; text-align:center; border-top:1px solid #eee; padding-top:20px; font-size:0.8rem; color:#94a3b8;">
+            هذا التقرير معتمد رقمياً من خلال بوابة معمل الجمهورية.
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            authDomain: "hamadaaboalhaj-a636c.firebaseapp.com",
+            projectId: "hamadaaboalhaj-a636c",
+            storageBucket: "hamadaaboalhaj-a636c.appspot.com",
+            messagingSenderId: "338243610996",
+            appId: "1:338243610996:web:0f785bc10134449842f6e6"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db_cloud = firebase.firestore();
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+
+            if (!id) { alert("رابط غير صحيح"); return; }
+
+            try {
+                const doc = await db_cloud.collection("patient_portal").doc(id).get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    generateImage(data);
+                } else {
+                    document.getElementById('loader').innerHTML = "⚠️ عذراً، النتائج لم تجهز بعد.";
+                }
+            } catch (err) { console.error(err); }
+        });
+
+        async function generateImage(patient) {
+            document.getElementById('hName').textContent = patient.name;
+            document.getElementById('hId').textContent = patient.id;
+            document.getElementById('hDate').textContent = patient.date;
+
+            const tbody = document.getElementById('hResults');
+            Object.keys(patient.results || {}).forEach(rid => {
+                tbody.innerHTML += `<tr style="border-bottom:1px solid #eee;"><td style="padding:12px; font-weight:700;">${rid}</td><td style="padding:12px; text-align:center; font-weight:900; color:#1e3a8a;">${patient.results[rid]}</td></tr>`;
+            });
+
+            // Convert to Image
+            const canvas = await html2canvas(document.getElementById('hiddenReportTemplate'), { scale: 3 });
+            const imgData = canvas.toDataURL('image/png');
+
+            const preview = document.getElementById('finalImagePreview');
+            preview.src = imgData;
+            preview.style.display = 'block';
+
+            document.getElementById('downloadLink').href = imgData;
+            document.getElementById('actionBar').style.display = 'flex';
+            document.getElementById('loader').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

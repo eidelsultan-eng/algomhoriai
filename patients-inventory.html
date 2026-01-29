@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سجل الحالات - معمل الجمهورية</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Kufi+Arabic:wght@400;700&family=Amiri:wght@400;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary-blue: #0284c7;
+            --bg-light: #f1f5f9;
+            --border: #e2e8f0;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --badge-auth: #facc15;
+            --badge-paid: #0ea5e9;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            font-family: 'Noto Kufi Arabic', 'Outfit', sans-serif;
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Top Blue Bar */
+        .info-strip {
+            background: #0ea5e9;
+            color: white;
+            padding: 10px 30px;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .container {
+            padding: 20px 40px;
+        }
+
+        /* Search Section */
+        .search-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+        }
+
+        .search-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #0369a1;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .search-pills {
+            display: flex;
+            gap: 10px;
+        }
+
+        .pill {
+            background: #f0f9ff;
+            color: #0369a1;
+            padding: 6px 15px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            border: 1px solid #bae6fd;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Inventory Table/List Header */
+        .inventory-header {
+            display: grid;
+            grid-template-columns: 1.5fr 1.5fr 1fr 1fr 0.8fr 1fr;
+            padding: 15px 25px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-bottom: 2px solid #cbd5e1;
+            border-radius: 8px 8px 0 0;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        /* Inventory Row */
+        .inventory-row {
+            display: grid;
+            grid-template-columns: 1.5fr 1.5fr 1fr 1fr 0.8fr 1fr;
+            padding: 20px 25px;
+            background: white;
+            border: 1px solid var(--border);
+            border-top: none;
+            transition: 0.2s;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .inventory-row:hover {
+            background: #fcfdfe;
+        }
+
+        /* Column Styling */
+        .col-info strong {
+            display: block;
+            font-size: 1.1rem;
+            margin: 4px 0;
+            color: #1e293b;
+        }
+
+        .col-info .id-tag {
+            color: var(--text-muted);
+            font-family: 'Outfit';
+        }
+
+        .status-badge {
+            background: var(--badge-auth);
+            color: #854d0e;
+            padding: 2px 10px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .payment-badge {
+            background: var(--badge-paid);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: lowercase;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        .meta-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .meta-list li {
+            margin-bottom: 4px;
+        }
+
+        .meta-list span {
+            color: var(--text-muted);
+        }
+
+        .payment-info div {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2px;
+        }
+
+        .payment-history {
+            border-top: 1px dotted #e2e8f0;
+            margin-top: 8px;
+            padding-top: 8px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .tests-included {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .test-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Actions Grid */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .btn-action {
+            width: 35px;
+            height: 35px;
+            border-radius: 4px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-whatsapp {
+            background: #22c55e;
+        }
+
+        .btn-portal {
+            background: #3b82f6;
+        }
+
+        .btn-pdf {
+            background: #64748b;
+        }
+
+        .btn-barcode {
+            background: #f59e0b;
+        }
+
+        .btn-edit {
+            background: #3b82f6;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+        }
+
+        .btn-action:hover {
+            transform: scale(1.1);
+            filter: brightness(1.1);
+        }
+
+        /* Hidden Report Template - Made reliable for capture */
+        #hiddenReportContainer {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 800px;
+            background: white;
+            padding: 40px;
+            direction: rtl;
+            z-index: -100;
+            /* Deeply behind but still in DOM flow */
+            opacity: 0.01;
+            /* Minimal opacity so renderer doesn't ignore it */
+            pointer-events: none;
+        }
+
+        .h-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .h-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+        }
+
+        .h-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .h-table th {
+            background: #f1f5f9;
+            padding: 8px;
+            text-align: right;
+            border: 1px solid #ddd;
+        }
+
+        .h-table td {
+            padding: 8px;
+            border: 1px solid #eee;
+        }
+
+        /* Modal for Barcode Print */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            width: 450px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .barcode-card {
+            border: 2px solid #333;
+            padding: 20px;
+            margin: 20px 0;
+            background: #fff;
+            border-radius: 12px;
+        }
+
+        nav.sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 80px;
+            background: #1e3a8a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            z-index: 1000;
+        }
+
+        .sidebar-item {
+            color: white;
+            margin-bottom: 25px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: 0.3s;
+        }
+
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            opacity: 1;
+        }
+
+        .main-wrapper {
+            margin: 0 auto;
+            max-width: 1200px;
+            padding: 20px;
+        }
+
+        /* Since we are using RTL */
+    </style>
+</head>
+
+<body>
+    <nav
+        style="background: white; border-bottom: 1px solid var(--border); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <img src="gomhouria_lab_logo.png" style="height: 40px;" alt="Logo">
+            <h2 style="margin: 0; color: #1e3a8a; font-weight: 800;">AL-GOMHOURIA LAB</h2>
+        </div>
+        <div style="display: flex; gap: 20px; font-weight: 700; color: #64748b;">
+            <span onclick="location.href='dashboard.html'" style="cursor:pointer">Dashboard</span>
+            <span onclick="location.href='patient-registration.html'" style="cursor:pointer">Registration</span>
+            <span onclick="location.href='cash-tally.html'" style="cursor:pointer">Cash Tally</span>
+            <span onclick="location.href='expenses-manager.html'" style="cursor:pointer">Expenses</span>
+            <span onclick="location.href='l2l-manager.html'" style="cursor:pointer">Lab to Lab</span>
+            <span onclick="location.href='contracts-manager.html'" style="cursor:pointer">Contracts</span>
+            <span onclick="location.href='hr-system.html'" style="cursor:pointer">Employee HR</span>
+            <span onclick="location.href='patients-inventory.html'" style="cursor:pointer; color: #0284c7;">Global
+                Search</span>
+        </div>
+    </nav>
+
+    <div class="info-strip">
+        <div id="resultCount">جاري تحميل البيانات...</div>
+        <div style="display: flex; gap: 15px;">
+            <span onclick="location.href='dashboard.html'" style="cursor:pointer">Dashboard</span>
+            <span onclick="location.href='patient-registration.html'" style="cursor:pointer">Registration</span>
+        </div>
+    </div>
+
+    <div class="container main-wrapper">
+        <section class="search-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div class="search-title">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                        <path
+                            d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                    </svg>
+                    إدارة بيانات المرضى والتقارير
+                </div>
+                <div id="currentTime"
+                    style="font-weight: 700; color: #1e3a8a; background: #e0f2fe; padding: 5px 15px; border-radius: 8px; font-family: 'Outfit';">
+                </div>
+            </div>
+
+            <!-- Tabs System -->
+            <div
+                style="display: flex; gap: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 0; margin-bottom: 25px;">
+                <button id="tabToday" class="tab-btn active" onclick="switchTab('today')"
+                    style="padding: 12px 25px; border: none; background: none; font-weight: 700; cursor: pointer; color: #64748b; border-bottom: 3px solid transparent; transition: 0.3s; font-size: 1rem;">
+                    مرضى اليوم (Today)
+                </button>
+                <button id="tabArchive" class="tab-btn" onclick="switchTab('archive')"
+                    style="padding: 12px 25px; border: none; background: none; font-weight: 700; cursor: pointer; color: #64748b; border-bottom: 3px solid transparent; transition: 0.3s; font-size: 1rem;">
+                    الأرشيف والتقارير (Archive)
+                </button>
+            </div>
+
+            <div id="filterControls"
+                style="display: none; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; animation: fadeIn 0.3s;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 0.5fr; gap: 20px; align-items: end;">
+                    <div>
+                        <label
+                            style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 8px; font-weight: 700;">من
+                            تاريخ (From Date)</label>
+                        <input type="date" id="dateFrom"
+                            style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-family: 'Outfit';">
+                    </div>
+                    <div>
+                        <label
+                            style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 8px; font-weight: 700;">إلى
+                            تاريخ (To Date)</label>
+                        <input type="date" id="dateTo"
+                            style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-family: 'Outfit';">
+                    </div>
+                    <button onclick="applyFilters()"
+                        style="background: #0ea5e9; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; height: 42px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <span>🔍</span> جلب البيانات
+                    </button>
+                </div>
+                <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="pill" onclick="setPeriod('thisMonth')"
+                        style="cursor: pointer; background: #fff; border: 1px solid #0ea5e9; color: #0ea5e9;">هذا الشهر
+                        (This Month)</button>
+                    <button class="pill" onclick="setPeriod('lastMonth')"
+                        style="cursor: pointer; background: #fff; border: 1px solid #0ea5e9; color: #0ea5e9;">الشهر
+                        الماضي (Last Month)</button>
+                    <button class="pill" onclick="setPeriod('total')"
+                        style="cursor: pointer; background: #fff; border: 1px solid #0ea5e9; color: #0ea5e9;">كل السجلات
+                        (Total Archive)</button>
+                </div>
+            </div>
+
+            <div class="search-pills" id="activeFilters">
+                <div class="pill" id="currentViewLabel">
+                    الرؤية الحالية: مرضى اليوم
+                </div>
+            </div>
+        </section>
+
+        <style>
+            .tab-btn.active {
+                color: #0ea5e9 !important;
+                border-bottom-color: #0ea5e9 !important;
+                background: #f0f9ff !important;
+                border-radius: 8px 8px 0 0;
+            }
+
+            /* Premium Barcode Design */
+            .barcode-card {
+                width: 380px;
+                background: white;
+                border: 1px solid #000;
+                padding: 10px;
+                position: relative;
+                font-family: 'Outfit', sans-serif;
+                color: #000;
+                margin: 0 auto;
+            }
+
+            .barcode-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 0.9rem;
+                font-weight: 700;
+                margin-bottom: 5px;
+            }
+
+            .circle-indicator {
+                width: 24px;
+                height: 24px;
+                background: #64748b;
+                color: white;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 900;
+                margin-right: 10px;
+            }
+
+            .serum-tag {
+                background: #000;
+                color: #fff;
+                padding: 2px 8px;
+                font-weight: 800;
+                font-size: 0.85rem;
+                margin-right: 10px;
+            }
+
+            .patient-name-row {
+                font-size: 1.1rem;
+                font-weight: 800;
+                margin: 5px 0;
+            }
+
+            .barcode-container {
+                text-align: center;
+                margin-top: 5px;
+            }
+
+            .test-sidebar {
+                position: absolute;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                width: 40px;
+                border-left: 1px solid #000;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.65rem;
+                font-weight: 800;
+                text-transform: uppercase;
+                background: #fff;
+            }
+
+            .test-sidebar-text {
+                writing-mode: vertical-rl;
+                transform: rotate(0deg);
+                white-space: nowrap;
+            }
+
+            @media print {
+                body * {
+                    visibility: hidden;
+                }
+
+                #printableArea,
+                #printableArea * {
+                    visibility: visible;
+                }
+
+                #printableArea {
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    margin: 0;
+                    border: none;
+                }
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+
+        <div class="inventory-header">
+            <div>Order & Patient Info</div>
+            <div>Status Details</div>
+            <div>Tests Included</div>
+            <div>Payments</div>
+            <div>Branch</div>
+            <div>Quick Actions</div>
+        </div>
+
+        <div id="inventoryContainer">
+            <!-- Dynamic rows injected here -->
+        </div>
+    </div>
+
+    <!-- Barcode Modal -->
+    <div id="barcodeModal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="info-strip">
+                <div style="display:flex; align-items:center; gap:20px;">
+                    <a href="dashboard.html" style="color:white; text-decoration:none; font-weight:700;">🏠
+                        Dashboard</a>
+                    <div class="zoom-controls"
+                        style="display: flex; gap: 5px; background: rgba(255,255,255,0.1); padding: 2px 10px; border-radius: 20px;">
+                        <button onclick="changeZoom(-0.1)"
+                            style="background:none; border:none; color:white; font-size:1.2rem; font-weight:bold; cursor:pointer;">-</button>
+                        <span id="zoomLevel" style="font-weight:bold; min-width:45px; text-align:center;">100%</span>
+                        <button onclick="changeZoom(0.1)"
+                            style="background:none; border:none; color:white; font-size:1.2rem; font-weight:bold; cursor:pointer;">+</button>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 20px;">
+                    <span>🧪 <a href="Tests.html" style="color:white; text-decoration:none;">Laboratory Tests</a></span>
+                    <span>💸 <a href="expenses-manager.html" style="color:white; text-decoration:none;">Expenses
+                            Manager</a></span>
+                    <span>📅 <span id="currentDate">Jan 29, 2026</span></span>
+                </div>
+            </div>
+            <div id="printableArea" class="barcode-card">
+                <div class="barcode-header">
+                    <div style="display: flex; align-items: center;">
+                        <div class="circle-indicator">O</div>
+                        <span id="printDateTime">07-03-25 (22:55)</span>
+                    </div>
+                    <div style="font-weight: 900;" id="printAgeGender">43 - Y (M)</div>
+                </div>
+
+                <div style="display: flex; align-items: center; margin-bottom: 2px;">
+                    <div class="serum-tag">Serum</div>
+                    <div style="font-weight: 700; font-size: 0.9rem;" id="printOrderNum">1-665190</div>
+                </div>
+
+                <div class="patient-name-row" id="printName">Ahmed Abdallah</div>
+
+                <div class="barcode-container">
+                    <svg id="barcodeDisplay"></svg>
+                    <div style="font-size: 1.1rem; font-weight: 700; margin-top: -5px;" id="printBarcodeNum">3803405
+                    </div>
+                </div>
+
+                <div class="test-sidebar">
+                    <div class="test-sidebar-text" id="printTests">ESTR, PRL, F. T, TEST</div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-report btn-print" style="flex: 2; height: 50px;" onclick="window.print()">🖨️ Print
+                    Label</button>
+                <button class="btn-report"
+                    style="flex: 1; height: 50px; background: #64748b; color: white; border: none; border-radius: 8px; cursor: pointer;"
+                    onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Report for Copying to Clipboard -->
+    <div id="hiddenReportContainer">
+        <div id="hReportBody">
+            <div class="h-header">
+                <div style="text-align: right;">
+                    <h3 style="color: #b91c1c; margin: 0;">د/ محمد عبد الناصر بليغ</h3>
+                    <p style="font-size: 0.7rem; margin: 2px 0;">دكتوراه التحاليل البيولوجية</p>
+                </div>
+                <div style="text-align: center;">
+                    <img src="gomhouria_lab_logo.png" style="width: 60px;">
+                </div>
+                <div style="text-align: left;">
+                    <h3 style="color: #1e3a8a; margin: 0;">معمل الجمهورية</h3>
+                    <p style="font-size: 0.7rem; margin: 2px 0;">للتحاليل الطبية</p>
+                </div>
+            </div>
+            <div class="h-info-grid">
+                <div>
+                    <div><strong>Patient:</strong> <span id="hName"></span></div>
+                    <div><strong>ID:</strong> <span id="hId"></span></div>
+                </div>
+                <div style="text-align: left;">
+                    <div><strong>Date:</strong> <span id="hDate"></span></div>
+                    <div><strong>Order:</strong> <span id="hOrder"></span></div>
+                </div>
+            </div>
+            <div id="hResults"></div>
+            <div
+                style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; font-size: 0.7rem; text-align: center; color: #666;">
+                هذا التقرير تم استخراجه إلكترونياً من نظام معمل الجمهورية.
+            </div>
+        </div>
+    </div>
+
+    <script src="tests-data.js"></script>
+
+    <script>
+        let currentTab = 'today';
+        let filteredPatients = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+            renderPatients();
+        });
+
+        function updateClock() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            document.getElementById('currentTime').textContent = now.toLocaleDateString('ar-EG', options);
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            if (tab === 'today') {
+                document.getElementById('tabToday').classList.add('active');
+                document.getElementById('filterControls').style.display = 'none';
+                document.getElementById('currentViewLabel').textContent = 'الرؤية الحالية: مرضى اليوم';
+            } else {
+                document.getElementById('tabArchive').classList.add('active');
+                document.getElementById('filterControls').style.display = 'block';
+                document.getElementById('currentViewLabel').textContent = 'الرؤية الحالية: الأرشيف (كل المسجلين)';
+            }
+            renderPatients();
+        }
+
+        function applyFilters() {
+            renderPatients();
+        }
+
+        function setPeriod(period) {
+            const now = new Date();
+            let fromDate, toDate;
+
+            if (period === 'thisMonth') {
+                fromDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                toDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            } else if (period === 'lastMonth') {
+                fromDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                toDate = new Date(now.getFullYear(), now.getMonth(), 0);
+            } else if (period === 'total') {
+                fromDate = null;
+                toDate = null;
+            }
+
+            document.getElementById('dateFrom').value = fromDate ? fromDate.toISOString().split('T')[0] : '';
+            document.getElementById('dateTo').value = toDate ? toDate.toISOString().split('T')[0] : '';
+
+            applyFilters();
+        }
+
+        function renderPatients() {
+            const db = JSON.parse(localStorage.getItem('patientsDatabase')) || [];
+            const container = document.getElementById('inventoryContainer');
+            const countEl = document.getElementById('resultCount');
+
+            const today = new Date().toISOString().split('T')[0];
+
+            let displayList = [];
+
+            if (currentTab === 'today') {
+                displayList = db.filter(p => p.date === today);
+            } else {
+                const fromDate = document.getElementById('dateFrom').value;
+                const toDate = document.getElementById('dateTo').value;
+
+                displayList = db.filter(p => {
+                    if (fromDate && p.date < fromDate) return false;
+                    if (toDate && p.date > toDate) return false;
+                    return true;
+                });
+            }
+
+            if (displayList.length === 0) {
+                container.innerHTML = `<div style="background: white; padding: 50px; text-align: center; border: 1px solid var(--border); border-top:none; border-radius: 0 0 12px 12px;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">🔍</div>
+                    <div style="font-weight: 700; color: #64748b;">لا توجد نتائج مطابقة لمواصفات البحث الحالية.</div>
+                </div>`;
+                countEl.textContent = `Found 0 matching patient(s) [${currentTab === 'today' ? 'Today' : 'Archive'}]`;
+                return;
+            }
+
+            countEl.textContent = `Found ${displayList.length} patient(s) matching ${currentTab === 'today' ? 'Today' : 'Selected Archive'}`;
+
+            const sorted = displayList.slice().reverse();
+
+            container.innerHTML = sorted.map(p => {
+                const resultsCount = Object.keys(p.results || {}).length;
+                const total = parseFloat(p.totalPrice || 0);
+                const paid = parseFloat(p.paidAmount || 0);
+                const remaining = total - paid;
+                const testsShown = Object.keys(p.results || {}).slice(0, 3);
+
+                return `
+                    <div class="inventory-row">
+                        <div class="col-info">
+                            <span class="id-tag">Order: order_${p.id.toLowerCase()}</span><br>
+                            <span class="id-tag">Patient: ${p.id}</span>
+                            <strong>${p.name}</strong>
+                            <span>Referred By: N/A</span><br>
+                            <span class="status-badge">AUTHENTICATED</span>
+                        </div>
+                        <div class="col-status">
+                            <ul class="meta-list">
+                                <li><span>تاريخ الطلب:</span> ${p.date}</li>
+                                <li><span style="color:#0369a1; font-weight:700;">تسجيل بواسطة:</span> ${p.registeredBy || 'د. محمد'}</li>
+                                <li><span style="color:#1e40af; font-weight:700;">نتائج بواسطة:</span> ${p.recordedBy || 'بانتظار الطبيب'}</li>
+                                <li><span>الحالة:</span> <span class="status-badge" style="${p.status === 'Completed' ? 'background:#dcfce7; color:#166534;' : 'background:#fee2e2; color:#991b1b;'}">${p.status || 'Waiting'}</span></li>
+                            </ul>
+                        </div>
+                        <div class="tests-included">
+                            ${testsShown.map(t => `<div class="test-item"><svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M8 1a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h4z" /><path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4z" /></svg> ${t}</div>`).join('')}
+                            ${resultsCount > 3 ? `<div style="color:var(--primary-blue); font-size: 0.75rem;">+ ${resultsCount - 3} more</div>` : ''}
+                        </div>
+                        <div class="payment-info">
+                            <span class="payment-badge">normal</span>
+                            <div><span>Total:</span> <span>${total.toFixed(2)} EGP</span></div>
+                            <div><span>Discount:</span> <span>0.00 EGP</span></div>
+                            <div><span>Paid:</span> <span>${paid.toFixed(2)} EGP</span></div>
+                            <div style="font-weight:700;"><span>Remaining:</span> <span>${remaining.toFixed(2)} EGP</span></div>
+                            <div class="payment-history">#1: ${paid.toFixed(2)} EGP (${p.date})</div>
+                        </div>
+                        <div>
+                            <strong>Al-Gomhouria (1)</strong>
+                        </div>
+                        <div class="actions-grid">
+                            <button class="btn-action btn-whatsapp" title="WhatsApp & PDF & Ctrl+V" onclick="openWhatsApp('${p.mobile}', '${p.name}', '${p.id}')">
+                                <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>
+                            </button>
+                            <button class="btn-action btn-portal" title="Patient Portal" onclick="location.href='patient-portal.html?id=${p.id}'">
+                                <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
+                            </button>
+                            <button class="btn-action btn-pdf" title="Report PDF" onclick="location.href='patient-report.html?id=${p.id}'">
+                                <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/></svg>
+                            </button>
+                            <button class="btn-action btn-barcode" title="Print Barcode" onclick="openBarcodeModal('${p.id}', '${p.name}', '${p.ageY}', '${p.gender}', '${p.date}', '${(p.tests || []).map(tid => medicalTests[tid] ? medicalTests[tid].name : tid).join(', ')}')">
+                                <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0v-3Zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5ZM.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5Zm15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5ZM4 4h1v8H4V4Zm2 0h2v8H6V4Zm3 0h1v8H9V4Zm2 0h2v8h-2V4Z"/></svg>
+                            </button>
+                            <button class="btn-action btn-edit" title="Edit Results" onclick="location.href='results-entry.html?id=${p.id}'">
+                                <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg>
+                            </button>
+                            <button class="btn-action btn-delete" title="Delete" onclick="alert('Delete functionality is currently disabled for security.')">
+                                <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function openWhatsApp(phone, name, id) {
+            const db = JSON.parse(localStorage.getItem('patientsDatabase')) || [];
+            const patient = db.find(p => p.id === id);
+            if (!patient) return;
+
+            // 1. تجهيز البيانات
+            let cleanPhone = phone.replace(/\D/g, '');
+            if (cleanPhone.startsWith('0')) cleanPhone = '2' + cleanPhone;
+            if (!cleanPhone.startsWith('2')) cleanPhone = '2' + cleanPhone;
+
+            const portalUrl = `https://gomhouria-lab.web.app/patient-portal.html?id=${id}`;
+            const messageText = `السلام عليكم ورحمة الله وبركاته\nأهلاً بك عميل معمل الجمهورية العزيز: أ/ ${name}.\nنود إخطاركم بأن نتائج التحاليل الخاصة بكم أصبحت جاهزة.\n\n🔗 يمكنك مشاهدة وتحميل نتائجك مباشرة عبر بوابتنا الرقمية:\n${portalUrl}\n\n💡 (لقد تم نسخ صورة التقرير أيضاً؛ يمكنك لصقها Ctrl+V هنا)`;
+            const waUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(messageText)}`;
+
+            // 2. تحديث بيانات التقرير "الخفي"
+            document.getElementById('hName').textContent = patient.name;
+            document.getElementById('hId').textContent = patient.id;
+            document.getElementById('hDate').textContent = patient.date;
+            document.getElementById('hOrder').textContent = `REC-${patient.id.split('-')[1] || patient.id}`;
+
+            const resultsContainer = document.getElementById('hResults');
+            resultsContainer.innerHTML = '';
+            let resultsHtml = '<table class="h-table" style="width:100%; border-collapse:collapse;"><thead><tr style="background:#1e3a8a; color:white;"><th style="padding:12px; text-align:right;">إسم الفحص</th><th style="padding:12px; text-align:center;">النتيجة</th></tr></thead><tbody>';
+            Object.keys(patient.results || {}).forEach(rid => {
+                const testName = (typeof medicalTests !== 'undefined' && medicalTests[rid]) ? medicalTests[rid].name : rid;
+                resultsHtml += `<tr style="border-bottom:1px solid #eee;"><td style="padding:12px; text-align:right;">${testName}</td><td style="padding:12px; font-weight:900; text-align:center; color:#1e3a8a;">${patient.results[rid]}</td></tr>`;
+            });
+            resultsHtml += '</tbody></table>';
+            resultsContainer.innerHTML = resultsHtml;
+
+            const element = document.getElementById('hReportBody');
+
+            // 3. التنفيذ بالترتيب (فتح الواتساب مع ضمان النسخ)
+            try {
+                const toast = document.createElement('div');
+                toast.id = "waAggressiveToast";
+                toast.style = "position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:rgba(30,58,138,0.95); color:white; padding:40px; border-radius:30px; z-index:11000; font-weight:900; box-shadow:0 20px 80px rgba(0,0,0,0.6); text-align:center; direction:rtl; border:4px solid #3b82f6; backdrop-filter:blur(10px);";
+                toast.innerHTML = `<div class="spinner-wa" style="width:40px; height:40px; border:4px solid white; border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 20px;"></div>جاري نسخ التقرير كصورة...<br><span style="font-size:0.9rem; font-weight:400; color:#93c5fd;">ممنوع التكبير أو التصغير لضمان جودة الصورة</span>`;
+                document.body.appendChild(toast);
+
+                if (!navigator.clipboard || !window.ClipboardItem) throw new Error("Clipboard API Fail");
+
+                // الخطوة السحرية: تمرير Promise مباشرة لـ ClipboardItem
+                const clipboardPromise = new Promise(async (resolve, reject) => {
+                    try {
+                        const canvas = await html2canvas(element, {
+                            scale: 2,
+                            backgroundColor: "#ffffff",
+                            useCORS: true,
+                            logging: false,
+                            allowTaint: true
+                        });
+                        canvas.toBlob(blob => {
+                            if (blob) resolve(blob);
+                            else reject("Blob Fail");
+                        }, 'image/png');
+                    } catch (e) { reject(e); }
+                });
+
+                await navigator.clipboard.write([
+                    new ClipboardItem({ 'image/png': clipboardPromise })
+                ]);
+
+                // تحديث الرسالة بعد النجاح
+                toast.style.background = "rgba(34,197,94,0.95)";
+                toast.style.borderColor = "#4ade80";
+                toast.innerHTML = `<div style="font-size:3rem; margin-bottom:20px;">✅</div>تم النسخ! افتح الآن واضغط <br><span style="background:white; color:#15803d; padding:5px 15px; border-radius:10px; font-family:Outfit; margin-top:10px; display:inline-block;">Ctrl + V</span>`;
+
+                // تحريك الصفحة للواتساب
+                window.location.href = waUrl;
+
+                setTimeout(() => {
+                    if (document.getElementById('waAggressiveToast')) document.getElementById('waAggressiveToast').remove();
+                }, 5000);
+
+            } catch (err) {
+                console.error("Critical Clipboard Error:", err);
+                alert("⚠️ تنبيه: المتصفح منع نظام النسخ التلقائي.\nيرجى استخدام زر 'تقرير PDF' ثم إرساله يدوياً.");
+                window.location.href = waUrl;
+                if (document.getElementById('waAggressiveToast')) document.getElementById('waAggressiveToast').remove();
+            }
+        }
+
+        function openBarcodeModal(id, name, age, gender, date, tests) {
+            document.getElementById('printName').textContent = name;
+
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('printDateTime').textContent = `${date} (${timeStr})`;
+
+            document.getElementById('printAgeGender').textContent = `${age} - Y (${gender.charAt(0)})`;
+
+            // Generate a random-like order sub-ID for visual matching
+            const orderSubId = id.split('-')[1] || Math.floor(100000 + Math.random() * 900000);
+            document.getElementById('printOrderNum').textContent = `1-${orderSubId}`;
+
+            document.getElementById('printBarcodeNum').textContent = id.replace(/\D/g, '').slice(-7);
+
+            // Format tests for side column
+            document.getElementById('printTests').textContent = tests || "GENERAL TEST";
+
+            JsBarcode("#barcodeDisplay", id, {
+                format: "CODE128",
+                width: 2,
+                height: 50,
+                displayValue: false,
+                margin: 0
+            });
+
+            document.getElementById('barcodeModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('barcodeModal').style.display = 'none';
+        }
+
+        let currentZoom = 1;
+        function changeZoom(delta) {
+            currentZoom = Math.min(Math.max(0.5, currentZoom + delta), 2);
+            document.body.style.setProperty('--app-zoom', currentZoom);
+            document.body.classList.add('zoomed');
+            document.getElementById('zoomLevel').textContent = Math.round(currentZoom * 100) + '%';
+            if (currentZoom === 1) document.body.classList.remove('zoomed');
+        }
+    </script>
+</body>
+
+</html>

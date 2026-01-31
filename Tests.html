@@ -11,6 +11,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
 
     <!-- Add before your custom JS scripts -->
@@ -231,38 +232,34 @@
 <body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="btn btn-warning position-relative start-0  ms-3" href="#" onclick="history.back(); return false;"
-                style="margin-right: 5px;">
-                <i class="fas fa-arrow-left"></i>
-                Back
-            </a>
-            <a class="navbar-brand" href="Dashboard.html">DataLab.M.S Pro</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+    <header>
+        <div class="logo-section" onclick="location.href='dashboard.html'">
+            <i class="fas fa-flask fa-2x" style="color: #4f46e5;"></i>
+            <div class="logo-text">AL GOMHOURIA<span>.LAB</span></div>
+        </div>
+        <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Global search for patients, orders, or files..." id="globalSearchInput">
+        </div>
+        <div class="header-actions">
+            <button class="action-btn" title="Notifications"><i class="fas fa-bell"></i></button>
+            <button class="action-btn" title="Settings"><i class="fas fa-cog"></i></button>
+            <button class="action-btn" id="logoutBtnMain"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+    </header>
 
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="fas fa-bell"></i></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" id="userProfile"><i class="fas fa-user"></i> <span
-                                id="userFullName">Loading...</span></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" id="userProfile"><i class="fas fa-building"></i> <span
-                                id="userBranchName">Branch Name</span></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></a>
-                    </li>
-                </ul>
-            </div>
+    <nav class="horizontal-nav">
+        <div class="nav-list">
+            <a href="dashboard.html" class="nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="advanced-stats.html" class="nav-item"><i class="fas fa-chart-pie"></i> Analytics</a>
+            <a href="patient-registration.html" class="nav-item"><i class="fas fa-user-plus"></i> Registration</a>
+            <a href="patient-order.html" class="nav-item"><i class="fas fa-file-medical"></i> Patient Request</a>
+            <a href="results-entry.html" class="nav-item"><i class="fas fa-flask"></i> Results Entry</a>
+            <a href="Tests.html" class="nav-item active"><i class="fas fa-microscope"></i> Tests Manager</a>
+            <a href="bulk_entry.html" class="nav-item"><i class="fas fa-layer-group"></i> Bulk Hub</a>
+            <a href="cash-tally.html" class="nav-item"><i class="fas fa-cash-register"></i> Cash Tally</a>
+            <a href="expenses-manager.html" class="nav-item"><i class="fas fa-money-bill-wave"></i> Expenses</a>
+            <a href="patient-portal.html" class="nav-item"><i class="fas fa-user-circle"></i> Patient Portal</a>
         </div>
     </nav>
 

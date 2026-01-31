@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataLab.M.S Pro - Test Results</title>
+    <link rel="icon" href="images/datalab_icon3.jpg" type="image/x-icon">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Add this with other script links in head -->
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+    <style>
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            text-align: center;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .floating-btn i {
+            font-size: 30px;
+            font-weight: bold;
+        }
+    </style>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .header-card {
+            background-color: #1a73e8;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .patient-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .search-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f1f1f1;
+            border-radius: 8px;
+        }
+
+        .patient-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .patient-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .orders-container {
+            margin-top: 20px;
+        }
+
+        .order-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .order-card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .order-date {
+            font-weight: 500;
+            color: #1a73e8;
+        }
+
+        .order-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .no-orders {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+
+        /* Search results styles */
+        .search-result-item {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .search-result-item:hover {
+            background-color: #e9ecef;
+        }
+
+        .highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
+
+        #searchResults {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: white;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="btn btn-warning position-relative start-0  ms-3" href="#" onclick="history.back(); return false;"
+                style="margin-right: 5px;">
+                <i class="fas fa-arrow-left"></i>
+                Back
+            </a>
+            <a class="navbar-brand" href="Dashboard.html">DataLab.M.S Pro</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-bell"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="userProfile"><i class="fas fa-user"></i> <span
+                                id="userFullName">Loading...</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="userProfile"><i class="fas fa-building"></i> <span
+                                id="userBranchName">Branch Name</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="header-card d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fas fa-file-medical"></i> Test Results</h4>
+            <div class="button-group">
+
+
+                <a href="Collected.html" class="btn btn-danger">
+                    <i class="fas fa-hourglass-half"></i> Pending Results
+                </a>
+                <a href="Authentication.html" class="btn btn-warning">
+                    <i class="fas fa-bell  "></i>Authenticate Results
+                </a>
+                <a href="PrintResults.html" class="btn btn-success">
+                    <i class="fas fa-print"></i> Print Results
+                </a>
+            </div>
+        </div>
+
+
+
+
+
+        <!-- Global Search Section -->
+        <div class="search-section">
+            <div class="row">
+
+                <div class="col-md-5">
+                    <!-- Search by Order ID Section -->
+
+                    <label for="orderIdSearch" class="form-label">Search by Order ID</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="orderIdSearch" placeholder="Enter Order ID">
+                        <button class="btn btn-warning" id="orderIdSearchBtn"><i class="fas fa-search"></i> Search
+                            Order</button>
+                    </div>
+
+
+                </div>
+                <div class="col-md-7">
+                    <!-- 1. Update the search input placeholder and label to include Sample ID -->
+                    <label for="globalSearch" class="form-label">Search (Patient ID, Name, Mobile, Sample
+                        ID)</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="globalSearch"
+                            placeholder="Search by patient ID, name, mobile, order ID, or sample ID">
+                        <button class="btn btn-primary" id="globalSearchBtn"><i class="fas fa-search"></i>
+                            Search</button>
+                    </div>
+                    <div id="searchResults">
+                        <div class="list-group" id="resultsList"></div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+        <!-- Patient Information (Initially Hidden) -->
+        <div class="patient-info" id="patientInfo" style="display: none;">
+            <div class="row">
+                <div class="col-md-8">
+                    <span class="patient-name" id="patientFullName">Mr. Ahmed Mahrous Amin</span>
+                </div>
+                <div class="col-md-4">
+                    <span>Patient ID: <span id="patientId"></span> | Age: <span id="patientAge"></span> | Gender: <span
+                            id="patientGender"></span></span>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-12">
+                    <span>Mobile: <span id="patientMobile"></span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Section -->
+        <div class="orders-container" id="ordersContainer" style="display: none;">
+            <h5 class="mb-3">Patient Orders</h5>
+            <div id="ordersList">
+                <!-- Orders will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+
+    <a class="btn bg-warning floating-btn">
+        <i class="fas fa-barcode"></i>
+    </a>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="firebase_config.js"></script>
+    <script src="logout.js"></script>
+    <script src="global_files/loadAllPatientsForSearch.js"></script>
+    <script src="global_files/errors_handled.js"></script>
+    <script>
+
+
+        window.addEventListener('DOMContentLoaded', function () {
+            const orderIdSearchInput = document.getElementById('orderIdSearch');
+            if (orderIdSearchInput) {
+                orderIdSearchInput.focus();
+            }
+        });
+        // DOM elements
+        const patientInfo = document.getElementById('patientInfo');
+        const ordersContainer = document.getElementById('ordersContainer');
+        const ordersList = document.getElementById('ordersList');
+        const globalSearch = document.getElementById('globalSearch');
+        const globalSearchBtn = document.getElementById('globalSearchBtn');
+        const searchResults = document.getElementById('searchResults');
+        const resultsList = document.getElementById('resultsList');
+
+        // Current patient data
+        let currentPatient = null;
+        let currentPatientDocRef = null;
+        let fuse = null;
+        let allPatients = [];
+
+        auth.onAuthStateChanged((user) => {
+            if (user || localStorage.getItem('isPersonalUse') === 'true') {
+                const email = user ? user.email : 'personal@datalab.ms';
+                fetchDoctorProfile(email);
+                loadAllPatientsForSearch();
+            } else {
+                window.location.href = 'Login.html';
+            }
+        });
+
+        let currentUserPermissions = [];
+        let currentUserBranch = null;
+
+        // Fetch doctor's profile and permissions
+        function fetchDoctorProfile(email) {
+            db.collection('employees').doc(email).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        document.getElementById('userFullName').textContent =
+                            `Dr. ${userData.fullName || 'User'}`;
+                        document.getElementById('userBranchName').textContent =
+                            `Branch: ${userData.branch || 'Branch'}`;
+                        currentUserBranch = userData.branch || ''; // <-- ADD THIS
+                        currentUserPermissions = userData.permissions || [];
+                        loadAllPatientsForSearch();
+                    }
+                });
+        }
+
+
+        // Initialize Fuse.js for search
+        function initializeFuseSearch() {
+            const options = {
+                keys: [
+                    'patient_id',
+                    'fullName', // Add fullName for exact/full name search
+                    'firstName',
+                    'secondName',
+                    'thirdName',
+                    'mobile',
+                    'sample_id'
+                ],
+                includeScore: true,
+                threshold: 0.4,
+                ignoreLocation: true,
+                minMatchCharLength: 2
+            };
+
+            fuse = new Fuse(allPatients, options);
+        }
+
+        // ...existing code...
+
+        function performGlobalSearch(query) {
+            if (!fuse || query.length < 2) {
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            // Normalize and split the query into words
+            const normalizedQuery = query.replace(/\s+/g, ' ').trim().toLowerCase();
+            const queryWords = normalizedQuery.split(' ');
+
+            // Filter patients where all query words are present in the full name
+            const filteredPatients = allPatients.filter(p => {
+                let name = '';
+                if (p.fullName) {
+                    name = p.fullName;
+                } else {
+                    name = [
+                        p.firstName || '',
+                        p.secondName || '',
+                        p.thirdName || ''
+                    ].join(' ');
+                }
+                name = name.replace(/\s+/g, ' ').trim().toLowerCase();
+                // Check if every word in the query is present in the name
+                return queryWords.every(word => name.includes(word));
+            });
+
+            if (filteredPatients.length === 1) {
+                displaySearchResults([{ item: filteredPatients[0], matches: [] }]);
+                return;
+            } else if (filteredPatients.length > 1) {
+                // Show all matching patients
+                displaySearchResults(filteredPatients.map(p => ({ item: p, matches: [] })));
+                return;
+            }
+
+            // Fallback to Fuse.js fuzzy search
+            const results = fuse.search(query);
+
+            if (results.length > 0) {
+                displaySearchResults(results);
+            } else {
+                // Try searching orders by sample_id
+                searchOrderBySampleId(query);
+            }
+        }
+
+        // ...existing code...
+        function searchOrderBySampleId(sampleId) {
+            // Assume orders are stored under each patient, so we need to search all patients' orders
+            db.collection('patients').get().then((patientsSnap) => {
+                let foundOrder = null;
+                let foundPatient = null;
+                let promises = [];
+                patientsSnap.forEach((patientDoc) => {
+                    const patientId = patientDoc.id;
+                    const ordersRef = db.collection('patients').doc(patientId).collection('orders');
+                    const p = ordersRef.where('sample_id', '==', sampleId).get().then((ordersSnap) => {
+                        ordersSnap.forEach((orderDoc) => {
+                            if (!foundOrder) {
+                                foundOrder = orderDoc.data();
+                                foundOrder.id = orderDoc.id;
+                                foundPatient = patientDoc.data();
+                                foundPatient.patient_id = patientId;
+                            }
+                        });
+                    });
+                    promises.push(p);
+                });
+
+                Promise.all(promises).then(() => {
+                    resultsList.innerHTML = '';
+                    if (foundOrder && foundPatient) {
+                        const item = document.createElement('div');
+                        item.className = 'list-group-item search-result-item';
+                        item.innerHTML = `<strong>Sample ID:</strong> ${sampleId}<br>
+                    <strong>Patient:</strong> ${foundPatient.firstName || ''} ${foundPatient.secondName || ''} ${foundPatient.thirdName || ''} (${foundPatient.patient_id})<br>
+                    <strong>Order ID:</strong> ${foundOrder.id}`;
+                        item.addEventListener('click', () => {
+                            window.open(`/Recording?orderId=${foundOrder.id}&patientId=${foundPatient.patient_id}`, '_self');
+                            searchResults.style.display = 'none';
+                            globalSearch.value = '';
+                        });
+                        resultsList.appendChild(item);
+                        searchResults.style.display = 'block';
+                    } else {
+                        const noResults = document.createElement('div');
+                        noResults.className = 'list-group-item';
+                        noResults.textContent = 'No matching patients or sample IDs found';
+                        resultsList.appendChild(noResults);
+                        searchResults.style.display = 'block';
+                    }
+                });
+            });
+        }
+
+        // Display search results
+        function displaySearchResults(results) {
+            resultsList.innerHTML = '';
+
+            if (results.length === 0) {
+                const noResults = document.createElement('div');
+                noResults.className = 'list-group-item';
+                noResults.textContent = 'No matching patients found';
+                resultsList.appendChild(noResults);
+                searchResults.style.display = 'block';
+                return;
+            }
+
+            results.slice(0, 5).forEach(result => {
+                const patient = result.item;
+                const item = document.createElement('div');
+                item.className = 'list-group-item search-result-item';
+
+                // Highlight matching parts
+                let displayText = `${patient.patient_id} - `;
+                if (patient.title) displayText += `${patient.title} `;
+                displayText += `${patient.firstName || ''} ${patient.secondName || ''} ${patient.thirdName || ''}`.trim();
+                if (patient.mobile) displayText += ` (${patient.mobile})`;
+
+                item.innerHTML = highlightMatches(displayText, result.matches);
+                item.addEventListener('click', () => {
+                    loadPatientFromSearch(patient.patient_id);
+                    searchResults.style.display = 'none';
+                    globalSearch.value = '';
+                });
+
+                resultsList.appendChild(item);
+            });
+
+            searchResults.style.display = 'block';
+        }
+
+        // Highlight matching text in search results
+        function highlightMatches(text, matches) {
+            if (!matches) return text;
+
+            const matchedIndices = new Set();
+            matches.forEach(match => {
+                match.indices.forEach(([start, end]) => {
+                    for (let i = start; i <= end; i++) {
+                        matchedIndices.add(i);
+                    }
+                });
+            });
+
+            let result = '';
+            for (let i = 0; i < text.length; i++) {
+                if (matchedIndices.has(i)) {
+                    result += `<span class="highlight">${text[i]}</span>`;
+                } else {
+                    result += text[i];
+                }
+            }
+
+            return result;
+        }
+
+        function loadPatientFromSearch(patientId) {
+            currentPatient = allPatients.find(p => p.patient_id === patientId);
+            if (currentPatient) {
+                displayPatientInfo();
+                loadPatientOrders();
+            } else {
+                alert('Patient not found');
+                patientInfo.style.display = 'none';
+                ordersContainer.style.display = 'none';
+            }
+        }
+
+        // Display patient information
+        // Update displayPatientInfo() to show both years and days for patient age
+
+        function displayPatientInfo() {
+            if (!currentPatient) return;
+
+            document.getElementById('patientFullName').textContent =
+                `${currentPatient.title || ''} ${currentPatient.firstName} ${currentPatient.secondName || ''} ${currentPatient.thirdName || ''}`;
+            document.getElementById('patientId').textContent = currentPatient.patient_id;
+
+            // Show age as years and days if available
+            let ageText = '';
+            if (currentPatient.age_years !== undefined && currentPatient.age_years !== null) {
+                ageText = `${currentPatient.age_years} yrs`;
+                if (currentPatient.age_days !== undefined && currentPatient.age_days !== null) {
+                    ageText += ` (${currentPatient.age_days} days)`;
+                }
+            } else {
+                ageText = 'N/A';
+            }
+            document.getElementById('patientAge').textContent = ageText;
+
+            document.getElementById('patientGender').textContent = currentPatient.gender || 'N/A';
+            document.getElementById('patientMobile').textContent = currentPatient.mobile || 'N/A';
+
+            patientInfo.style.display = 'block';
+        }
+
+        // Load patient orders (now from allPatients array)
+        function loadPatientOrders() {
+            ordersList.innerHTML = '<div class="text-center py-4"><i class="fas fa-spinner fa-spin"></i> Loading orders...</div>';
+
+            if (!currentPatient || !Array.isArray(currentPatient.orders) || currentPatient.orders.length === 0) {
+                ordersList.innerHTML = '<div class="no-orders"><i class="fas fa-info-circle"></i> No orders found for this patient</div>';
+                ordersContainer.style.display = 'block';
+                return;
+            }
+
+            // Sort orders by order_date descending
+            const sortedOrders = [...currentPatient.orders].sort((a, b) => {
+                const dateA = a.order_date instanceof Date ? a.order_date : (a.order_date?.toDate ? a.order_date.toDate() : new Date(a.order_date));
+                const dateB = b.order_date instanceof Date ? b.order_date : (b.order_date?.toDate ? b.order_date.toDate() : new Date(b.order_date));
+                return dateB - dateA;
+            });
+
+            ordersList.innerHTML = '';
+            sortedOrders.forEach(order => {
+                const orderDate = order.order_date instanceof Date
+                    ? order.order_date
+                    : (order.order_date?.toDate ? order.order_date.toDate() : new Date(order.order_date));
+                const formattedDate = orderDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                const testCount = Array.isArray(order.tests) ? order.tests.length : 0;
+                const testNames = Array.isArray(order.tests) ? order.tests.map(t => t.test_name).join(', ') : 'No tests available';
+
+                const orderCard = document.createElement('div');
+                orderCard.className = 'order-card';
+                orderCard.dataset.orderId = order.order_id;
+                orderCard.dataset.patientId = currentPatient.patient_id;
+
+                // Prepare age display (years + days if available)
+                let ageDisplay = '';
+                if (currentPatient.age_years !== undefined && currentPatient.age_years !== null) {
+                    ageDisplay = `${currentPatient.age_years} yrs`;
+                    if (currentPatient.age_days !== undefined && currentPatient.age_days !== null) {
+                        ageDisplay += ` (${currentPatient.age_days} days)`;
+                    }
+                } else {
+                    ageDisplay = 'N/A';
+                }
+
+                orderCard.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="order-date">${formattedDate}</span>
+                    <span class="order-status ${order.status === 'completed' ? 'status-completed' : 'status-pending'}">
+                        ${order.status || 'pending'}
+                    </span>
+                </div>
+                <span class="branch-name-label" style="color: #000; font-weight: bold;">
+                    Branch: ${order.branch || 'N/A'}
+                </span>
+                <div></div>
+                <div>
+                    <small>Ordered by: ${order.ordered_by || 'Unknown'}</small>
+                </div>
+            </div>
+            <div class="mt-2">
+                <small><strong>Age:</strong> ${ageDisplay}</small>
+            </div>
+            <div class="mt-2">
+                <small>${testCount} tests - </small>
+                <small class="text-muted">${testNames}</small>
+            </div>
+        `;
+
+                orderCard.addEventListener('click', () => {
+                    window.open(`/Recording?orderId=${order.order_id}&patientId=${currentPatient.patient_id}`, '_self');
+                });
+
+                ordersList.appendChild(orderCard);
+            });
+
+            ordersContainer.style.display = 'block';
+        }
+
+
+        // Event listeners for global search
+        globalSearch.addEventListener('input', (e) => {
+            performGlobalSearch(e.target.value.trim());
+        });
+
+        globalSearchBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            performGlobalSearch(globalSearch.value.trim());
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!searchResults.contains(e.target) && e.target !== globalSearch) {
+                searchResults.style.display = 'none';
+            }
+        });
+
+
+
+        // Search by Order ID logic (search in allPatients array)
+        document.getElementById('orderIdSearchBtn').addEventListener('click', async () => {
+            const orderId = document.getElementById('orderIdSearch').value.trim();
+            if (!orderId) {
+                alert('Please enter an Order ID');
+                return;
+            }
+            let found = false;
+            for (const patient of allPatients) {
+                if (Array.isArray(patient.orders)) {
+                    const order = patient.orders.find(o => o.order_id === orderId);
+                    if (order) {
+                        window.open(`/Recording?orderId=${orderId}&patientId=${patient.patient_id}`, '_blank');
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if (!found) {
+                alert('Order not found');
+            }
+        });
+        document.getElementById('orderIdSearch').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                document.getElementById('orderIdSearchBtn').click();
+            }
+        });
+        // ...existing code...
+    </script>
+</body>
+
+</html>

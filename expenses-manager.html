@@ -8,6 +8,9 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Cairo:wght@400;700;900&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -306,36 +309,36 @@
 </head>
 
 <body>
-    <nav class="navbar">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <button class="btn-back" onclick="location.href='cash-tally.html'">← Back</button>
-            <span style="font-weight: 800; font-size: 1.1rem; color:white;">DataLab.M.S Pro</span>
+    <header>
+        <div class="logo-section" onclick="location.href='dashboard.html'">
+            <i class="fas fa-flask fa-2x" style="color: #4f46e5;"></i>
+            <div class="logo-text">DataLab<span>.M.S</span></div>
         </div>
-        <div style="display:flex; align-items:center; gap:20px;">
-            <div class="zoom-controls"
-                style="display: flex; gap: 5px; background: rgba(255,255,255,0.1); padding: 2px 10px; border-radius: 20px;">
-                <button onclick="changeZoom(-0.1)"
-                    style="background:none; border:none; color:white; font-size:1.2rem; font-weight:bold; cursor:pointer;">-</button>
-                <span id="zoomLevel" style="font-weight:bold; min-width:45px; text-align:center;">100%</span>
-                <button onclick="changeZoom(0.1)"
-                    style="background:none; border:none; color:white; font-size:1.2rem; font-weight:bold; cursor:pointer;">+</button>
-            </div>
-            <span style="cursor:pointer; font-weight:bold" onclick="toggleSidebar()">☰ Menu</span>
+        <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Global search for patients, orders, or files..." id="globalSearchInput">
+        </div>
+        <div class="header-actions">
+            <button class="action-btn" title="Notifications"><i class="fas fa-bell"></i></button>
+            <button class="action-btn" title="Settings"><i class="fas fa-cog"></i></button>
+            <button class="action-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+    </header>
+
+    <nav class="horizontal-nav">
+        <div class="nav-list">
+            <a href="dashboard.html" class="nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="advanced-stats.html" class="nav-item"><i class="fas fa-chart-pie"></i> Analytics</a>
+            <a href="patient-registration.html" class="nav-item"><i class="fas fa-user-plus"></i> Registration</a>
+            <a href="patient-order.html" class="nav-item"><i class="fas fa-file-medical"></i> Patient Request</a>
+            <a href="results-entry.html" class="nav-item"><i class="fas fa-flask"></i> Results Entry</a>
+            <a href="Tests.html" class="nav-item"><i class="fas fa-microscope"></i> Tests Manager</a>
+            <a href="bulk_entry.html" class="nav-item"><i class="fas fa-layer-group"></i> Bulk Hub</a>
+            <a href="cash-tally.html" class="nav-item"><i class="fas fa-cash-register"></i> Cash Tally</a>
+            <a href="expenses-manager.html" class="nav-item active"><i class="fas fa-money-bill-wave"></i> Expenses</a>
+            <a href="patient-portal.html" class="nav-item"><i class="fas fa-user-circle"></i> Patient Portal</a>
         </div>
     </nav>
-
-    <aside id="sidebar" class="sidebar">
-        <div style="padding:0 30px 40px; font-weight:900; font-size:1.5rem; color:var(--primary); text-align:center">
-            معمل الجمهورية</div>
-        <a href="dashboard.html" class="menu-item">📊 Dashboard</a>
-        <a href="patient-registration.html" class="menu-item">➕ New Patient</a>
-        <a href="patients-inventory.html" class="menu-item">🗄️ Inventory</a>
-        <a href="cash-tally.html" class="menu-item">💰 Cash Tally</a>
-        <a href="expenses-manager.html" class="menu-item active">💸 Expenses</a>
-        <a href="l2l-manager.html" class="menu-item">🧪 Lab to Lab</a>
-        <a href="contracts-manager.html" class="menu-item">🤝 Contracts</a>
-        <a href="results-entry.html" class="menu-item">📝 Results Entry</a>
-    </aside>
 
     <div class="main-content">
         <div class="container">

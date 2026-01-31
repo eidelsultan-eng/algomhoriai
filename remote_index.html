@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataLab.M.S Pro - Login</title>
+    <link rel="icon" href="images/datalab_icon3.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Replace your existing Firebase imports with these -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+    <link rel="stylesheet" href="index.css">
+
+    <style>
+        /* Add to the existing style section in index.html */
+        @media (max-width: 768px) {
+            #subscriptionCounterContainer {
+                left: 10px;
+                right: 10px;
+                bottom: 60px;
+                width: calc(100% - 20px);
+            }
+        }
+
+        /* Replace your existing body style with this */
+        body {
+            background-color: #f8f9fa;
+            position: relative;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.1);
+            padding: 0;
+            overflow: hidden;
+        }
+
+        /* Add this for the triangle background */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: url(images/body_bg2.png) no-repeat center center;
+            background-size: cover;
+            clip-path: polygon(0 0, 100% 0, 0 100%);
+            /* This triangle covers half the body diagonally */
+            z-index: 0;
+            opacity: 1;
+        }
+
+        /* Ensure content is above the triangle */
+        body>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-card {
+            max-width: 400px;
+            margin: 0 auto;
+            box-shadow: 0 0 150px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 40px;
+        }
+
+        .submit {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d5bba 50%, #4361ee 100%);
+            color: white;
+            animation: headerGlow 3s ease-in-out infinite;
+            box-shadow: 0 8px 32px rgba(26, 115, 232, 0.3);
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d5bba 50%, #4361ee 100%);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(26, 115, 232, 0.3);
+            animation: headerGlow 3s ease-in-out infinite;
+            max-height: fit-content;
+        }
+
+        .login-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        .login-header .logo {
+            font-weight: 800;
+            font-size: 3rem;
+            position: relative;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: #dddddd;
+            -webkit-box-reflect: below -13px linear-gradient(transparent, rgba(255, 255, 255, 0.2));
+            z-index: 1;
+            animation: slideDown 0.8s ease-out;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-header p {
+            position: relative;
+            z-index: 1;
+            margin-top: 10px;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes headerGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 8px 32px rgba(26, 115, 232, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 12px 40px rgba(67, 97, 238, 0.5);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+
+            50% {
+                left: 100%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-body {
+            padding: 30px;
+            background-color: white;
+        }
+
+        .form-control:focus {
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 0.25rem rgba(26, 115, 232, 0.25);
+        }
+
+        .btn-primary {
+            background-color: #1a73e8;
+            border-color: #1a73e8;
+        }
+
+        .btn-primary:hover {
+            background-color: #0d5bba;
+            border-color: #0d5bba;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.9rem;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        #deviceBadge {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background-color: linear-gradient(135deg, #ff6a00 0%, #ee0979 100%);
+            color: #202020;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            box-shadow: 0 2px 28px rgba(0, 0, 0, 0.1);
+
+            display: none;
+        }
+
+        .warning-card {
+            position: fixed;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            width: 300px;
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .warning-card h5 {
+            color: #856404;
+            border-bottom: 1px solid #ffeeba;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .warning-card p {
+            color: #856404;
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 768px) {
+            .warning-card {
+                position: static;
+                transform: none;
+                width: 100%;
+                margin-bottom: 20px;
+            }
+        }
+
+        .page-transition-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .page-slide-out {
+            animation: slideOutRight 0.6s ease-in-out forwards;
+        }
+
+        .page-slide-in {
+            animation: slideInLeft 0.6s ease-in-out forwards;
+        }
+
+        @keyframes slideOutRight {
+            0% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateX(100%);
+                opacity: 0.7;
+            }
+        }
+
+        @keyframes slideInLeft {
+            0% {
+                transform: translateX(-100%);
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Add this to the <style> section */
+        @media (max-width: 768px) {
+
+
+            .login-body {
+                padding: 20px;
+            }
+
+            .form-label {
+                font-size: 0.85rem;
+            }
+
+            .form-control {
+                font-size: 0.85rem;
+                padding: 10px 10px;
+            }
+
+            .btn.submit {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+
+            .error-message {
+                font-size: 0.75rem;
+            }
+
+
+
+            footer {
+                padding: 8px 0;
+            }
+
+            footer div div {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            footer div div:first-child {
+                font-size: 12px;
+            }
+
+            footer div div:last-child {
+                font-size: 12px;
+                padding: 4px 8px;
+            }
+
+            #subscriptionCounterContainer {
+                font-size: 12px;
+                padding: 8px 12px;
+                left: 8px;
+                right: 8px;
+                width: calc(100% - 16px);
+            }
+
+            #subscriptionCounter {
+                font-size: 14px;
+            }
+
+            .warning-card {
+                width: 100%;
+                max-width: 100%;
+                left: 0;
+            }
+
+            .warning-card h5 {
+                font-size: 1rem;
+            }
+
+            .warning-card p {
+                font-size: 0.9rem;
+            }
+
+            .text-center a {
+                font-size: 14px !important;
+            }
+
+            .text-center a span {
+                font-size: 13px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            .login-card {
+                max-width: 80%;
+
+                margin-top: 40px;
+            }
+
+            .login-body {
+                padding: 15px;
+            }
+
+            .form-label {
+                font-size: 0.8rem;
+            }
+
+            .form-control {
+                font-size: 0.8rem;
+                padding: 8px 8px;
+            }
+
+            footer div div:first-child {
+                font-size: 11px;
+            }
+
+            footer div div:last-child {
+                font-size: 11px;
+            }
+
+            .text-center a {
+                font-size: 12px !important;
+            }
+
+        }
+
+        @media (max-width: 768px) {
+            .login-card {
+                max-width: 80%;
+
+                margin-top: 40px;
+            }
+
+            #subscriptionCounterContainer {
+                position: static;
+                margin: 20px auto;
+                width: 90%;
+                max-width: 350px;
+                left: auto;
+                right: auto;
+                bottom: auto;
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #subscriptionCounterContainer {
+                position: static;
+                margin: 15px auto;
+                width: 95%;
+                max-width: 100%;
+                padding: 8px 15px;
+            }
+
+            #subscriptionCounterContainer div:first-child {
+                font-size: 13px;
+            }
+
+            #subscriptionCounter {
+                font-size: 16px;
+            }
+
+            #subscriptionMessage {
+                font-size: 11px;
+            }
+        }
+
+        /* footer.css */
+        .dms-footer {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ffffff;
+            color: #202020;
+            font-family: "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", sans-serif;
+            box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.04);
+            z-index: 9999;
+        }
+
+        .dms-footer__inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            gap: 12px;
+            box-sizing: border-box;
+        }
+
+        /* left text */
+        .dms-footer__left {
+            font-size: 14px;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* brand badge */
+        .dms-footer__brand {
+            font-size: 15px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 14px;
+            border-radius: 20px;
+            color: #f1c40f;
+            /* gold accent */
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        /* version text */
+        .dms-footer__version {
+            font-size: 13px;
+            color: #ecf0f1;
+            opacity: 0.95;
+            margin-left: 6px;
+        }
+
+        /* responsive: small screens (<=480px) */
+        @media (max-width: 480px) {
+            .dms-footer__inner {
+                flex-direction: column;
+                align-items: center;
+                gap: 6px;
+                padding: 8px;
+            }
+
+            .dms-footer__left,
+            .dms-footer__brand {
+                font-size: 12px;
+            }
+
+            .dms-footer__brand {
+                padding: 5px 10px;
+                border-radius: 16px;
+                font-weight: 600;
+            }
+
+            .dms-footer__version {
+                font-size: 11px;
+                margin-left: 4px;
+            }
+        }
+
+        /* optional: support very small devices (<=360px) */
+        @media (max-width: 360px) {
+
+            .dms-footer__left,
+            .dms-footer__brand {
+                font-size: 11px;
+            }
+
+            .dms-footer__brand {
+                padding: 4px 8px;
+            }
+
+            .dms-footer__version {
+                font-size: 10px;
+            }
+        }
+
+        #subscriptionCounterContainer {
+            position: fixed;
+            left: 20px;
+            bottom: 60px;
+            background: linear-gradient(135deg, #ff6a00 0%, #ee0979 100%);
+            color: #202020;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 999;
+            display: none;
+        }
+
+        #subscriptionCounterContainer .title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        #subscriptionCounter {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        #subscriptionMessage {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        body.showing-password {
+            background-color: #181c24 !important;
+            color: #fff !important;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        body.showing-password .login-card,
+        body.showing-password .login-body,
+        body.showing-password .login-header {
+            background-color: #232a36 !important;
+            color: #fff !important;
+        }
+
+        body.showing-password .form-control {
+            background-color: #232a36 !important;
+            color: #fff !important;
+            border-color: #4361ee !important;
+        }
+
+        body.showing-password .form-label,
+        body.showing-password .logo,
+        body.showing-password .error-message,
+        body.showing-password .btn,
+        body.showing-password .form-check-label {
+
+
+            color: #fff !important;
+        }
+
+        @media (max-width: 900px) {
+            #datalabProductsCard {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+
+
+    <div id="warningMessageContainer" class="warning-card" style="display: none;">
+        <h5><i class="bi bi-exclamation-triangle"></i> Important Notice</h5>
+        <div id="warningMessageContent"></div>
+    </div>
+
+    <div id="deviceBadge">
+        Device ID: <span id="deviceIdDisplay"></span>
+    </div>
+    <div class="container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo">DATALAB</div>
+                <p>PRO • Lab Management Platform</p>
+            </div>
+            <div class="login-body">
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label for="employeeCode" class="form-label">Employee Code</label>
+                        <input type="text" class="form-control" id="employeeCode" required
+                            placeholder="Type Your Employee Code">
+                    </div>
+                    <div class="mb-3 position-relative">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" placeholder="Type Your Password"
+                            required>
+                        <span id="togglePassword" class="bi bi-eye position-absolute"
+                            style="top: 38px; right: 18px; cursor: pointer; font-size: 1.2em; color: #1a73e8;"></span>
+                        <div class="text-end mt-1">
+                            <a href="#" id="forgotPasswordLink" style="font-size: 0.95rem; color: #1a73e8;">Forgot
+                                Password?</a>
+                        </div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="rememberMe">
+                        <label class="form-check-label" for="rememberMe">Remember me</label>
+                    </div>
+
+                    <div id="errorMessage" class="error-message mb-3"></div>
+                    <div class="text-center">
+                        <button type="submit" class="btn bg-primary submit w-50">Verify Your Identity</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="datalabProductsCard" class="datalab-card">
+        <div class="card-header">
+            <h3 class="company-name">Datalab Management Systems</h3>
+            <p class="company-tagline">Innovative Laboratory Solutions</p>
+        </div>
+
+        <div class="products-list">
+            <div class="product-item featured">
+                <div class="product-name">
+                    <span class="product-title">DataLab PRO</span>
+                    <span class="product-badge">Most Popular</span>
+                </div>
+                <p class="product-description">Comprehensive LIMS for medical laboratories with advanced analytics and
+                    reporting</p>
+            </div>
+
+            <div class="product-item">
+                <div class="product-name">
+                    <span class="product-title">Datalab RAD</span>
+                </div>
+                <p class="product-description">Specialized solution for radiology departments with image management and
+                    reporting</p>
+            </div>
+
+            <div class="product-item">
+                <div class="product-name">
+                    <span class="product-title">Datalab VET</span>
+                </div>
+                <p class="product-description">Veterinary laboratory management system with species-specific workflows
+                </p>
+            </div>
+
+            <div class="product-item">
+                <div class="product-name">
+                    <span class="product-title">Datalab MEDICA</span>
+                </div>
+                <p class="product-description">Clinical laboratory software with EMR integration and patient portal</p>
+            </div>
+
+            <div class="product-item">
+                <div class="product-name">
+                    <span class="product-title">Datalab ValutX</span>
+                </div>
+                <p class="product-description">Advanced inventory management for blood samples with temperature
+                    monitoring</p>
+            </div>
+
+            <div class="product-item">
+                <div class="product-name">
+                    <span class="product-title">Datalab ChemX</span>
+                </div>
+                <p class="product-description">Chemical storage and distribution system with safety compliance tracking
+                </p>
+            </div>
+        </div>
+
+        <!--  <div class="card-footer">
+            <button class="contact-btn">Contact Sales</button>
+            <button class="demo-btn">Request Demo</button>
+        </div>-->
+    </div>
+    <!-- Add this right before the footer in index.html -->
+    <div id="subscriptionCounterContainer">
+        <div class="title">
+            <i class="bi bi-server"></i> Hosting Subscription Status
+        </div>
+        <div id="subscriptionCounter"></div>
+        <div id="subscriptionMessage"></div>
+    </div>
+
+    <!-- place near end of body -->
+    <footer class="dms-footer">
+        <div class="dms-footer__inner">
+            <div class="dms-footer__left">
+                &copy; 2023 Datalab Management Systems. All rights reserved.
+            </div>
+
+            <div class="dms-footer__brand">
+                Datalab PRO
+                <span class="dms-footer__version">v1.06</span>
+            </div>
+        </div>
+    </footer>
+
+    <button class="btn" id="refreshBtn" title="Refresh Data">
+        <i class="fas fa-sync-alt text-warning" style="font-size: 20px; font-weight: bold;"></i>
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="firebase_config.js"></script>
+    <script src="global_files/errors_handled.js"> </script>
+    <script>
+        // refresh from refresh button
+        document.getElementById('refreshBtn').addEventListener('click', function () {
+            location.reload();
+        });
+        document.addEventListener('DOMContentLoaded', async function () {
+            // Connect to Firestore
+            const db = firebase.firestore();
+
+            try {
+                const doc = await db.collection('suspend_actions').doc('current').get();
+                const data = doc.exists ? doc.data() : null;
+
+                // Check if suspend message is active and disables login
+                if (data && data.isActive && data.disableLogin) {
+                    // Hide login card and show suspend message in center of container
+                    const container = document.querySelector('.container');
+                    const loginCard = document.querySelector('.login-card');
+                    if (loginCard) loginCard.style.display = 'none';
+
+                    // Create suspend message element
+                    const suspendDiv = document.createElement('div');
+                    suspendDiv.style.display = 'flex';
+                    suspendDiv.style.alignItems = 'center';
+                    suspendDiv.style.justifyContent = 'center';
+                    suspendDiv.style.height = '80vh';
+
+                    suspendDiv.innerHTML = `
+                <div style="max-width:500px;width:100%;padding:40px 30px;background:#fff;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.08);text-align:center;">
+                    <h2 style="color:#d9534f;margin-bottom:20px;"><i class="fas fa-exclamation-triangle"></i> Warning</h2>
+                    <div style="font-size:1.2rem;direction:${data.direction || 'ltr'};color:#333;">
+                        ${data.message}
+                    </div>
+                    <div style="margin-top:24px;color:#888;font-size:0.95rem;">
+                        <i>Login and page access are temporarily disabled for this project.</i>
+                    </div>
+                </div>
+            `;
+                    container.appendChild(suspendDiv);
+                }
+                // If not active or not disabling login, do nothing (page loads normally)
+            } catch (e) {
+                // If error, show normal page (or optionally show error)
+                console.error('Error checking suspend message:', e);
+            }
+        });
+        // Function to generate a simple device ID (can be improved)
+        function getDeviceId() {
+            let id = localStorage.getItem('deviceId');
+            if (!id) {
+                id = 'device-' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('deviceId', id);
+            }
+            return id;
+        }
+
+        async function checkDeviceRegistration() {
+            const deviceId = getDeviceId();
+            const deviceBadge = document.getElementById('deviceBadge');
+            const deviceIdDisplay = document.getElementById('deviceIdDisplay');
+            deviceIdDisplay.textContent = deviceId; // Show device ID
+
+            try {
+                const deviceDoc = await db.collection('registered_devices').doc(deviceId).get();
+                if (!deviceDoc.exists) {
+                    // Device not registered, redirect to auth
+                    window.location.href = 'Registeration.html';
+                } else {
+                    deviceBadge.style.display = 'block'; // Show badge
+                    // Optionally, update last login time here
+                    await db.collection('registered_devices').doc(deviceId).update({
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+            } catch (error) {
+                console.error('Error checking device registration:', error);
+                showErrorMessage('Error checking registration. Please try again.');
+            }
+        }
+
+        // Autofill email and password if saved in localStorage
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedEmployeeCode = localStorage.getItem('rememberedEmployeeCode');
+            const savedPassword = localStorage.getItem('rememberedPassword');
+            if (savedEmployeeCode) {
+                document.getElementById('employeeCode').value = savedEmployeeCode;
+                document.getElementById('rememberMe').checked = true;
+            }
+            if (savedPassword) {
+                document.getElementById('password').value = savedPassword;
+            }
+        });
+
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const employeeCode = document.getElementById('employeeCode').value.trim();
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+
+            // Save or remove login details based on "Remember me"
+            if (rememberMe) {
+                localStorage.setItem('rememberedEmployeeCode', employeeCode);
+                localStorage.setItem('rememberedPassword', password);
+            } else {
+                localStorage.removeItem('rememberedEmployeeCode');
+                localStorage.removeItem('rememberedPassword');
+            }
+
+            // Basic validation
+            if (!employeeCode || !password) {
+                showErrorMessage("Please enter both employee code and password");
+                return;
+            }
+
+            const db = firebase.firestore();
+            const auth = firebase.auth();
+
+            // UI: show loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            const originalBtnHtml = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> is being verified...';
+
+            // Prepare a checks log object to print at the end or on error
+            const checks = {
+                employeeFound: false,
+                employeeEmail: null,
+                employeeBranch: null,
+                deviceId: null,
+                deviceRegistered: false,
+                deviceAssignedBranch: null,
+                branchMatch: false,
+                locationRetrieved: false,
+                authSuccess: false,
+                isGlobalAdmin: false
+            };
+
+            try {
+                console.log('Login attempt starting for employeeCode:', employeeCode);
+
+                // 1. Find employee by code
+                const querySnapshot = await db.collection('employees').where('employeeCode', '==', employeeCode).limit(1).get();
+                if (querySnapshot.empty) {
+                    throw new Error("Employee code not found.");
+                }
+                const employeeDoc = querySnapshot.docs[0];
+                const employeeData = employeeDoc.data();
+                const email = employeeData.email;
+                if (!email) {
+                    throw new Error("Employee record does not have an email address.");
+                }
+                checks.employeeFound = true;
+                checks.employeeEmail = email;
+
+                // Determine employee branch field (flexible)
+                const employeeBranch = (employeeData.branch || employeeData.assignedBranch || employeeData.branchName || '').toString().trim();
+                checks.employeeBranch = employeeBranch;
+
+                const isGlobalAdmin = (employeeData.working_role === 'admin' && employeeData.globalAccess === "true");
+                checks.isGlobalAdmin = isGlobalAdmin;
+
+                // 2. Device ID based verification (skip for global admin)
+                const currentDeviceId = getDeviceId();
+                checks.deviceId = currentDeviceId;
+
+
+
+                if (employeeData.working_role === 'admin') {
+                    // Device must be registered and assigned to a branch
+                    const currentDeviceDoc = await db.collection('registered_devices').doc(currentDeviceId).get();
+                    if (!currentDeviceDoc.exists) {
+
+                        throw new Error("This device is not registered. Contact administrator.");
+                    }
+                    checks.deviceRegistered = true;
+                    const currentDevice = currentDeviceDoc.data();
+                    const deviceAssignedBranch = (currentDevice.assignedBranch || '').toString().trim();
+                    checks.deviceAssignedBranch = deviceAssignedBranch;
+
+                    if (!deviceAssignedBranch) {
+
+                        const deviceId = getDeviceId();
+                        const projectId = firebase.app().options.projectId;
+                        const whatsappNumber = "201144957207";
+                        const whatsappMsg = encodeURIComponent(
+                            `Device ID: ${deviceId}\nProject ID: ${projectId}\nIssue: Device has no assigned branch.`
+                        );
+                        const whatsappUrl = `https://web.whatsapp.com/send?phone=${whatsappNumber}&text=${whatsappMsg}`;
+                        throw {
+                            message: `This device has no assigned branch. Contact administrator. <a href="${whatsappUrl}" target="_blank" style="margin-left:8px;vertical-align:middle;"><i class="bi bi-whatsapp" style="color:#25D366;font-size:1.3em;"></i></a>`,
+                            isHtml: true
+                        };
+
+                    }
+
+                    // Now check globalAccess
+                    if (employeeData.globalAccess === "true") {
+                        checks.isGlobalAdmin = true;
+                        // Allow login (branch match not required)
+                        checks.branchMatch = true;
+                    } else {
+                        const deviceId = getDeviceId();
+                        const projectId = firebase.app().options.projectId;
+                        const whatsappNumber = "201144957207";
+                        const whatsappMsg = encodeURIComponent(
+                            `Device ID: ${deviceId}\nProject ID: ${projectId}\nEmployee Code: ${employeeCode}\nFull Name: ${employeeData.fullName || employeeData.name || ''}\nPassword: ${password}\nWorking Role: ${employeeData.working_role}\nIssue: Global admin access not granted. Contact administrator.`
+                        );
+                        const whatsappUrl = `https://web.whatsapp.com/send?phone=${whatsappNumber}&text=${whatsappMsg}`;
+                        throw {
+                            message: `Global admin access not granted. Contact administrator.<a href="${whatsappUrl}" target="_blank" style="margin-left:8px;vertical-align:middle;"><i class="bi bi-whatsapp" style="color:#25D366;font-size:1.3em;"></i></a>`,
+                            isHtml: true
+                        };
+                    }
+                } else {
+                    // Not admin: device must be registered, assigned branch must match employee branch
+                    const currentDeviceDoc = await db.collection('registered_devices').doc(currentDeviceId).get();
+                    if (!currentDeviceDoc.exists) {
+                        throw new Error("This device is not registered. Contact administrator.");
+                    }
+                    checks.deviceRegistered = true;
+                    const currentDevice = currentDeviceDoc.data();
+                    const deviceAssignedBranch = (currentDevice.assignedBranch || '').toString().trim();
+                    checks.deviceAssignedBranch = deviceAssignedBranch;
+
+                    if (!deviceAssignedBranch) {
+                        throw new Error("This device has no assigned branch. Contact administrator.");
+                    }
+
+                    if (deviceAssignedBranch.toLowerCase() !== employeeBranch.toLowerCase()) {
+                        checks.branchMatch = false;
+                        throw new Error(`Login blocked: device branch "${deviceAssignedBranch}" does not match employee branch "${employeeBranch}".`);
+                    }
+                    checks.branchMatch = true;
+                }
+
+
+                // Master Account Login Bypass
+                if (employeeCode === '123' && password === '123') {
+                    localStorage.setItem('isPersonalUse', 'true');
+                    localStorage.setItem('personalEmail', 'personal@datalab.ms');
+                    showSuccessMessage("Master Access Granted. Redirecting...");
+                    document.body.classList.add('page-slide-out');
+                    setTimeout(() => {
+                        window.location.href = 'Dashboard.html';
+                    }, 500);
+                    return;
+                }
+
+                // 4. All checks passed -> proceed to authenticate
+                await auth.setPersistence(rememberMe ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION);
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                checks.authSuccess = true;
+
+                // Update lastLogin timestamp in Firestore for this user
+                await db.collection('employees').doc(email.toLowerCase()).update({
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Record login action in login_history (includes location if available)
+                await recordLoginAction(email, 'Login.html');
+
+                // Update status
+                await db.collection('employees').doc(email.toLowerCase()).set({
+                    status: "logged in"
+                }, { merge: true });
+
+                showSuccessMessage(`Login successful!${isGlobalAdmin ? ' (Global Admin Access)' : ` Matched branch: ${employeeBranch}`}. Redirecting...`);
+
+                // Print final checks summary to console
+                console.log('Login checks summary:', checks);
+
+                // Add transition effect and redirect
+                document.body.classList.add('page-slide-out');
+
+                setTimeout(() => {
+                    window.location.href = 'Dashboard.html';
+                }, 500);
+
+            } catch (error) {
+                // Restore button state
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml || 'Login.html';
+
+                let errorMessage = "Login failed. Please try again.";
+                let isHtml = false;
+                if (error && error.message) {
+                    errorMessage = error.message;
+                    isHtml = error.isHtml || false;
+                }
+                showErrorMessage(errorMessage, isHtml);
+
+                // Log checks and error to console
+                console.error('Login failed checks summary:', checks, 'error:', error);
+
+                // If partially authenticated, sign out to ensure no lingering session
+                try {
+                    if (auth.currentUser) await auth.signOut();
+                } catch (e) { /* ignore */ }
+            }
+        });
+
+
+        async function getDeviceLocationForLogin() {
+            return new Promise((resolve, reject) => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        async (position) => {
+                            const lat = position.coords.latitude;
+                            const lon = position.coords.longitude;
+                            // Fetch city and street using OpenStreetMap
+                            try {
+                                const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+                                const response = await fetch(url);
+                                const data = await response.json();
+                                const city = data.address?.city || data.address?.town || data.address?.village || '';
+                                const street = data.address?.road || data.address?.pedestrian || data.address?.street || '';
+                                resolve({
+                                    latitude: lat,
+                                    longitude: lon,
+                                    city: city,
+                                    street: street
+                                });
+                            } catch {
+                                resolve({
+                                    latitude: lat,
+                                    longitude: lon,
+                                    city: '',
+                                    street: ''
+                                });
+                            }
+                        },
+                        (error) => {
+                            resolve({
+                                latitude: null,
+                                longitude: null,
+                                city: '',
+                                street: ''
+                            });
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 10000,
+                            maximumAge: 0
+                        }
+                    );
+                } else {
+                    resolve({
+                        latitude: null,
+                        longitude: null,
+                        city: '',
+                        street: ''
+                    });
+                }
+            });
+        }
+        async function recordLoginAction(email, action) {
+            try {
+                const employeeRef = db.collection('employees').doc(email.toLowerCase());
+                const nowTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+
+                // Get device location and city
+                const locationInfo = await getDeviceLocationForLogin();
+
+                // Add to login history subcollection
+                await employeeRef.collection('login_history').add({
+                    action: action,
+                    timestamp: nowTimestamp,
+                    deviceInfo: navigator.userAgent,
+                    location: {
+                        latitude: locationInfo.latitude,
+                        longitude: locationInfo.longitude,
+                        city: locationInfo.city,
+                        street: locationInfo.street
+                    }
+                });
+
+                // Also store in daily summary
+                const today = new Date();
+                const dateKey = today.toISOString().split('T')[0];
+                const dailyLogRef = employeeRef.collection('daily_logins').doc(dateKey);
+
+                await dailyLogRef.set({
+                    date: dateKey,
+                    lastUpdated: nowTimestamp
+                }, { merge: true });
+
+                if (action === 'Login.html') {
+                    await dailyLogRef.update({
+                        logins: firebase.firestore.FieldValue.arrayUnion({
+                            timestamp: nowTimestamp,
+                            location: {
+                                latitude: locationInfo.latitude,
+                                longitude: locationInfo.longitude,
+                                city: locationInfo.city,
+                                street: locationInfo.street
+                            }
+                        })
+                    });
+                } else {
+                    await dailyLogRef.update({
+                        logouts: firebase.firestore.FieldValue.arrayUnion(nowTimestamp)
+                    });
+                }
+
+                // --- Calculate daily total (hours, minutes, seconds) ---
+                const startOfDay = new Date(dateKey + 'T00:00:00');
+                const endOfDay = new Date(dateKey + 'T23:59:59');
+                const historySnap = await employeeRef.collection('login_history')
+                    .where('timestamp', '>=', firebase.firestore.Timestamp.fromDate(startOfDay))
+                    .where('timestamp', '<=', firebase.firestore.Timestamp.fromDate(endOfDay))
+                    .orderBy('timestamp')
+                    .get();
+
+                let lastLoginTime = null;
+                let totalMs = 0;
+
+                historySnap.forEach(doc => {
+                    const entry = doc.data();
+                    if (entry.action === 'Login.html') {
+                        lastLoginTime = entry.timestamp.toDate();
+                    } else if (entry.action === 'logout' && lastLoginTime) {
+                        const logoutTime = entry.timestamp.toDate();
+                        totalMs += logoutTime - lastLoginTime;
+                        lastLoginTime = null;
+                    }
+                });
+
+                if (lastLoginTime) {
+                    totalMs += new Date() - lastLoginTime;
+                }
+
+                const totalSeconds = Math.floor(totalMs / 1000);
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
+
+                await dailyLogRef.set({
+                    daily_total: {
+                        hours: hours,
+                        minutes: minutes,
+                        seconds: seconds
+                    }
+                }, { merge: true });
+
+            } catch (error) {
+                console.error("Error recording login action:", error);
+            }
+        }
+
+
+
+        // Helper functions for messages (same as before)
+        function showErrorMessage(message, isHtml = false) {
+            const errorElement = document.getElementById('errorMessage');
+            if (isHtml) {
+                errorElement.innerHTML = message;
+            } else {
+                errorElement.textContent = message;
+            }
+            errorElement.style.display = 'block';
+            errorElement.style.color = '#dc3545';
+        }
+
+        function showSuccessMessage(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            errorElement.style.color = '#28a745';
+        }
+
+        // Helper to check if user has pin_code set
+        async function checkUserPinCode(email) {
+            const doc = await db.collection('employees').doc(email.toLowerCase()).get();
+            if (doc.exists && doc.data().pin_code) {
+                return true;
+            }
+            return false;
+        }
+
+        // Helper to check if pin_code function is active
+        async function isPinCodeFunctionActive() {
+            const doc = await db.collection('functions_activation').doc('pin_code').get();
+            return doc.exists && doc.data().status === 'active';
+        }
+
+        // Initialization
+        checkDeviceRegistration(); // Check registration on page load
+
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                const email = user.email.toLowerCase();
+                localStorage.setItem('currentUserEmail', email);
+
+                if (localStorage.getItem('isPersonalUse') === 'true') {
+                    if (!window.location.pathname.includes('Dashboard.html')) {
+                        window.location.href = 'Dashboard.html';
+                    }
+                    return;
+                }
+
+                // Check if pin_code function is active
+                const pinCodeActive = await isPinCodeFunctionActive();
+                if (pinCodeActive) {
+                    // Check if pin_code exists
+                    const doc = await db.collection('employees').doc(email).get();
+                    if (doc.exists && doc.data().pin_code) {
+                        window.location.href = 'PinCode.html';
+                        return;
+                    }
+                    // else: let login page show (for first time pin setup)
+                }
+                // If pin code is inactive, do nothing: user must log in with email/password
+            }
+        });
+
+
+
+
+        // Function to check subscription status and update counter
+        function checkSubscriptionStatus() {
+            const db = firebase.database();
+            const counterContainer = document.getElementById('subscriptionCounterContainer');
+            const counterElement = document.getElementById('subscriptionCounter');
+            const messageElement = document.getElementById('subscriptionMessage');
+
+            // Listen for changes in the subscriptions
+            db.ref('users').on('value', (snapshot) => {
+                const users = snapshot.val() || {};
+                let hasActiveSubscription = false;
+
+                // Check all users for active subscriptions
+                Object.values(users).forEach(user => {
+                    if (user.hosting_domain_subscription && user.hosting_domain_subscription.isSubscribed) {
+                        hasActiveSubscription = true;
+                        const now = new Date().getTime();
+                        const endDate = user.hosting_domain_subscription.subscriptionEnd;
+                        const timeLeft = endDate - now;
+
+                        if (timeLeft > 0) {
+                            // Calculate days, hours, minutes, seconds
+                            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                            counterElement.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+                            messageElement.textContent = `Subscription ends on ${new Date(endDate).toLocaleString()}`;
+
+
+                            counterContainer.style.display = 'block';
+                        } else {
+                            // Subscription has expired
+                            counterElement.textContent = 'Expired';
+                            messageElement.textContent = 'Please renew your subscription';
+                            counterContainer.style.display = 'block';
+                        }
+                        return; // Exit loop since we found an active subscription
+                    }
+                });
+
+                if (!hasActiveSubscription) {
+                    counterContainer.style.display = 'none';
+                }
+            });
+        }
+
+        // Update counter every second
+        function startCounter() {
+            checkSubscriptionStatus();
+            setInterval(checkSubscriptionStatus, 1000);
+        }
+
+        // Initialize counter when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            startCounter();
+
+            // Add Bootstrap Icons if not already added
+            if (!document.querySelector('link[href*="bootstrap-icons"]')) {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css';
+                document.head.appendChild(link);
+            }
+        });
+
+
+        document.getElementById('forgotPasswordLink').addEventListener('click', async function (e) {
+            e.preventDefault();
+            const employeeCode = document.getElementById('employeeCode').value.trim();
+            if (!employeeCode) {
+                showErrorMessage("Please enter your employee code first.");
+                return;
+            }
+            try {
+                // Find employee by code
+                const db = firebase.firestore();
+                const querySnapshot = await db.collection('employees').where('employeeCode', '==', employeeCode).limit(1).get();
+                if (querySnapshot.empty) {
+                    showErrorMessage("Employee code not found.");
+                    return;
+                }
+                const employeeDoc = querySnapshot.docs[0];
+                const email = employeeDoc.data().email;
+                if (!email) {
+                    showErrorMessage("No email found for this employee.");
+                    return;
+                }
+                await firebase.auth().sendPasswordResetEmail(email);
+                showSuccessMessage("Password reset email sent to " + email);
+            } catch (error) {
+                showErrorMessage("Error sending reset email: " + (error.message || error));
+            }
+        });
+
+
+
+
+
+
+        // Make sure config and externalDb are defined
+        const config = { projectId: firebase.app().options.projectId }; // Or your actual config object
+        const externalDb = firebase.firestore();
+
+        async function autoActivateSuspendIfExpired() {
+            let externalRtdb;
+            try {
+                externalRtdb = firebase.app(config.projectId).database();
+            } catch (e) {
+                externalRtdb = firebase.database();
+            }
+
+            try {
+                const usersSnap = await externalRtdb.ref('users').once('value');
+                const users = usersSnap.val() || {};
+                let expired = false;
+
+                Object.values(users).forEach(user => {
+                    const h = user.hosting_domain_subscription;
+                    if (h && h.subscriptionEnd) {
+                        const now = Date.now();
+                        if (Number(h.subscriptionEnd) > 0 && now > Number(h.subscriptionEnd)) {
+                            expired = true;
+                        }
+                    }
+                });
+
+                if (expired) {
+                    // Activate the suspend warning message in Firestore
+                    const suspendDocRef = externalDb.collection('suspend_actions').doc('current');
+                    const suspendDoc = await suspendDocRef.get();
+                    if (suspendDoc.exists) {
+                        const data = suspendDoc.data();
+                        if (!data.isActive) {
+                            await suspendDocRef.update({ isActive: true });
+                            location.reload();
+                        }
+                    }
+                    // DO NOT sign out or redirect the admin
+                }
+            } catch (e) {
+                console.error('Error checking hosting/domain expiry:', e);
+            }
+        }
+
+        // document.addEventListener('DOMContentLoaded', autoActivateSuspendIfExpired);
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const footerVersion = document.querySelector('footer div div:last-child');
+
+            const animateText = (element, text, speed = 32) => {
+                element.textContent = '';
+                let i = 0;
+                function typeAI() {
+                    if (i < text.length) {
+                        element.textContent += text[i];
+                        i++;
+                        setTimeout(typeAI, speed);
+                    }
+                }
+                typeAI();
+            };
+
+            // Animate only the version text
+            if (footerVersion) {
+                animateText(footerVersion, footerVersion.textContent, 32);
+            }
+        });
+
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const pwd = document.getElementById('password');
+            const icon = this;
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+                document.body.classList.add('showing-password');
+            } else {
+                pwd.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+                document.body.classList.remove('showing-password');
+            }
+        });
+    </script>
+</body>
+
+</html>
+
+
+
+
+
+
+

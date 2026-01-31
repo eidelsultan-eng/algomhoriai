@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary-blue: #0ea5e9;
@@ -302,32 +304,37 @@
 </head>
 
 <body>
-    <div class="top-navbar">
-        <div style="display: flex; gap: 20px; align-items: center;">
-            <button class="btn-back-link" onclick="location.href='dashboard.html'">← Back</button>
-            <span style="font-weight: 800;">DataLab.M.S Pro</span>
-            <span onclick="location.href='cash-tally.html'" style="cursor:pointer; font-weight:700;">💰 Cash
-                Tally</span>
+    <header>
+        <div class="logo-section" onclick="location.href='dashboard.html'">
+            <i class="fas fa-flask fa-2x" style="color: #4f46e5;"></i>
+            <div class="logo-text">AL GOMHOURIA<span>.LAB</span></div>
         </div>
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <div class="zoom-controls"
-                style="display: flex; gap: 5px; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 20px;">
-                <button onclick="changeZoom(-0.1)"
-                    style="background:none; color:white; font-size:1.2rem; font-weight:bold; padding:0 5px;">-</button>
-                <span id="zoomLevel" style="font-weight:bold; min-width:45px; text-align:center;">100%</span>
-                <button onclick="changeZoom(0.1)"
-                    style="background:none; color:white; font-size:1.2rem; font-weight:bold; padding:0 5px;">+</button>
-            </div>
-            <button class="btn-back-link" style="background:#10b981; color:white;"
-                onclick="location.href='Tests.html'">🧪 Manage Tests</button>
-            <span>🏢 Branch: Al-Gomhouria</span>
-            <svg width="18" height="18" fill="white" viewBox="0 0 16 16" style="cursor: pointer;">
-                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-                <path fill-rule="evenodd"
-                    d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
-            </svg>
+        <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Global search for patients, orders, or files..." id="globalSearchInput">
         </div>
-    </div>
+        <div class="header-actions">
+            <button class="action-btn" title="Notifications"><i class="fas fa-bell"></i></button>
+            <button class="action-btn" title="Settings"><i class="fas fa-cog"></i></button>
+            <button class="action-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+    </header>
+
+    <nav class="horizontal-nav">
+        <div class="nav-list">
+            <a href="dashboard.html" class="nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="advanced-stats.html" class="nav-item"><i class="fas fa-chart-pie"></i> Analytics</a>
+            <a href="patient-registration.html" class="nav-item active"><i class="fas fa-user-plus"></i>
+                Registration</a>
+            <a href="patient-order.html" class="nav-item"><i class="fas fa-file-medical"></i> Patient Request</a>
+            <a href="results-entry.html" class="nav-item"><i class="fas fa-flask"></i> Results Entry</a>
+            <a href="Tests.html" class="nav-item"><i class="fas fa-microscope"></i> Tests Manager</a>
+            <a href="bulk_entry.html" class="nav-item"><i class="fas fa-layer-group"></i> Bulk Hub</a>
+            <a href="cash-tally.html" class="nav-item"><i class="fas fa-cash-register"></i> Cash Tally</a>
+            <a href="expenses-manager.html" class="nav-item"><i class="fas fa-money-bill-wave"></i> Expenses</a>
+            <a href="patient-portal.html" class="nav-item"><i class="fas fa-user-circle"></i> Patient Portal</a>
+        </div>
+    </nav>
 
     <div class="main-container">
         <div class="banner-blue">
@@ -506,6 +513,36 @@
                 </div>
             </div>
 
+            <!-- Simplified Loyalty Points Section (3 Fields) -->
+            <div class="field-grid"
+                style="background: #eff6ff; padding: 25px; border-radius: 15px; border: 2px solid #3b82f6; margin-top: 25px; grid-template-columns: 1fr 1fr 1fr;">
+                <div
+                    style="grid-column: span 3; border-bottom: 2px solid #dbeafe; margin-bottom: 15px; padding-bottom: 10px;">
+                    <h4 style="margin: 0; color: #1e40af; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-coins"></i> نظام حساب نقاط المراجع (Loyalty System)
+                    </h4>
+                </div>
+                <div>
+                    <span class="label-field" style="color: #1e40af;">المبلغ (Amount)</span>
+                    <input type="number" id="currentOrderAmount" placeholder="1000" class="input-field"
+                        style="border-color: #3b82f6; font-weight: 800; font-size: 1.1rem;"
+                        oninput="syncPointsFromAmount()">
+                </div>
+                <div>
+                    <span class="label-field" style="color: #1e40af;">النقاط (Points for this)</span>
+                    <input type="number" id="earnedPointsPreview" placeholder="100" class="input-field"
+                        style="border-color: #3b82f6; font-weight: 800; font-size: 1.1rem; color: #059669;"
+                        oninput="syncAmountFromPoints()">
+                </div>
+                <div>
+                    <span class="label-field" style="color: #1e40af;">مجموع النقاط (Total Points)</span>
+                    <input type="number" id="totalPointsDisplay" value="0" readonly class="input-field"
+                        style="background: #dbeafe; border-color: #3b82f6; font-weight: 900; font-size: 1.2rem; color: #1e3a8a;">
+                </div>
+                <!-- Hidden storage for previous points -->
+                <input type="hidden" id="oldPoints" value="0">
+            </div>
+
             <div class="form-footer">
                 <button type="reset" class="btn-action btn-red-clear">✕ Clear</button>
                 <button type="button" class="btn-action btn-green-save" onclick="savePatient()">💾 Save Patient</button>
@@ -655,6 +692,108 @@
                 el.style.borderColor = '#2563eb';
                 el.style.background = '#eff6ff';
             }
+            updateLoyaltyCalculation();
+        }
+
+        // --- Search Logic & Points ---
+        document.querySelector('.btn-blue-search').addEventListener('click', () => {
+            const query = document.querySelector('.search-area-grid input[placeholder*="name, ID, or mobile"]').value.toLowerCase();
+            performSearch(query);
+        });
+
+        document.querySelector('.btn-cancel-grey + input').parentElement.querySelector('input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                performSearch(e.target.value.toLowerCase());
+            }
+        });
+
+        const POINTS_PER_EGP = 0.1; // 10% ratio (1000 EGP = 100 Points)
+        const EGP_PER_POINT = 0.1;   // Keep: 10 EGP discount per 100 points
+
+        // Auto-search as user types name
+        document.getElementById('firstName').addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            if (val.length > 2) {
+                const db = JSON.parse(localStorage.getItem('patientsDatabase')) || [];
+                const patient = db.find(p => p.name.toLowerCase().includes(val));
+                if (patient) {
+                    fillPatientData(patient);
+                }
+            }
+        });
+
+        function fillPatientData(patient) {
+            document.getElementById('pId').value = patient.id;
+            document.getElementById('firstName').value = patient.name.split(' ')[0] || '';
+            const rest = patient.name.split(' ').slice(1).join(' ');
+            document.getElementById('secondName').value = rest;
+            document.getElementById('mobile').value = patient.mobile;
+            document.getElementById('ageY').value = patient.ageY || 0;
+            document.getElementById('gender').value = patient.gender || '';
+
+            // Core Points Update
+            const currentPoints = parseFloat(patient.points) || 0;
+            document.getElementById('oldPoints').value = currentPoints;
+            document.getElementById('totalPointsDisplay').value = currentPoints.toFixed(1);
+
+            togglePregnancy();
+            updateLoyaltyCalculation();
+        }
+
+        function updateLoyaltyCalculation() {
+            const allTests = { ...medicalTests, ...dynamicTests };
+            let totalPrice = 0;
+            selectedTestIds.forEach(tid => {
+                totalPrice += (allTests[tid] && allTests[tid].price) ? allTests[tid].price : 150;
+            });
+
+            const pointsEarned = totalPrice * POINTS_PER_EGP;
+            document.getElementById('currentOrderAmount').value = totalPrice.toFixed(2);
+            document.getElementById('earnedPointsPreview').value = pointsEarned.toFixed(1);
+
+            const oldPts = parseFloat(document.getElementById('oldPoints').value) || 0;
+            document.getElementById('totalPointsDisplay').value = (oldPts + pointsEarned).toFixed(1);
+        }
+
+        function syncPointsFromAmount() {
+            const amount = parseFloat(document.getElementById('currentOrderAmount').value) || 0;
+            const points = amount * POINTS_PER_EGP;
+            document.getElementById('earnedPointsPreview').value = points.toFixed(1);
+
+            const oldPts = parseFloat(document.getElementById('oldPoints').value) || 0;
+            document.getElementById('totalPointsDisplay').value = (oldPts + points).toFixed(1);
+        }
+
+        function syncAmountFromPoints() {
+            const points = parseFloat(document.getElementById('earnedPointsPreview').value) || 0;
+            const amount = points / POINTS_PER_EGP;
+            document.getElementById('currentOrderAmount').value = amount.toFixed(2);
+
+            const oldPts = parseFloat(document.getElementById('oldPoints').value) || 0;
+            document.getElementById('totalPointsDisplay').value = (oldPts + points).toFixed(1);
+        }
+
+        function calculatePointsDiscount() {
+            const pointsToRedeem = parseFloat(document.getElementById('pointsToRedeem').value) || 0;
+            const availablePoints = parseFloat(document.getElementById('availablePoints').value) || 0;
+
+            if (pointsToRedeem > availablePoints) {
+                alert("Redeemed points cannot exceed available points!");
+                document.getElementById('pointsToRedeem').value = availablePoints;
+                calculatePointsDiscount();
+                return;
+            }
+
+            const discount = pointsToRedeem * EGP_PER_POINT;
+            document.getElementById('pointsDiscountValue').value = `${discount.toFixed(2)} EGP`;
+            return discount;
+        }
+
+        function applyFullPoints() {
+            const available = document.getElementById('availablePoints').value;
+            document.getElementById('pointsToRedeem').value = available;
+            calculatePointsDiscount();
         }
 
         function savePatient() {
@@ -663,30 +802,66 @@
             if (!fname || !mob) return alert("First Name and Mobile are required!");
 
             const db = JSON.parse(localStorage.getItem('patientsDatabase')) || [];
-            const patient = {
-                id: document.getElementById('pId').value,
-                name: `${fname} ${document.getElementById('secondName').value} ${document.getElementById('thirdName').value}`.trim(),
-                mobile: mob,
-                ageY: document.getElementById('ageY').value,
-                ageM: document.getElementById('ageM').value,
-                ageD: document.getElementById('ageD').value,
-                gender: document.getElementById('gender').value,
-                isPregnant: document.getElementById('isPregnant').value,
-                registeredBy: document.getElementById('registeredBy').value || 'د. محمد',
-                referralDoctor: document.getElementById('referralDoctor').value || 'لا يوجد',
-                corporate: document.getElementById('corporateContract').value || 'نقدي',
-                date: new Date().toLocaleDateString('en-CA'),
-                tests: selectedTestIds,
-                testsCount: selectedTestIds.length,
-                status: 'Waiting',
-                samplingTime: new Date().toISOString(), // لبداية حساب الـ TAT
-                results: {}
-            };
 
-            db.push(patient);
+            // Get points from the UI
+            const finalTotalPoints = parseFloat(document.getElementById('totalPointsDisplay').value) || 0;
+            const currentEarnedPoints = parseFloat(document.getElementById('earnedPointsPreview').value) || 0;
+
+            const existingIdx = db.findIndex(p => p.mobile === mob || p.id === document.getElementById('pId').value);
+            let patient;
+
+            if (existingIdx > -1) {
+                // Update existing
+                patient = db[existingIdx];
+                patient.tests = selectedTestIds;
+                patient.testsCount = selectedTestIds.length;
+                patient.points = finalTotalPoints;
+                patient.status = 'Registered';
+                patient.date = new Date().toLocaleDateString('en-CA');
+            } else {
+                // New
+                patient = {
+                    id: document.getElementById('pId').value,
+                    name: `${fname} ${document.getElementById('secondName').value} ${document.getElementById('thirdName').value}`.trim(),
+                    mobile: mob,
+                    ageY: document.getElementById('ageY').value,
+                    ageM: document.getElementById('ageM').value,
+                    ageD: document.getElementById('ageD').value,
+                    gender: document.getElementById('gender').value,
+                    isPregnant: document.getElementById('isPregnant').value,
+                    registeredBy: document.getElementById('registeredBy').value || 'د. محمد',
+                    referralDoctor: document.getElementById('referralDoctor').value || 'لا يوجد',
+                    corporate: document.getElementById('corporateContract').value || 'نقدي',
+                    date: new Date().toLocaleDateString('en-CA'),
+                    tests: selectedTestIds,
+                    testsCount: selectedTestIds.length,
+                    status: 'Registered',
+                    points: finalTotalPoints,
+                    results: {}
+                };
+                db.push(patient);
+            }
+
             localStorage.setItem('patientsDatabase', JSON.stringify(db));
-            alert("✅ Patient Registered Successfully!");
-            location.href = 'dashboard.html';
+            alert(`✅ تم حفظ البيانات بنجاح!\nالنقاط المكتسبة: ${currentEarnedPoints.toFixed(0)}\nإجمالي النقاط الجديد: ${finalTotalPoints.toFixed(0)}`);
+            location.href = `barcode-manager.html?id=${patient.id}`;
+        }
+
+        function performSearch(query) {
+            if (!query) return;
+            const db = JSON.parse(localStorage.getItem('patientsDatabase')) || [];
+            const patient = db.find(p =>
+                p.id.toLowerCase().includes(query) ||
+                p.name.toLowerCase().includes(query) ||
+                p.mobile.includes(query)
+            );
+
+            if (patient) {
+                fillPatientData(patient);
+                alert("Patient found and points loaded!");
+            } else {
+                alert("Patient not found!");
+            }
         }
 
         let currentZoom = 1;

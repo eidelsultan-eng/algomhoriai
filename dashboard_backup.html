@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gomhouria Lab - Executive Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cairo:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --sidebar-bg: #f8fafc;
+            --main-bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --primary-blue: #2563eb;
+            --accent-glow: rgba(37, 99, 235, 0.1);
+            --text-dark: #0f172a;
+            --text-gray: #64748b;
+            --radius-xl: 30px;
+            --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            background-color: var(--main-bg);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-dark);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--card-bg);
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 0;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            padding: 0 30px 40px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand-text {
+            font-weight: 800;
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+            font-family: 'Noto Kufi Arabic';
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            color: var(--text-gray);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 5px solid transparent;
+        }
+
+        .sidebar-menu li:hover,
+        .sidebar-menu li.active {
+            background: #eff6ff;
+            color: var(--primary-blue);
+            border-left-color: var(--primary-blue);
+        }
+
+        /* Top Bar */
+        .topbar {
+            position: fixed;
+            top: 20px;
+            left: 300px;
+            right: 20px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            z-index: 90;
+            box-shadow: var(--shadow-premium);
+        }
+
+        .search-container {
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 8px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 400px;
+            border: 1px solid transparent;
+            transition: 0.3s;
+        }
+
+        .search-container:focus-within {
+            border-color: var(--primary-blue);
+            background: white;
+            box-shadow: 0 0 0 4px var(--accent-glow);
+        }
+
+        .search-container input {
+            background: none;
+            border: none;
+            outline: none;
+            width: 100%;
+            font-family: inherit;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main {
+            margin-left: 280px;
+            margin-top: 110px;
+            padding: 0 30px 40px;
+            width: calc(100% - 280px);
+            box-sizing: border-box;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 30px;
+            border-radius: var(--radius-xl);
+            border: 1px solid #f1f5f9;
+            box-shadow: var(--shadow-premium);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: var(--accent-glow);
+            border-radius: 50%;
+            transform: translate(50%, -50%);
+            opacity: 0.1;
+        }
+
+        .metric-icon {
+            font-size: 1.5rem;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 5px;
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .search-results-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            margin-top: 10px;
+            display: none;
+            z-index: 2000;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+        }
+
+        .search-item {
+            padding: 15px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .search-item:hover {
+            background: #f8fafc;
+        }
+
+        .search-item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .search-item-name {
+            font-weight: 800;
+            color: var(--primary-blue);
+        }
+
+        .search-item-meta {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+        }
+
+        .search-item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .mini-btn {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .mini-btn-edit {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .mini-btn-report {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+
+        /* Activity Section */
+        .activity-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 30px;
+            box-shadow: var(--shadow-premium);
+            border: 1px solid #f1f5f9;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 15px;
+        }
+
+        .card-title {
+            font-weight: 800;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 450px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 15px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .activity-item:hover {
+            background: white;
+            border-color: var(--primary-blue);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+            transform: scale(1.02);
+        }
+
+        .item-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: var(--primary-blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: 1rem;
+        }
+
+        .item-meta {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            margin-top: 2px;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .status-waiting {
+            background: #fff7ed;
+            color: #9a3412;
+            border: 1px solid #ffedd5;
+        }
+
+        .status-complete {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #dcfce7;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .activity-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .topbar {
+                left: 20px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                flex-direction: column;
+                height: auto;
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .search-container {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-text">معمل الجمهورية</div>
+        </div>
+        <ul class="sidebar-menu">
+            <li onclick="location.href='dashboard.html'" class="active">📊 Dashboard</li>
+            <li onclick="location.href='patient-registration.html'">➕ New Patient</li>
+            <li onclick="location.href='patients-inventory.html'">🗄️ Inventory</li>
+            <li onclick="location.href='cash-tally.html'">💰 Cash Tally</li>
+            <li onclick="location.href='expenses-manager.html'">💸 Expenses</li>
+            <li onclick="location.href='l2l-manager.html'">🧪 Lab to Lab</li>
+            <li onclick="location.href='contracts-manager.html'">🤝 Contracts</li>
+            <li onclick="location.href='Tests.html'">🧬 Laboratory Tests</li>
+            <li onclick="location.href='results-entry.html'">📝 Results Entry</li>
+        </ul>
+    </aside>
+
+    <header class="topbar">
+        <div class="topbar-left">
+            <div class="search-container">
+                <div class="search-box">
+                    <i>🔍</i>
+                    <input type="text" id="globalSearchInput" placeholder="بحث شامل (إسم، هاتف، أو كود المريض)..."
+                        oninput="performGlobalSearch(this.value)">
+                </div>
+                <div id="searchResults" class="search-results-dropdown">
+                    <!-- النتائج هنا -->
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-left: 20px;">
+                <button onclick="changeZoom(-0.1)"
+                    style="background: #e2e8f0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 700;">-</button>
+                <span id="zoomLevel" style="font-weight: 700; font-size: 0.9rem;">100%</span>
+                <button onclick="changeZoom(0.1)"
+                    style="background: #e2e8f0; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 700;">+</button>
+            </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <div
+                style="background: #f1f5f9; padding: 8px 15px; border-radius: 12px; display: flex; align-items: center; gap: 10px;">
+                <div
+                    style="width: 32px; height: 32px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">
+                    MA</div>
+                <div style="font-size: 0.85rem; font-weight: 700;">Admin Zone</div>
+            </div>
+            <button onclick="location.href='index.html'"
+                style="border: none; background: #fee2e2; color: #ef4444; padding: 10px; border-radius: 12px; cursor: pointer;">🚪
+                Logout</button>
+        </div>
+    </header>
+
+    <main class="main">
+        <!-- Action Row -->
+        <div style="display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;">
+            <button class="action-card" style="background: #2563eb; color: white;">🤖 DMS Chat AI Zone</button>
+            <button class="action-card" style="background: white; color: #f97316; border: 1px solid #f97316;">🎗️
+                GAHAR</button>
+            <button class="action-card" style="background: white; color: #db2777; border: 1px solid #db2777;">🧪
+                Diagnostics</button>
+            <div style="flex: 1;"></div>
+            <div
+                style="background: white; padding: 10px 20px; border-radius: 15px; display: flex; align-items: center; gap: 10px; border: 1px solid #e2e8f0;">
+                <div
+                    style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 10px rgba(34, 197, 94, 0.5); animation: pulse 2s infinite;">
+                </div>
+                <span style="font-size: 0.8rem; font-weight: 700; color: #64748b;">System Speed: 4.8 Mbps - 4G</span>
+            </div>
+        </div>
+
+        <style>
+            .action-card {
+                padding: 12px 25px;
+                border-radius: 12px;
+                font-weight: 800;
+                font-size: 0.9rem;
+                cursor: pointer;
+                transition: 0.3s;
+                border: none;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            }
+
+            .action-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            }
+
+            @keyframes pulse {
+                0% {
+                    transform: scale(0.95);
+                    opacity: 1;
+                }
+
+                70% {
+                    transform: scale(1.1);
+                    opacity: 0.7;
+                }
+
+                100% {
+                    transform: scale(0.95);
+                    opacity: 1;
+                }
+            }
+        </style>
+
+        <div class="metrics-grid">
+            <div class="card">
+                <div class="card-title">📈 نمو الإيرادات الشهري</div>
+                <canvas id="revenueChart" height="200"></canvas>
+            </div>
+            <div class="card">
+                <div class="card-title">🔬 التحاليل الأكثر طلباً</div>
+                <canvas id="testsChart" height="200"></canvas>
+            </div>
+        </div>
+
+        <div class="activity-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">⏳ Waiting for Results (قيد الانتظار)</div>
+                    <span id="badgeWaiting" class="status-badge status-waiting">0 Cases</span>
+                </div>
+                <div class="activity-list" id="listWaiting"></div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">✅ Completed Records (تم التسجيل)</div>
+                    <span id="badgeComplete" class="status-badge status-complete">0 Cases</span>
+                </div>
+                <div class="activity-list" id="listComplete"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', refreshDashboard);
+
+        async function refreshDashboard() {
+            console.log("Refreshing dashboard...");
+            await loadMetrics();
+        }
+
+        async function loadMetrics() {
+            const db = JSON.parse(localStorage.getItem('patientsDatabase')) || [];
+            const todayStr = new Date().toLocaleDateString('en-CA');
+            const monthStr = todayStr.substring(0, 7);
+
+            const today = db.filter(p => p.date === todayStr);
+            const month = db.filter(p => p.date && p.date.startsWith(monthStr));
+
+            // These are no longer displayed as static metrics, but kept for potential use or future charts
+            // document.getElementById('countToday').textContent = today.length;
+            // document.getElementById('countMonth').textContent = month.length;
+            // document.getElementById('countTotal').textContent = db.length;
+
+            const waiting = db.filter(p => !p.results || Object.keys(p.results).length === 0);
+            const complete = db.filter(p => p.results && Object.keys(p.results).length > 0);
+
+            // document.getElementById('countWaiting').textContent = waiting.length;
+            document.getElementById('badgeWaiting').textContent = `${waiting.length} Cases`;
+            document.getElementById('badgeComplete').textContent = `${complete.length} Cases`;
+
+            renderData('listWaiting', waiting.reverse().slice(0, 10), 'waiting');
+            renderData('listComplete', complete.reverse().slice(0, 10), 'complete');
+            initCharts(); // Initialize charts after data is loaded
+        }
+
+        function renderData(containerId, data, type) {
+            const container = document.getElementById(containerId);
+            if (!data.length) {
+                container.innerHTML = `<div style="padding: 40px; text-align: center; color: #94a3b8; font-weight: 600;">No ${type} cases found.</div>`;
+                return;
+            }
+
+            container.innerHTML = data.map(p => `
+                <div class="activity-item" onclick="location.href='results-entry.html?id=${p.id}'">
+                    <div class="item-avatar" style="background: ${type === 'waiting' ? '#f97316' : '#10b981'}">
+                        ${p.name.charAt(0)}
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">${p.name}</div>
+                        <div class="item-meta">ID: ${p.id} • ${p.date} • ${p.testsCount || 0} Tests</div>
+                    </div>
+                    <div class="status-badge ${type === 'waiting' ? 'status-waiting' : 'status-complete'}">
+                        ${type === 'waiting' ? 'انتظار' : 'تم التسجيل'}
+                    </div>
+                </div>
+            `).join('');
+        }
+        function updateClock() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            document.getElementById('currentTime').textContent = now.toLocaleDateString('ar-EG', options);
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        function performGlobalSearch(query) {
+            const resultsDiv = document.getElementById('searchResults');
+            if (!query || query.length < 2) {
+                resultsDiv.style.display = 'none';
+                return;
+            }
+
+            const db = JSON.parse(localStorage.getItem('patientsDatabase')) || [];
+            const results = db.filter(p =>
+                p.name.toLowerCase().includes(query.toLowerCase()) ||
+                (p.mobile && p.mobile.includes(query)) ||
+                p.id.toLowerCase().includes(query.toLowerCase())
+            ).slice(0, 10); // عرض أول 10 نتائج فقط
+
+            if (results.length === 0) {
+                resultsDiv.innerHTML = '<div style="padding:20px; text-align:center; color:#64748b;">لا توجد نتائج مطابقة</div>';
+                resultsDiv.style.display = 'block';
+                return;
+            }
+
+            resultsDiv.innerHTML = results.map(p => `
+                <div class="search-item">
+                    <div class="search-item-info">
+                        <span class="search-item-name">${p.name}</span>
+                        <span class="search-item-meta">ID: ${p.id} | هاتف: ${p.mobile || '---'} | بتاريخ: ${p.date}</span>
+                    </div>
+                    <div class="search-item-actions">
+                        <a href="results-entry.html?id=${p.id}" class="mini-btn mini-btn-edit">تعديل</a>
+                        <a href="patient-report.html?id=${p.id}" class="mini-btn mini-btn-report">تقرير</a>
+                    </div>
+                </div>
+            `).join('');
+            resultsDiv.style.display = 'block';
+        }
+
+        // إخفاء القائمة عند الضغط خارجها
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-container')) {
+                document.getElementById('searchResults').style.display = 'none';
+            }
+        });
+
+        // Initialize Charts
+        function initCharts() {
+            // Revenue Chart
+            const ctxRev = document.getElementById('revenueChart').getContext('2d');
+            new Chart(ctxRev, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'الإيرادات (ج.م)',
+                        data: [12000, 19000, 15000, 25000, 22000, 30000],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: { plugins: { legend: { display: false } } }
+            });
+
+            // Tests Distribution Chart
+            const ctxTest = document.getElementById('testsChart').getContext('2d');
+            new Chart(ctxTest, {
+                type: 'doughnut',
+                data: {
+                    labels: ['CBC', 'Glucose', 'Liver Profile', 'Lipid', 'Other'],
+                    datasets: [{
+                        data: [40, 25, 15, 10, 10],
+                        backgroundColor: ['#1e3a8a', '#3b82f6', '#60a5fa', '#93c5fd', '#e2e8f0']
+                    }]
+                }
+            });
+        }
+        initCharts();
+    </script>
+</body>
+
+</html>

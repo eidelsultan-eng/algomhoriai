@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Query - DataLab.M.S Pro AI</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #1557b0;
+            --success: #34a853;
+            --danger: #d93025;
+            --gray: #70757a;
+            --bg: #f1f3f4;
+            --border: #dfe1e5;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            --header-h: 56px;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 0;
+            color: #202124;
+        }
+
+        /* Top Nav */
+        header {
+            background: white;
+            height: var(--header-h);
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            color: var(--primary);
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 15px 120px 15px;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #3c4043;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Form Controls */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #5f6368;
+        }
+
+        input,
+        select {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 0.85rem;
+            outline: none;
+            background: white;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-green {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .btn-plus-icon {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Table Area */
+        .table-container {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 10px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            border-bottom: 1px solid var(--border);
+            color: #5f6368;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .badge {
+            background: var(--primary);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
+
+        /* Selected Test Cards */
+        .selected-test-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #fff;
+        }
+
+        .tc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .tc-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .tc-meta {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .tc-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .tc-price-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8fafc;
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .tc-price-box span {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #666;
+        }
+
+        .tc-price-box input {
+            border: none;
+            background: transparent;
+            width: 70px;
+            text-align: right;
+            font-weight: 700;
+            padding: 0;
+        }
+
+        .btn-trash {
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .tc-suggest {
+            background: #f1f3f4;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            color: #555;
+        }
+
+        .tc-suggest a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Payment Card - EXACTLY LIKE IMAGE */
+        .payment-card {
+            background: #f1faf1;
+            /* Light greenish */
+            border: 1px solid #c5e1a5;
+        }
+
+        .payment-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        /* Sidebar - Analyze Prescription */
+        .sidebar-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .btn-analyze {
+            background: #4285f4;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* Fixed Bottom Summary */
+        .summary-footer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            min-width: 250px;
+            border: 1px solid #e0e0e0;
+            z-index: 1001;
+        }
+
+        .sum-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .sum-total-line {
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+            margin-top: 10px;
+            color: #202124;
+        }
+
+        .btn-save-order {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            margin-top: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Collapsible Utilities */
+        .collapsible-trigger {
+            background: #f8fafc;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        #searchSuggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 0 0 6px 6px;
+            z-index: 100;
+            box-shadow: var(--shadow);
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .sugg-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .sugg-item:hover {
+            background: #f8fafc;
+            color: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo-area" onclick="location.href='dashboard.html'">
+            <i class="fas fa-microscope"></i>
+            <span>DataLab.M.S Pro <span style="font-weight: 400; opacity: 0.7;">| AI-Powered</span></span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <div style="text-align: right;">
+                <div style="font-weight: 700; font-size: 0.85rem;">Admin Zone</div>
+                <div style="font-size: 0.7rem; color: #888;">System Status: Stable</div>
+            </div>
+            <div
+                style="width: 36px; height: 36px; background: #e8f0fe; color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem;">
+                AD</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <!-- Top Filters -->
+            <div class="card">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Patient Category</label>
+                        <select id="patientType" onchange="toggleContractView()">
+                            <option value="normal">Normal Patient</option>
+                            <option value="contract">Contract Patient</option>
+                        </select>
+                    </div>
+                    <div id="contractGroup" class="form-group" style="display: none;">
+                        <label>Select Contract</label>
+                        <select id="contractSelect">
+                            <option>Select Contract Registration...</option>
+                            <option>Syndicate of Engineers</option>
+                            <option>Teachers' Union</option>
+                            <option>Medical Association</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Discount Type</label>
+                        <select id="discountApply" onchange="updateCalculations()">
+                            <option value="none">No Discount</option>
+                            <option value="percentage">Percentage</option>
+                            <option value="fixed">Fixed discount</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 2;">
+                        <label>Referred By Doctor</label>
+                        <div style="display: flex; gap: 5px;">
+                            <select style="flex: 1;">
+                                <option>محمد نبيل عباده</option>
+                            </select>
+                            <input type="text" placeholder="Add new doctor..." style="flex: 1;">
+                            <button class="btn-green">Save</button>
+                        </div>
+                    </div>
+                    <div class="form-group" style="flex: 1.5;">
+                        <label>Patient Source</label>
+                        <div style="display: flex; gap: 5px;">
+                            <select style="flex: 1;">
+                                <option>Select Source</option>
+                                <option>Doctor refer</option>
+                                <option>Facebook Ads</option>
+                                <option>Instagram Ads</option>
+                                <option>Whatsapp Ads</option>
+                            </select>
+                            <input type="text" placeholder="Add source..." style="flex: 1;">
+                            <button class="btn-plus-icon"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Area -->
+            <div class="card">
+                <label style="margin-bottom: 10px; display: block; font-weight: 700; font-size: 0.85rem;">Search and Add
+                    Tests</label>
+                <div class="form-row" style="grid-template-columns: 2fr 1.5fr 1fr 1.5fr;">
+                    <div class="form-group" style="position: relative;">
+                        <input type="text" id="testSearch" placeholder="psa" oninput="showSuggestions(this.value)">
+                        <div id="searchSuggestions"></div>
+                    </div>
+                    <select>
+                        <option>Add all tests by Group</option>
+                        <option>Clinical Chemistry</option>
+                        <option>Hematology</option>
+                    </select>
+                    <input type="text" placeholder="Add by ID & Enter">
+                    <input type="text" placeholder="Add Test by Abbreviation">
+                </div>
+
+                <div style="font-weight: 700; font-size: 0.8rem; margin: 15px 0 10px 0;">All Available Tests <span
+                        class="badge">399</span></div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">ID</th>
+                                <th>Name</th>
+                                <th style="width: 80px;">Abbr</th>
+                                <th style="width: 100px;">Sample Type</th>
+                                <th style="width: 120px;">Group</th>
+                                <th style="width: 60px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="availTable">
+                            <!-- Rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Add Service Row -->
+            <div class="card" style="padding: 10px 15px;">
+                <div class="form-row" style="margin-bottom: 0; align-items: center;">
+                    <div class="form-group" style="flex: 2;">
+                        <label>Add Service</label>
+                        <div style="display: flex; gap: 5px;">
+                            <input type="text" placeholder="Search and add service..." style="flex: 1;">
+                            <button
+                                style="background:none; border: 1px solid #ddd; padding: 5px 10px; border-radius: 4px;"><i
+                                    class="fas fa-cog"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group" style="flex: 1.5;">
+                        <label>Select Employee</label>
+                        <select>
+                            <option>Select Employee</option>
+                            <option>Dr. Ahmed (Lab Manager)</option>
+                            <option>Sarah Johnson (Front Desk)</option>
+                            <option>Admin Zone</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Employee Code</label>
+                        <input type="text" placeholder="Enter Code">
+                    </div>
+                </div>
+            </div>
+
+            <div style="font-weight: 700; font-size: 0.9rem; color: #3c4043; margin-top: 10px;">Selected Tests</div>
+            <div id="selectedList">
+                <!-- Test Cards -->
+            </div>
+
+            <!-- Selected Services placeholder -->
+            <div class="card" style="padding: 10px 15px;">
+                <div class="section-title">Selected Services</div>
+                <div
+                    style="background: #e1f5fe; padding: 10px; border-radius: 4px; font-size: 0.8rem; text-align: center; color: #0288d1; border: 1px solid #b3e5fc;">
+                    No services selected yet
+                </div>
+            </div>
+
+            <div class="collapsible-trigger">
+                <span>Test Questions</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+
+            <!-- Payment Info (Green Card) -->
+            <div class="card payment-card">
+                <div class="section-title"><i class="fas fa-cash-register"></i> Payment Information</div>
+                <div class="payment-grid">
+                    <div class="form-group">
+                        <label>Total Amount</label>
+                        <input type="number" id="payTotal" readonly value="8351.00">
+                    </div>
+                    <div class="form-group">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <input type="checkbox">
+                            <label style="margin: 0;">Use points</label>
+                        </div>
+                        <label><i class="fas fa-star" style="color: #fbbc05;"></i> Patient Points</label>
+                        <input type="text" value="No points" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Discount Amount</label>
+                        <input type="number" id="payDiscount" value="0.00" oninput="updateCalculations()">
+                    </div>
+                    <div class="form-group">
+                        <label>Paid Amount</label>
+                        <input type="number" id="payPaid" readonly value="0.00">
+                    </div>
+                </div>
+
+                <div class="payment-grid" style="margin-top: 15px;">
+                    <div class="form-group">
+                        <label>Remaining Amount</label>
+                        <input type="number" id="payRem" readonly value="8351.00"
+                            style="font-weight: 700; color: var(--danger);">
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Payment Amount (EGP)</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="number" id="payInput" placeholder="0.00" style="flex: 2;"
+                                oninput="updateCalculations()">
+                            <button class="btn-green" style="flex: 1; height: 35px;">Proceed Payment</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Method</label>
+                        <select>
+                            <option>Cash</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents Upload -->
+            <div class="card">
+                <div class="section-title"><i class="fas fa-paperclip"></i> Upload Documents (Image or PDF)</div>
+                <div
+                    style="border: 1px dashed #ccc; padding: 20px; text-align: center; border-radius: 4px; font-size: 0.85rem; color: #666;">
+                    <button
+                        style="padding: 5px 15px; background: #f8f9fa; border: 1px solid #ddd; cursor: pointer;">Browse...</button>
+                    <span style="margin-left: 10px;">No files selected.</span>
+                </div>
+            </div>
+
+            <div style="font-size: 0.75rem; color: #888; padding: 10px;">Order Actions Log</div>
+        </div>
+
+        <div class="sidebar">
+            <div class="sidebar-card">
+                <div style="font-size: 0.7rem; color: #888; margin-bottom: 10px;">automatically extract test names</div>
+                <button class="btn-analyze">
+                    <i class="fas fa-robot"></i> Analyze Prescription
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fixed Floating Summary -->
+    <div class="summary-footer">
+        <div class="sum-row">
+            <span>Total:</span>
+            <span id="footTotal">8351.00 EGP</span>
+        </div>
+        <div class="sum-row">
+            <span>Discount:</span>
+            <span id="footDiscount">0.00 EGP</span>
+        </div>
+        <div class="sum-row">
+            <span>Paid:</span>
+            <span id="footPaid">0.00 EGP</span>
+        </div>
+        <div class="sum-row sum-total-line">
+            <span>Remaining:</span>
+            <span id="footRem" style="color: var(--danger);">8351.00 EGP</span>
+        </div>
+        <button class="btn-save-order" onclick="alert('Simulation Exported!')">
+            <i class="fas fa-save"></i> Save Order
+        </button>
+    </div>
+
+    <script src="tests-data.js"></script>
+    <script>
+        let selectedTests = [];
+
+        function initAvailTable() {
+            const table = document.getElementById('availTable');
+            const keys = Object.keys(medicalTests).slice(0, 10);
+            table.innerHTML = keys.map(k => {
+                const t = medicalTests[k];
+                return `
+                    <tr>
+                        <td style="font-weight:700;">${k}</td>
+                        <td style="font-weight:600;">${t.name}</td>
+                        <td>${t.abbr || k}</td>
+                        <td>Serum</td>
+                        <td>${t.category}</td>
+                        <td style="text-align:center;">
+                            <button onclick="addTest('${k}')" style="background:#2e7d32; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;"><i class="fas fa-plus"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function showSuggestions(val) {
+            const sugg = document.getElementById('searchSuggestions');
+            if (!val) { sugg.style.display = 'none'; return; }
+            const matches = Object.keys(medicalTests).filter(k =>
+                medicalTests[k].name.toLowerCase().includes(val.toLowerCase())
+            ).slice(0, 5);
+            if (matches.length === 0) { sugg.style.display = 'none'; return; }
+            sugg.innerHTML = matches.map(k => `<div class="sugg-item" onclick="addTest('${k}')">${medicalTests[k].name} (${k})</div>`).join('');
+            sugg.style.display = 'block';
+        }
+
+        function addTest(id) {
+            document.getElementById('searchSuggestions').style.display = 'none';
+            document.getElementById('testSearch').value = '';
+            if (selectedTests.find(t => t.id === id)) return;
+            const t = medicalTests[id];
+            selectedTests.push({ id, name: t.name, price: t.price || 50.00, sample: 'Serum', group: t.category });
+            renderSelected();
+        }
+
+        function removeTest(id) {
+            selectedTests = selectedTests.filter(t => t.id !== id);
+            renderSelected();
+        }
+
+        function renderSelected() {
+            const list = document.getElementById('selectedList');
+            list.innerHTML = selectedTests.map(t => `
+                <div class="selected-test-card">
+                    <div class="tc-header">
+                        <div>
+                            <div class="tc-name">${t.name}</div>
+                            <div class="tc-meta">${t.sample} - Min Price: 0.00 EGP</div>
+                        </div>
+                        <div class="tc-controls">
+                            <select style="font-size:0.75rem;"><option>Normal: 1 Hour</option></select>
+                            <div class="tc-price-box">
+                                <span>EGP</span>
+                                <input type="number" value="${t.price.toFixed(2)}" oninput="updateTestPrice('${t.id}', this.value)">
+                            </div>
+                            <i class="fas fa-trash-alt btn-trash" onclick="removeTest('${t.id}')"></i>
+                        </div>
+                    </div>
+                    <div class="tc-suggest">
+                        Recommended from group "${t.group}": <a href="#">Albumin in urine</a>
+                    </div>
+                </div>
+            `).join('');
+            updateCalculations();
+        }
+
+        function updateTestPrice(id, val) {
+            const t = selectedTests.find(x => x.id === id);
+            if (t) t.price = parseFloat(val) || 0;
+            updateCalculations();
+        }
+
+        function toggleContractView() {
+            const type = document.getElementById('patientType').value;
+            const group = document.getElementById('contractGroup');
+            group.style.display = type === 'contract' ? 'flex' : 'none';
+            updateCalculations();
+        }
+
+        function updateCalculations() {
+            const total = selectedTests.reduce((s, t) => s + t.price, 0);
+            const discType = document.getElementById('discountApply').value;
+            const discInputVal = parseFloat(document.getElementById('payDiscount').value) || 0;
+            const payInput = parseFloat(document.getElementById('payInput').value) || 0;
+
+            let discount = 0;
+            if (discType === 'percentage') {
+                discount = (total * discInputVal) / 100;
+            } else if (discType === 'fixed') {
+                discount = discInputVal;
+            }
+
+            const remaining = Math.max(0, total - discount - payInput);
+
+            document.getElementById('payTotal').value = total.toFixed(2);
+            document.getElementById('payPaid').value = payInput.toFixed(2);
+            document.getElementById('payRem').value = remaining.toFixed(2);
+
+            document.getElementById('footTotal').textContent = total.toFixed(2) + " EGP";
+            document.getElementById('footDiscount').textContent = discount.toFixed(2) + " EGP";
+            document.getElementById('footPaid').textContent = payInput.toFixed(2) + " EGP";
+            document.getElementById('footRem').textContent = remaining.toFixed(2) + " EGP";
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initAvailTable();
+        });
+    </script>
+</body>
+
+</html>

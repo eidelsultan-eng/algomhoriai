@@ -8,6 +8,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Kufi+Arabic:wght@400;700&family=Amiri:wght@400;700&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -357,32 +358,36 @@
 </head>
 
 <body>
-    <nav
-        style="background: white; border-bottom: 1px solid var(--border); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center;">
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <img src="gomhouria_lab_logo.png" style="height: 40px;" alt="Logo">
-            <h2 style="margin: 0; color: #1e3a8a; font-weight: 800;">AL-GOMHOURIA LAB</h2>
+    <header>
+        <div class="logo-section" onclick="location.href='dashboard.html'">
+            <i class="fas fa-flask fa-2x" style="color: #4f46e5;"></i>
+            <div class="logo-text">DataLab<span>.M.S</span></div>
         </div>
-        <div style="display: flex; gap: 20px; font-weight: 700; color: #64748b;">
-            <span onclick="location.href='dashboard.html'" style="cursor:pointer">Dashboard</span>
-            <span onclick="location.href='patient-registration.html'" style="cursor:pointer">Registration</span>
-            <span onclick="location.href='cash-tally.html'" style="cursor:pointer">Cash Tally</span>
-            <span onclick="location.href='expenses-manager.html'" style="cursor:pointer">Expenses</span>
-            <span onclick="location.href='l2l-manager.html'" style="cursor:pointer">Lab to Lab</span>
-            <span onclick="location.href='contracts-manager.html'" style="cursor:pointer">Contracts</span>
-            <span onclick="location.href='hr-system.html'" style="cursor:pointer">Employee HR</span>
-            <span onclick="location.href='patients-inventory.html'" style="cursor:pointer; color: #0284c7;">Global
-                Search</span>
+        <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Global search for patients, orders, or files..." id="globalSearchInput">
+        </div>
+        <div class="header-actions">
+            <button class="action-btn" title="Notifications"><i class="fas fa-bell"></i></button>
+            <button class="action-btn" title="Settings"><i class="fas fa-cog"></i></button>
+            <button class="action-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+    </header>
+
+    <nav class="horizontal-nav">
+        <div class="nav-list">
+            <a href="dashboard.html" class="nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="advanced-stats.html" class="nav-item"><i class="fas fa-chart-pie"></i> Analytics</a>
+            <a href="patient-registration.html" class="nav-item"><i class="fas fa-user-plus"></i> Registration</a>
+            <a href="patient-order.html" class="nav-item"><i class="fas fa-file-medical"></i> Patient Request</a>
+            <a href="results-entry.html" class="nav-item"><i class="fas fa-flask"></i> Results Entry</a>
+            <a href="Tests.html" class="nav-item"><i class="fas fa-microscope"></i> Tests Manager</a>
+            <a href="bulk_entry.html" class="nav-item"><i class="fas fa-layer-group"></i> Bulk Hub</a>
+            <a href="cash-tally.html" class="nav-item"><i class="fas fa-cash-register"></i> Cash Tally</a>
+            <a href="expenses-manager.html" class="nav-item"><i class="fas fa-money-bill-wave"></i> Expenses</a>
+            <a href="patient-portal.html" class="nav-item"><i class="fas fa-user-circle"></i> Patient Portal</a>
         </div>
     </nav>
-
-    <div class="info-strip">
-        <div id="resultCount">جاري تحميل البيانات...</div>
-        <div style="display: flex; gap: 15px;">
-            <span onclick="location.href='dashboard.html'" style="cursor:pointer">Dashboard</span>
-            <span onclick="location.href='patient-registration.html'" style="cursor:pointer">Registration</span>
-        </div>
-    </div>
 
     <div class="container main-wrapper">
         <section class="search-section">
@@ -397,6 +402,17 @@
                 <div id="currentTime"
                     style="font-weight: 700; color: #1e3a8a; background: #e0f2fe; padding: 5px 15px; border-radius: 8px; font-family: 'Outfit';">
                 </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div
+                style="background: white; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; gap: 10px;">
+                <input type="text" id="inventorySearchInput" placeholder="بحث بالإسم، رقم الهوية، أو المحمول..."
+                    style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 1rem;">
+                <button onclick="renderPatients()"
+                    style="background: #1e3a8a; color: white; border: none; padding: 0 25px; border-radius: 8px; font-weight: 700; cursor: pointer;">
+                    بحث
+                </button>
             </div>
 
             <!-- Tabs System -->
@@ -757,6 +773,16 @@
                 });
             }
 
+            // Apply Global Search
+            const searchQuery = document.getElementById('inventorySearchInput').value.toLowerCase();
+            if (searchQuery) {
+                displayList = displayList.filter(p =>
+                    (p.name && p.name.toLowerCase().includes(searchQuery)) ||
+                    (p.id && p.id.toLowerCase().includes(searchQuery)) ||
+                    (p.mobile && p.mobile.includes(searchQuery))
+                );
+            }
+
             if (displayList.length === 0) {
                 container.innerHTML = `<div style="background: white; padding: 50px; text-align: center; border: 1px solid var(--border); border-top:none; border-radius: 0 0 12px 12px;">
                     <div style="font-size: 3rem; margin-bottom: 15px;">🔍</div>
@@ -819,7 +845,7 @@
                             <button class="btn-action btn-pdf" title="Report PDF" onclick="location.href='patient-report.html?id=${p.id}'">
                                 <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/></svg>
                             </button>
-                            <button class="btn-action btn-barcode" title="Print Barcode" onclick="openBarcodeModal('${p.id}', '${p.name}', '${p.ageY}', '${p.gender}', '${p.date}', '${(p.tests || []).map(tid => medicalTests[tid] ? medicalTests[tid].name : tid).join(', ')}')">
+                            <button class="btn-action btn-barcode" title="Print Barcode" onclick="location.href='barcode-manager.html?id=${p.id}'">
                                 <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0v-3Zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5ZM.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5Zm15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5ZM4 4h1v8H4V4Zm2 0h2v8H6V4Zm3 0h1v8H9V4Zm2 0h2v8h-2V4Z"/></svg>
                             </button>
                             <button class="btn-action btn-edit" title="Edit Results" onclick="location.href='results-entry.html?id=${p.id}'">

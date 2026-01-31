@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طباعة الباركود - DataLab.M.S Pro</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Kufi+Arabic:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <link rel="stylesheet" href="css2.css">
+    <style>
+        body {
+            font-family: 'Noto Kufi Arabic', 'Outfit', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .top-nav-barcode {
+            background: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-back-yellow {
+            background: #f59e0b;
+            color: black;
+            border: none;
+            padding: 4px 15px;
+            border-radius: 4px;
+            font-weight: 800;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .header-banner {
+            background: #2563eb;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-group-header {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-header {
+            padding: 8px 15px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+
+        .patient-strip {
+            background: white;
+            margin: 0 20px 20px;
+            padding: 20px 30px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+        }
+
+        .patient-main-info h2 {
+            margin: 0 0 5px 0;
+            font-size: 1.4rem;
+            color: #1e3a8a;
+        }
+
+        .patient-sub-info {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .order-meta-info {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .badge-order {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        .badge-registered {
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+        }
+
+        .badge-normal {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .table-container {
+            background: white;
+            margin: 0 20px 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 15px;
+            font-size: 0.85rem;
+            color: #475569;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 15px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .status-pill {
+            padding: 2px 10px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .status-collected {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-reg {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .sample-id-pill {
+            background: #0ea5e9;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .tat-pill {
+            background: #64748b;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .action-btns-row {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-mini-action {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .btn-mini-action:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        .preview-pane {
+            background: white;
+            margin: 0 20px 40px;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .preview-title {
+            font-weight: 700;
+            color: #64748b;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .barcode-card {
+            border: 1px dashed #cbd5e1;
+            padding: 15px;
+            width: fit-content;
+            text-align: center;
+        }
+
+        .barcode-card .patient-name {
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .main-actions-footer {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn-footer {
+            padding: 10px 25px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Print Specific Styles */
+        @media print {
+            body {
+                background: white;
+                margin: 0;
+                padding: 0;
+            }
+
+            .top-nav-barcode,
+            .header-banner,
+            .patient-strip,
+            .main-actions-footer,
+            .table-container,
+            .preview-title,
+            .preview-pane>span {
+                display: none !important;
+            }
+
+            .preview-pane {
+                margin: 0 !important;
+                padding: 0 !important;
+                border: none !important;
+            }
+
+            #barcodePreviewArea {
+                display: block !important;
+            }
+
+            .barcode-card {
+                border: none !important;
+                page-break-inside: avoid;
+                margin: 0 0 15px 0;
+                /* Space between labels if multiple */
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+                padding: 10px 0;
+            }
+
+            .barcode-card svg {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-nav-barcode">
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <a href="dashboard.html" class="btn-back-yellow">← Back</a>
+            <span style="font-weight: 800; font-family: 'Outfit';">DataLab.M.S Pro</span>
+        </div>
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <span><i class="fas fa-user-md"></i> Dr. Mohamed Bleeh</span>
+            <button style="background: none; border: none; color: white; cursor: pointer; font-size: 1.1rem;"><i
+                    class="fas fa-sign-out-alt"></i></button>
+        </div>
+    </div>
+
+    <div class="header-banner">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <i class="fas fa-barcode" style="font-size: 1.8rem;"></i>
+            <h1 style="margin: 0; font-size: 1.5rem; font-weight: 800;">Sample Barcodes</h1>
+        </div>
+        <div class="btn-group-header">
+            <button class="btn-header" style="background: #10b981; color: white;" onclick="goToResult()"><i
+                    class="fas fa-file-medical"></i>
+                Result</button>
+            <button class="btn-header" style="background: #64748b; color: white;" onclick="goToReceipt()"><i
+                    class="fas fa-receipt"></i>
+                Receipt</button>
+            <button class="btn-header" style="background: #0f172a; color: white;" onclick="goToJobOrder()"><i
+                    class="fas fa-briefcase"></i> Job
+                Order</button>
+        </div>
+    </div>
+
+    <div class="patient-strip">
+        <div class="patient-main-info">
+            <h2 id="pName">S السيد / مها عبد الفتاح الرفاعي</h2>
+            <div class="patient-sub-info">
+                ID: <span id="pId">DMS-2025-1122</span> |
+                Age: <span id="pAge">35y</span> |
+                Gender: <span id="pGender">Female</span> |
+                Mobile: <span id="pMobile">01092001799</span>
+            </div>
+        </div>
+        <div class="order-meta-info">
+            <div class="badge-order" style="background: #2563eb; color: white;">Order ID: <span
+                    id="pOrderId">order_dms2025-1132</span></div>
+            <div class="badge-order badge-registered">Registered</div>
+            <div class="badge-order badge-normal">Normal Patient</div>
+        </div>
+    </div>
+
+    <div class="main-actions-footer">
+        <button class="btn-footer" style="background: #2563eb; color: white;" onclick="generateAll()"><i
+                class="fas fa-layer-group"></i>
+            Generate All</button>
+        <button class="btn-footer" style="background: #3b82f6; color: white;" onclick="generateSelected()"><i
+                class="fas fa-check-double"></i>
+            Generate Selected</button>
+        <button class="btn-footer" style="background: #0f172a; color: white;" onclick="window.print()"><i
+                class="fas fa-print"></i>
+            Print</button>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 40px;"><input type="checkbox" id="selectAllTests"
+                            onchange="toggleSelectAll(this)"></th>
+                    <th>Test Name</th>
+                    <th>Sample Type</th>
+                    <th>Status</th>
+                    <th>Timestamp</th>
+                    <th>Sample ID</th>
+                    <th>TAT</th>
+                    <th>L.T.L</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="testsTableBody">
+                <!-- Injected Rows -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="preview-pane">
+        <span class="preview-title">Preview:</span>
+        <div id="barcodePreviewArea" style="display: flex; gap: 20px; flex-wrap: wrap;">
+            <!-- Barcodes Injected -->
+        </div>
+    </div>
+
+    <script src="tests-data.js"></script>
+    <script>
+        let currentPatient = null;
+        let selectedPatientId = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            selectedPatientId = params.get('id');
+            const db = JSON.parse(localStorage.getItem('patientsDatabase')) || [];
+            currentPatient = db.find(p => p.id === selectedPatientId);
+
+            if (currentPatient) {
+                renderPatientInfo(currentPatient);
+                renderTestsTable(currentPatient);
+                generateAll(); // Initial generation
+            } else {
+                alert('Patient not found!');
+            }
+        });
+
+        function renderPatientInfo(p) {
+            document.getElementById('pName').textContent = p.name;
+            document.getElementById('pId').textContent = p.id;
+            document.getElementById('pAge').textContent = `${p.ageY}y`;
+            document.getElementById('pGender').textContent = p.gender;
+            document.getElementById('pMobile').textContent = p.mobile;
+            document.getElementById('pOrderId').textContent = `order_${p.id.toLowerCase().replace(/-/g, '')}`;
+        }
+
+        function renderTestsTable(p) {
+            const tbody = document.getElementById('testsTableBody');
+            tbody.innerHTML = '';
+
+            const tests = p.tests || [];
+            tests.forEach((testId, index) => {
+                const testData = medicalTests[testId] || { name: testId, sampleType: 'Serum' };
+                const sampleId = 100 + index;
+                const row = `
+                    <tr data-test-id="${testId}" data-sample-id="${sampleId}">
+                        <td><input type="checkbox" class="test-checkbox" checked onchange="updatePreview()"></td>
+                        <td style="font-weight:bold;">${testData.name}</td>
+                        <td>${testData.sampleType || 'Serum'}</td>
+                        <td><span class="status-pill status-reg">registered</span></td>
+                        <td style="font-size:0.75rem; color:#64748b;">${new Date().toLocaleString('en-US', { month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })}</td>
+                        <td><span class="sample-id-pill">${sampleId}</span></td>
+                        <td><span class="tat-pill">normal_1 Hour</span></td>
+                        <td>
+                            <select style="border:1px solid #e2e8f0; padding:4px; border-radius:4px; font-size:0.75rem;">
+                                <option>-- Select L.T.L --</option>
+                            </select>
+                        </td>
+                        <td>
+                            <div class="action-btns-row">
+                                <div class="btn-mini-action" title="Print Barcode" onclick="printSingleBarcode('${testId}', ${sampleId})"><i class="fas fa-barcode"></i></div>
+                                <div class="btn-mini-action" title="Edit"><i class="fas fa-edit"></i></div>
+                                <div class="btn-mini-action" title="Refresh" onclick="updatePreview()"><i class="fas fa-sync-alt"></i></div>
+                                <div class="btn-mini-action" title="History"><i class="fas fa-history"></i></div>
+                                <div class="btn-mini-action"><i class="fas fa-chevron-down"></i></div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+        }
+
+        function updatePreview() {
+            const container = document.getElementById('barcodePreviewArea');
+            container.innerHTML = '';
+
+            const rows = document.querySelectorAll('#testsTableBody tr');
+            rows.forEach(row => {
+                const checkbox = row.querySelector('.test-checkbox');
+                if (checkbox.checked) {
+                    const testId = row.dataset.testId;
+                    const sampleId = row.dataset.sampleId;
+                    const testData = medicalTests[testId] || { name: testId, sampleType: 'Serum' };
+                    addBarcodeToPreview(currentPatient, testData, sampleId);
+                }
+            });
+        }
+
+        function addBarcodeToPreview(p, test, sampleId) {
+            const container = document.getElementById('barcodePreviewArea');
+            const barcodeUniqueId = `barcode-${test.id || sampleId}`;
+            const card = document.createElement('div');
+            card.className = 'barcode-card';
+            card.innerHTML = `
+                <div class="patient-name">${p.name}</div>
+                <div style="font-size:0.6rem; color:#64748b; margin-bottom:5px;">${p.id}</div>
+                <svg id="${barcodeUniqueId}"></svg>
+                <div style="font-size:0.6rem; margin-top:5px; font-weight:bold;">${sampleId} - ${test.sampleType || 'Serum'} - ${p.ageY}y</div>
+            `;
+            container.appendChild(card);
+
+            JsBarcode(`#${barcodeUniqueId}`, `${p.id}-${sampleId}`, {
+                format: "CODE128",
+                width: 1.5,
+                height: 40,
+                displayValue: false,
+                margin: 0
+            });
+        }
+
+        function toggleSelectAll(master) {
+            const checkboxes = document.querySelectorAll('.test-checkbox');
+            checkboxes.forEach(cb => cb.checked = master.checked);
+            updatePreview();
+        }
+
+        function generateAll() {
+            const master = document.getElementById('selectAllTests');
+            master.checked = true;
+            toggleSelectAll(master);
+        }
+
+        function generateSelected() {
+            updatePreview();
+        }
+
+        function printSingleBarcode(testId, sampleId) {
+            const testData = medicalTests[testId] || { name: testId, sampleType: 'Serum' };
+            const container = document.getElementById('barcodePreviewArea');
+            container.innerHTML = '';
+            addBarcodeToPreview(currentPatient, testData, sampleId);
+            window.print();
+            // Restore all if needed, or just let user regenerate
+        }
+
+        // Navigation functions
+        function goToResult() {
+            if (selectedPatientId) window.location.href = `patient-report.html?id=${selectedPatientId}`;
+        }
+        function goToReceipt() {
+            if (selectedPatientId) window.location.href = `patient-order.html?id=${selectedPatientId}`;
+        }
+        function goToJobOrder() {
+            if (selectedPatientId) window.location.href = `patient-order.html?id=${selectedPatientId}`;
+        }
+    </script>
+</body>
+
+</html>

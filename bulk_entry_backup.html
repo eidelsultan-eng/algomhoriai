@@ -1,0 +1,3430 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataLab.M.S Pro - Bulk Entry</title>
+    <link rel="icon" href="../images/datalab_icon3.jpg" type="image/x-icon">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- JsBarcode -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+<!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
+    <style>
+        :root {
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-size-normal: 14px;
+            --font-size-small: 13px;
+            --font-size-large: 16px;
+            --line-height: 1.5;
+        }
+
+        * {
+            font-family: var(--font-family);
+        }
+
+        body {
+            font-size: var(--font-size-normal);
+            line-height: var(--line-height);
+            background-color: #f8f9fa;
+        }
+
+        .container-fluid {
+            max-width: 1400px;
+        }
+
+        /* Navbar */
+        .navbar-brand {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .nav-link {
+            font-size: var(--font-size-normal);
+        }
+
+        /* Header Card */
+        .header-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+        }
+
+        .header-card h4 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Main Content */
+        .main-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eaeaea;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+            font-size: var(--font-size-normal);
+            margin-bottom: 6px;
+        }
+
+        .form-control,
+        .form-select {
+            font-size: var(--font-size-normal);
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+        }
+
+        .input-group-text {
+            font-size: var(--font-size-normal);
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+        }
+
+        /* Buttons */
+        .btn {
+            font-size: var(--font-size-normal);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-lg {
+            padding: 12px 24px;
+            font-size: var(--font-size-large);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: var(--font-size-small);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Progress Bar */
+        .progress {
+            height: 12px;
+            border-radius: 6px;
+            background-color: #e9ecef;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 6px;
+            transition: width 0.6s ease;
+        }
+
+        /* Card Styling */
+        .info-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .info-card .card-title {
+            font-size: var(--font-size-large);
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .info-card .card-text {
+            font-size: var(--font-size-normal);
+            color: #6c757d;
+        }
+
+        /* Table Styling */
+        .table {
+            font-size: var(--font-size-small);
+        }
+
+        .table thead th {
+            font-weight: 600;
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            padding: 12px;
+        }
+
+        .table tbody td {
+            padding: 12px;
+            vertical-align: middle;
+        }
+
+        /* Badge */
+        .badge {
+            font-size: 0.85em;
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        /* Alert */
+        .alert {
+            font-size: var(--font-size-normal);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        /* Modal */
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px 12px 0 0;
+            padding: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 25px;
+            font-size: var(--font-size-normal);
+        }
+
+        /* Test Item */
+        .test-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .test-item strong {
+            font-size: var(--font-size-normal);
+            color: #2c3e50;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container-fluid {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+
+            .main-content {
+                padding: 15px;
+            }
+
+            .section-title {
+                font-size: 1.1rem;
+            }
+
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .input-group {
+                flex-wrap: wrap;
+            }
+
+            .input-group>* {
+                margin-bottom: 10px;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Loading Spinner */
+        .spinner-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: #667eea;
+        }
+
+        /* Bulk Patients Table */
+        .bulk-patients-table {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .bulk-patients-table table {
+            margin-bottom: 0;
+        }
+
+        .bulk-patients-table thead th {
+            position: sticky;
+            top: 0;
+            background-color: #f8f9fa;
+            z-index: 10;
+        }
+
+        /* Excel Upload Area */
+        .excel-upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .excel-upload-area:hover {
+            background-color: #eef1f7;
+            border-color: #764ba2;
+        }
+
+        .excel-upload-area i {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .excel-upload-area p {
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        /* Status Indicators */
+        .status-success {
+            color: #28a745;
+        }
+
+        .status-error {
+            color: #dc3545;
+        }
+
+        .status-processing {
+            color: #ffc107;
+        }
+
+        /* Summary Card */
+        .summary-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-item .label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .summary-item .value {
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: var(--font-size-large);
+        }
+
+        /* Counter Display */
+        .counter-display {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Tooltip */
+        .custom-tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .custom-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: var(--font-size-small);
+        }
+
+        .custom-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* Barcode Label Styling for Display */
+        .barcode-label {
+            width: 50mm;
+            height: 25mm;
+            border: 1px dashed #ccc;
+            padding: 1mm;
+            margin: 2mm;
+            display: inline-block;
+            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        .barcode-container {
+            text-align: center;
+            margin-bottom: 0.5mm;
+        }
+
+        .patient-info {
+            font-weight: bold;
+            font-size: 6pt;
+            margin-bottom: 0.5mm;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: center;
+        }
+
+        .test-abbr {
+            font-size: 5pt;
+            margin: 0 0.5mm;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+            max-width: 100%;
+            text-align: center;
+        }
+
+        .barcode-label .order-info {
+            font-size: 5pt;
+            margin-top: 0.5mm;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+            max-width: 100%;
+            word-break: break-all;
+            text-align: center;
+        }
+
+        .barcode-svg {
+            height: 8mm;
+            width: 100%;
+        }
+
+        .department-info {
+            font-size: 5pt;
+            margin-bottom: 0.5mm;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+            max-width: 100%;
+            text-align: center;
+        }
+
+        .barcode-order-page {
+            page-break-after: always;
+            break-after: page;
+        }
+
+        /* Print Styles - CRITICAL FOR BARCODE PRINTING */
+        @media print {
+
+            /* Hide everything except barcode container */
+            body * {
+                display: none !important;
+                visibility: hidden !important;
+            }
+
+            #bulkBarcodePrintContainer,
+            #bulkBarcodePrintContainer * {
+                display: block !important;
+                visibility: visible !important;
+            }
+
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+                width: 100% !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+
+            #bulkBarcodePrintContainer {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+                position: static !important;
+            }
+
+            .barcode-label {
+                width: 50mm !important;
+                height: 25mm !important;
+                margin: 2mm !important;
+                padding: 1mm !important;
+                display: inline-block !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                border: 1px dashed #ccc !important;
+                font-family: Arial, sans-serif !important;
+                font-size: 5pt !important;
+                box-sizing: border-box !important;
+            }
+
+            .barcode-order-page {
+                page-break-after: always !important;
+                break-after: page !important;
+                display: block !important;
+            }
+
+            .patient-info {
+                font-weight: bold !important;
+                font-size: 6pt !important;
+                margin-bottom: 0.5mm !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                text-align: center !important;
+            }
+
+            .test-abbr {
+                font-size: 5pt !important;
+                margin: 0 0.5mm !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                display: block !important;
+                max-width: 100% !important;
+                text-align: center !important;
+            }
+
+            .order-info {
+                font-size: 5pt !important;
+                margin-top: 0.5mm !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                display: block !important;
+                max-width: 100% !important;
+                word-break: break-all !important;
+                text-align: center !important;
+            }
+
+            .barcode-svg {
+                height: 8mm !important;
+                width: 100% !important;
+                display: block !important;
+            }
+
+            .department-info {
+                font-size: 5pt !important;
+                margin-bottom: 0.5mm !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                display: block !important;
+                max-width: 100% !important;
+                text-align: center !important;
+            }
+
+            /* Remove all shadows, backgrounds, etc. */
+            * {
+                box-shadow: none !important;
+                text-shadow: none !important;
+                background: transparent !important;
+                color: black !important;
+            }
+
+            /* Remove links */
+            a,
+            a:visited {
+                text-decoration: underline;
+            }
+
+            a[href]:after {
+                content: " (" attr(href) ")";
+            }
+
+            /* Don't show links for images, or javascript/internal links */
+            .ir a:after,
+            a[href^="javascript:"]:after,
+            a[href^="#"]:after {
+                content: "";
+            }
+
+            /* Always show the table header at the top of the page */
+            thead {
+                display: table-header-group;
+            }
+
+            tr,
+            img {
+                page-break-inside: avoid;
+            }
+
+            img {
+                max-width: 100% !important;
+            }
+
+            @page {
+                margin: 5mm !important;
+                size: auto !important;
+            }
+        }
+
+        /* Extra classes for print control */
+        .no-print {
+            display: none !important;
+        }
+
+        .print-only {
+            display: none !important;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            .print-only {
+                display: block !important;
+            }
+        }
+
+        /* Ensure barcode container is hidden by default */
+        #bulkBarcodePrintContainer {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            z-index: 9999;
+        }
+
+        /* Bulk Barcode Print Button Row */
+        #bulkBarcodePrintBtnRow {
+            margin-top: 20px;
+        }
+
+        /* Style for barcode preview */
+        .barcode-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../Dashboard.html">
+                <i class="fas fa-database me-2"></i>DataLab.M.S Pro
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../Dashboard.html">
+                            <i class="fas fa-home me-1"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../Patient-Request.html">
+                            <i class="fas fa-user-injured me-1"></i> Patient Request
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="userProfile">
+                            <i class="fas fa-user me-1"></i>
+                            <span id="userFullName">User</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt me-1"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- Header Card -->
+        <div class="header-card">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h4>
+                        <i class="fas fa-users me-2"></i>
+                        Bulk Entry System
+                    </h4>
+                    <p class="mb-0" style="opacity: 0.9;">Add multiple patients and orders at once</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="dropdown">
+                        <button class="btn btn-light btn-lg dropdown-toggle" type="button" id="bulkOperationsDropdown"
+                            data-bs-toggle="dropdown">
+                            <i class="fas fa-cogs me-2"></i> Bulk Operations
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#bulkOrders" onclick="showBulkSection('orders')">
+                                    <i class="fas fa-clipboard-list me-2"></i> Bulk Orders
+                                </a></li>
+                            <li><a class="dropdown-item" href="#bulkBarcode" onclick="showBulkSection('Barcode.html')">
+                                    <i class="fas fa-barcode me-2"></i> Bulk Collect & Recollect & Barcode
+                                </a></li>
+                            <li><a class="dropdown-item" href="#bulkRecordResults"
+                                    onclick="showBulkSection('recordResults')">
+                                    <i class="fas fa-file-medical me-2"></i> Bulk Record Results
+                                </a></li>
+                            <li><a class="dropdown-item" href="#bulkPrint" onclick="showBulkSection('print')">
+                                    <i class="fas fa-print me-2"></i> Bulk Print Results
+                                </a></li>
+
+                            <li><a class="dropdown-item" href="#bulkExcelSection" onclick="showBulkSection('excel')">
+                                    <i class="fas fa-file-excel me-2"></i> Bulk Excel Sheet
+                                </a></li>
+
+                            <li><a class="dropdown-item" href="#bulkPdfSection" onclick="showBulkSection('pdf')">
+                                    <i class="fas fa-file-pdf me-2"></i> Bulk PDF File
+                                </a></li>
+                        
+                            <li><a class="dropdown-item" href="#bulkMoney" onclick="showBulkSection('money')">
+                                    <i class="fas fa-money-bill-wave me-2"></i> Bulk Money
+                                </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bulk Orders Section (Initially Hidden) -->
+        <div id="bulkOrdersSection" class="main-content" style="display: none;">
+            <h4 class="section-title">
+                <i class="fas fa-clipboard-list me-2"></i>
+                Bulk Orders - Add Multiple Patients
+            </h4>
+
+            <!-- Step 1: Number of Patients -->
+            <div class="row mb-4 fade-in">
+                <div class="col-md-12">
+                    <div class="info-card">
+                        <div class="row align-items-center">
+                            <div class="col-md-4">
+                                <label class="form-label">
+                                    <i class="fas fa-users me-2"></i>
+                                    Number of Patients
+                                </label>
+                                <input type="number" class="form-control" id="numberOfPatients" min="1" max="1000"
+                                    placeholder="Enter number of patients" value="10">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label">
+                                            <i class="fas fa-id-card me-2"></i>
+                                            From Patient ID
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="fromPatientId"
+                                                placeholder="Auto-generated" readonly>
+                                            <button class="btn btn-outline-secondary" type="button"
+                                                onclick="refreshPatientIds()">
+                                                <i class="fas fa-sync-alt"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">
+                                            <i class="fas fa-id-card me-2"></i>
+                                            To Patient ID
+                                        </label>
+                                        <input type="text" class="form-control" id="toPatientId"
+                                            placeholder="Auto-calculated" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Order IDs -->
+            <div class="row mb-4 fade-in">
+                <div class="col-md-12">
+                    <div class="info-card">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-list-ol me-2"></i>
+                                    From Order ID
+                                </label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="fromOrderId"
+                                        placeholder="Auto-generated" readonly>
+                                    <button class="btn btn-outline-secondary" type="button" onclick="refreshOrderIds()">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-list-ol me-2"></i>
+                                    To Order ID
+                                </label>
+                                <input type="text" class="form-control" id="toOrderId" placeholder="Auto-calculated"
+                                    readonly>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Order IDs will be generated sequentially for each patient
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Patient Details Input Method -->
+            <div class="row mb-4 fade-in">
+                <div class="col-md-12">
+                    <div class="info-card">
+                        <h6 class="card-title mb-3">
+                            <i class="fas fa-user-edit me-2"></i>
+                            How to Add Patient Details?
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <select class="form-select" id="patientDetailsMethod"
+                                    onchange="togglePatientDetailsMethod()">
+                                    <option value="">Select method to add patient details</option>
+                                    <option value="manual">Add Patients Details Manually (DMS)</option>
+                                    <option value="excel">Add Patients Details from Excel Sheet</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Manual Input Section -->
+                        <div id="manualInputSection" style="display: none;">
+                            <div class="bulk-patients-table">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th width="15%">Patient ID</th>
+                                            <th width="15%">Order ID</th>
+                                            <th width="20%">First Name</th>
+                                            <th width="20%">Second Name</th>
+                                            <th width="20%">Third Name</th>
+                                            <th width="10%">Age (Years)</th>
+                                            <th width="15%">Mobile</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="manualPatientsTable">
+                                        <!-- Will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="text-end">
+                                <button class="btn btn-outline-primary btn-sm" onclick="generateSampleNames()">
+                                    <i class="fas fa-magic me-1"></i> Generate Sample Names
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Excel Upload Section -->
+                        <div id="excelUploadSection" style="display: none;">
+                            <div class="excel-upload-area" onclick="document.getElementById('excelFileInput').click()">
+                                <i class="fas fa-file-excel"></i>
+                                <p class="mb-2">Click to upload Excel file or drag and drop</p>
+                                <p class="text-muted small">Format: fullName, age_years, mobile</p>
+                                <input type="file" id="excelFileInput" accept=".xlsx,.xls,.csv" style="display: none;"
+                                    onchange="handleExcelUpload(event)">
+                            </div>
+                            <div class="mt-3" id="excelPreview"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Order Configuration -->
+            <div class="row mb-4 fade-in">
+                <div class="col-md-12">
+                    <div class="section-title">Order Configuration</div>
+                    <div class="row">
+                        <!-- Patient Type -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-user-tag me-2"></i>
+                                Patient Type *
+                            </label>
+                            <select class="form-select" id="bulkPatientType" required
+                                onchange="handleBulkPatientTypeChange()">
+                                <option value="">Select Patient Type</option>
+                                <option value="normal">Normal Patient</option>
+                                <option value="packages">DataLab Packages</option>
+                                <!-- Contract options will be loaded by JS -->
+                            </select>
+                        </div>
+
+                        <!-- Discount Type -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-percentage me-2"></i>
+                                Discount Type
+                            </label>
+                            <select class="form-select" id="bulkDiscountType" disabled>
+                                <option value="">Select Discount Type</option>
+                                <option value="percentage">Percentage</option>
+                                <option value="fixed">Fixed Amount</option>
+                            </select>
+                        </div>
+
+                        <!-- Discount Value -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-calculator me-2"></i>
+                                Discount Value
+                            </label>
+                            <input type="number" class="form-control" id="bulkDiscountValue" disabled>
+                        </div>
+                    </div>
+
+                    <!-- Contract Extra Fields -->
+                    <div class="row mb-3" id="bulkContractExtraFields" style="display:none;">
+                        <div class="col-md-4">
+                            <label class="form-label">Insurance Card ID</label>
+                            <input type="text" class="form-control" id="bulkPatientContractId"
+                                placeholder="Enter Insurance Card ID">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Claim Form ID</label>
+                            <input type="text" class="form-control" id="bulkClaimFormId"
+                                placeholder="Enter Claim Form ID">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Nested Type Value (%)</label>
+                            <input type="number" class="form-control" id="bulkNestedTypeValue" min="0" max="100"
+                                step="0.01">
+                        </div>
+                    </div>
+
+                    <!-- Referred By -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label class="form-label">
+                                <i class="fas fa-user-md me-2"></i>
+                                Referred By
+                            </label>
+                            <div class="input-group">
+                                <select class="form-select" id="bulkReferredBySelect">
+                                    <option value="">Select Doctor</option>
+                                </select>
+                                <input type="text" class="form-control" id="bulkNewReferredByInput"
+                                    placeholder="Add new doctor">
+                                <button class="btn btn-outline-success" id="bulkSaveReferredByBtn" type="button">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Test Selection -->
+            <div class="row mb-4 fade-in">
+                <div class="col-md-12">
+                    <div class="section-title">Test Selection</div>
+
+                    <!-- Test Search -->
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Search by First Letters</label>
+                            <input type="text" class="form-control" id="bulkTestSearch"
+                                placeholder="Search by first letters">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Add All Tests by Group</label>
+                            <select class="form-select" id="bulkQuickAddByGroup">
+                                <option value="">Select Group</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Add by ID</label>
+                            <input type="text" class="form-control" id="bulkQuickAddTestId"
+                                placeholder="Add by ID & Enter">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Add by Abbreviation</label>
+                            <input type="text" class="form-control" id="bulkQuickAddTestAbbr"
+                                placeholder="Add by Abbr & Enter">
+                        </div>
+                    </div>
+
+                    <!-- All Available Tests -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label class="form-label d-flex align-items-center">
+                                All Available Tests
+                                <span id="bulkAllTestsCount" class="badge bg-primary ms-2">0</span>
+                            </label>
+                            <div id="bulkAllTestsTableContainer" style="max-height: 200px; overflow-y: auto;">
+                                <!-- Tests will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Selected Tests -->
+                    <div id="bulkSelectedTestsContainer">
+                        <h6 class="mb-3">
+                            <i class="fas fa-list-check me-2"></i>
+                            Selected Tests
+                            <span class="badge bg-secondary" id="bulkSelectedTestsCount">0</span>
+                        </h6>
+                        <div id="bulkSelectedTestsList">
+                            <div class="alert alert-info">No tests selected yet</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 6: Services -->
+            <div class="row mb-4 fade-in">
+                <div class="col-md-12">
+                    <div class="section-title">Add Services</div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="bulkServiceSearch"
+                                    placeholder="Search and add service">
+                                <button class="btn btn-outline-secondary" type="button" onclick="openServiceModal()">
+                                    <i class="fas fa-cogs"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" id="bulkEmployeeSelect">
+                                <option value="">Select Employee</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="bulkEmployeeCodeInput"
+                                placeholder="Employee Code">
+                        </div>
+                    </div>
+
+                    <!-- Selected Services -->
+                    <div id="bulkSelectedServicesContainer" style="display: none;">
+                        <h6 class="mb-3">
+                            <i class="fas fa-concierge-bell me-2"></i>
+                            Selected Services
+                        </h6>
+                        <div id="bulkSelectedServicesList">
+                            <div class="alert alert-info">No services selected yet</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 7: Payment Information -->
+            <div class="row mb-4 fade-in">
+                <div class="col-md-12">
+                    <div class="section-title">Payment Information</div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Test Cost per Patient</label>
+                            <input type="text" class="form-control" id="bulkTestCostPerPatient" readonly value="0.00">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Service Cost per Patient</label>
+                            <input type="text" class="form-control" id="bulkServiceCostPerPatient" readonly
+                                value="0.00">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Total per Patient</label>
+                            <input type="text" class="form-control" id="bulkTotalPerPatient" readonly value="0.00">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Grand Total</label>
+                            <input type="text" class="form-control" id="bulkGrandTotal" readonly value="0.00">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3" id="bulkContractShareRow" style="display:none;">
+                        <div class="col-md-6">
+                            <label class="form-label">Contract Share Total</label>
+                            <input type="text" class="form-control" id="bulkContractShareTotal" readonly value="0.00">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Patient Share Up Total</label>
+                            <input type="text" class="form-control" id="bulkPatientShareUpTotal" readonly value="0.00">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="form-label">Payment Method</label>
+                            <select class="form-select" id="bulkPaymentMethod">
+                                <option value="cash">Cash</option>
+                                <option value="credit_card">Credit Card</option>
+                                <option value="vodafone_cash">Vodafone Cash</option>
+                                <option value="instapay">InstaPay</option>
+                                <option value="visa">Visa</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Payment Amount per Patient (EGP)</label>
+                            <input type="number" class="form-control" id="bulkPaymentAmountPerPatient" min="0"
+                                step="0.01">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Total Payment Amount</label>
+                            <input type="text" class="form-control" id="bulkTotalPaymentAmount" readonly value="0.00">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Card -->
+            <div class="row mb-4 fade-in">
+                <div class="col-md-12">
+                    <div class="summary-card">
+                        <h6 class="card-title mb-3">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            Order Summary
+                        </h6>
+                        <div class="summary-item">
+                            <span class="label">Number of Patients:</span>
+                            <span class="value" id="summaryPatientsCount">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Number of Orders:</span>
+                            <span class="value" id="summaryOrdersCount">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Total Tests Cost:</span>
+                            <span class="value" id="summaryTestsCost">0.00 EGP</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Total Services Cost:</span>
+                            <span class="value" id="summaryServicesCost">0.00 EGP</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Grand Total:</span>
+                            <span class="value" id="summaryGrandTotal">0.00 EGP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-secondary" onclick="resetBulkForm()">
+                            <i class="fas fa-redo me-2"></i> Reset Form
+                        </button>
+                        <div>
+                            <button class="btn btn-outline-primary me-2" onclick="validateBulkForm()">
+                                <i class="fas fa-check-circle me-2"></i> Validate
+                            </button>
+                            <button class="btn btn-success" id="startBulkSaveBtn" onclick="startBulkSave()" disabled>
+                                <i class="fas fa-play me-2"></i> Start Bulk Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Section -->
+            <div class="row mb-4" id="progressSection" style="display: none;">
+                <div class="col-md-12">
+                    <div class="info-card">
+                        <h6 class="card-title mb-3">
+                            <i class="fas fa-tasks me-2"></i>
+                            Saving Progress
+                        </h6>
+                        <div class="counter-display" id="progressCounter">0/0</div>
+                        <div class="progress">
+                            <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Current Patient:</span>
+                                    <span id="currentPatientId">-</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Current Order:</span>
+                                    <span id="currentOrderId">-</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Status:</span>
+                                    <span id="currentStatus" class="status-processing">Ready</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Successful:</span>
+                                    <span id="successCount" class="status-success">0</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Failed:</span>
+                                    <span id="failedCount" class="status-error">0</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Remaining:</span>
+                                    <span id="remainingCount">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3" id="progressLog"></div>
+                        <div class="text-center mt-3">
+                            <button class="btn btn-danger btn-sm" id="cancelBulkSaveBtn" onclick="cancelBulkSave()">
+                                <i class="fas fa-stop me-1"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Bulk Barcode Section -->
+        <div id="bulkBarcodeSection" class="main-content" style="display: none;">
+            <h4 class="section-title">
+                <i class="fas fa-barcode me-2"></i>
+                Bulk Barcode Printing
+            </h4>
+
+            <!-- Filter Controls -->
+            <div class="row mb-4 fade-in">
+                <div class="col-md-12">
+                    <div class="info-card">
+                        <h6 class="card-title mb-3">
+                            <i class="fas fa-filter me-2"></i>
+                            Filter Orders for Barcode Printing
+                        </h6>
+
+                        <!-- Date Range -->
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Date From</label>
+                                <input type="date" class="form-control" id="bulkBarcodeDateFrom">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Date To</label>
+                                <input type="date" class="form-control" id="bulkBarcodeDateTo">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Time From</label>
+                                <input type="time" class="form-control" id="bulkBarcodeTimeFrom">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Time To</label>
+                                <input type="time" class="form-control" id="bulkBarcodeTimeTo">
+                            </div>
+                        </div>
+
+                        <!-- Filter Options -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Department</label>
+                                <select class="form-select" id="bulkBarcodeDepartment">
+                                    <option value="">All Departments</option>
+                                    <!-- Departments will be populated by JS -->
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Tests Status</label>
+                                <select class="form-select" id="bulkBarcodeTestStatus">
+                                    <option value="">All Test Statuses</option>
+                                    <option value="registered">Registered Only</option>
+                                    <option value="Collected.html">Collected Only</option>
+                                    <option value="sent">Sent Only</option>
+                                    <option value="SendOut.html">Sendout Only</option>
+                                    <option value="recollected">Recollected Only</option>
+                                    <option value="completed">Completed Only</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Patient Type</label>
+                                <select class="form-select" id="bulkBarcodePatientType">
+                                    <option value="">All Types</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="packages">Packages</option>
+                                    <!-- Contracts will be added by JS -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Search Options -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Search by Patient ID/Name</label>
+                                <input type="text" class="form-control" id="bulkBarcodeSearch"
+                                    placeholder="Enter patient ID, name, or mobile...">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Branch</label>
+                                <select class="form-select" id="bulkBarcodeBranch">
+                                    <option value="">All Branches</option>
+                                    <!-- Branches will be populated by JS -->
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Tests Status</label>
+                                <select class="form-select" id="bulkBarcodeTestStatus">
+                                    <option value="">All Test Statuses</option>
+                                    <option value="registered">Registered Only</option>
+                                    <option value="Collected.html">Collected Only</option>
+                                    <option value="not_collected">Not Collected</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="d-flex justify-content-between">
+                                    <button class="btn btn-outline-secondary" onclick="clearBulkBarcodeFilters()">
+                                        <i class="fas fa-redo me-2"></i> Clear Filters
+                                    </button>
+                                    <div>
+                                        <button class="btn btn-primary me-2" onclick="loadBulkBarcodeOrders()">
+                                            <i class="fas fa-search me-2"></i> Search Orders
+                                        </button>
+                                        <button class="btn btn-success" id="bulkGenerateBarcodesBtn"
+                                            onclick="startBulkBarcodeGeneration()" disabled>
+                                            <i class="fas fa-barcode me-2"></i> Generate Barcodes
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Barcode Styles Summary -->
+            <div class="row mb-4 fade-in" id="bulkBarcodeStylesSummary" style="display: none;">
+                <div class="col-md-12">
+                    <div class="alert alert-info">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1"><i class="fas fa-paint-brush me-2"></i> Barcode Styles Active</h6>
+                                <p class="mb-0 small" id="bulkStylesInfo">Loading styles...</p>
+                            </div>
+                            <button class="btn btn-sm btn-outline-info" onclick="openBulkBarcodeSettings()">
+                                <i class="fas fa-cog me-1"></i> Customize
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Summary -->
+            <div class="row mb-4 fade-in">
+                <div class="col-md-12">
+                    <div class="summary-card">
+                        <h6 class="card-title mb-3">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            Orders Summary
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="summary-item">
+                                    <span class="label">Total Orders:</span>
+                                    <span class="value" id="bulkTotalOrdersCount">0</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="summary-item">
+                                    <span class="label">Total Tests:</span>
+                                    <span class="value" id="bulkTotalTestsCount">0</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="summary-item">
+                                    <span class="label">To Collect:</span>
+                                    <span class="value" id="bulkToCollectCount">0</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="summary-item">
+                                    <span class="label">Estimated Pages:</span>
+                                    <span class="value" id="bulkEstimatedPages">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Table -->
+            <div class="row mb-4 fade-in">
+                <div class="col-md-12">
+                    <div class="section-title">
+                        <i class="fas fa-list-ol me-2"></i>
+                        Filtered Orders
+                        <span class="badge bg-primary ms-2" id="bulkFilteredOrdersCount">0</span>
+                    </div>
+
+                    <div class="bulk-patients-table" style="max-height: 400px;">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th width="5%">
+                                        <input type="checkbox" id="selectAllBulkOrders">
+                                    </th>
+                                    <th width="10%">Order ID</th>
+                                    <th width="15%">Patient</th>
+                                    <th width="10%">Patient ID</th>
+                                    <th width="10%">Status</th>
+                                    <th width="10%">Tests</th>
+                                    <th width="10%">Order Date</th>
+                                    <th width="15%">Tests Status</th>
+                                    <th width="15%">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bulkBarcodeOrdersTable">
+                                <!-- Orders will be populated by JavaScript -->
+                                <tr>
+                                    <td colspan="9" class="text-center py-4">
+                                        <div class="text-muted">
+                                            <i class="fas fa-search fa-2x mb-3"></i><br>
+                                            Use the filters above to search for orders
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bulk Actions -->
+            <div class="row mb-4 fade-in">
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <button class="btn btn-outline-danger me-2" id="bulkRecollectAllBtn"
+                                onclick="showBulkRecollectModal()" disabled>
+                                <i class="fas fa-redo me-2"></i> Recollect All Selected
+                            </button>
+                            <button class="btn btn-outline-warning" id="bulkMarkCollectedBtn"
+                                onclick="bulkMarkAsCollected()" disabled>
+                                <i class="fas fa-vial me-2"></i> Mark as Collected
+                            </button>
+                        </div>
+                        <div>
+                            <button class="btn btn-secondary me-2" onclick="refreshBulkBarcodeOrders()">
+                                <i class="fas fa-sync-alt me-2"></i> Refresh
+                            </button>
+                            <button class="btn btn-success" id="bulkBarcodePrintBtn" onclick="printBulkBarcodes()">
+                                <i class="fas fa-print me-2"></i> Print All Barcodes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Section -->
+            <div class="row mb-4" id="bulkBarcodeProgressSection" style="display: none;">
+                <div class="col-md-12">
+                    <div class="info-card">
+                        <h6 class="card-title mb-3">
+                            <i class="fas fa-tasks me-2"></i>
+                            Barcode Generation Progress
+                        </h6>
+                        <div class="counter-display" id="bulkProgressCounter">0/0</div>
+                        <div class="progress">
+                            <div class="progress-bar" id="bulkProgressBar" style="width: 0%"></div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Current Order:</span>
+                                    <span id="bulkCurrentOrderId">-</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Current Patient:</span>
+                                    <span id="bulkCurrentPatientName">-</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Status:</span>
+                                    <span id="bulkCurrentStatus" class="status-processing">Ready</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Successful:</span>
+                                    <span id="bulkSuccessCount" class="status-success">0</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Failed:</span>
+                                    <span id="bulkFailedCount" class="status-error">0</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Remaining:</span>
+                                    <span id="bulkRemainingCount">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3" id="bulkProgressLog" style="max-height: 150px; overflow-y: auto;"></div>
+                        <div class="text-center mt-3">
+                            <button class="btn btn-danger btn-sm" id="cancelBulkBarcodeBtn"
+                                onclick="cancelBulkBarcodeGeneration()">
+                                <i class="fas fa-stop me-1"></i> Cancel Generation
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-4 fade-in" id="bulkBarcodePrintBtnRow" style="display:none;">
+                    <div class="col-md-12 text-end">
+                        <button class="btn btn-success" id="bulkBarcodePrintBtn" onclick="printBulkBarcodes()">
+                            <i class="fas fa-print me-2"></i> Print All Barcodes
+                        </button>
+                    </div>
+
+                    <!-- Barcode Preview Container -->
+                    <div id="bulkBarcodePrintContainer" style="display: none;"></div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+        <div id="bulkRecordResultsSection" class="main-content" style="display: none;">
+            <h4 class="section-title">
+                <i class="fas fa-notes-medical me-2"></i>
+                Bulk Record Results
+            </h4>
+            <!-- Filter Controls -->
+            <div class="row mb-4 fade-in">
+                <div class="col-md-12">
+                    <div class="info-card">
+                        <h6 class="card-title mb-3">
+                            <i class="fas fa-filter me-2"></i>
+                            Filter Orders for Bulk Results Entry
+                        </h6>
+                        <!-- Date Range -->
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Date From</label>
+                                <input type="date" class="form-control" id="bulkRecordDateFrom">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Date To</label>
+                                <input type="date" class="form-control" id="bulkRecordDateTo">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Time From</label>
+                                <input type="time" class="form-control" id="bulkRecordTimeFrom">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Time To</label>
+                                <input type="time" class="form-control" id="bulkRecordTimeTo">
+                            </div>
+                        </div>
+                        <!-- Filter Options -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Department</label>
+                                <select class="form-select" id="bulkRecordDepartment">
+                                    <option value="">All Departments</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Order Status</label>
+                                <select class="form-select" id="bulkRecordStatus">
+                                    <option value="">All Statuses</option>
+                                    <option value="registered">Registered</option>
+                                    <option value="Collected.html">Collected</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="recollected">Recollected</option>
+                                    <option value="sent">Sent to LTL</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Patient Type</label>
+                                <select class="form-select" id="bulkRecordPatientType">
+                                    <option value="">All Types</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="packages">Packages</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Search Options -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Search by Patient ID/Name</label>
+                                <input type="text" class="form-control" id="bulkRecordSearch"
+                                    placeholder="Enter patient ID, name, or mobile...">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Branch</label>
+                                <select class="form-select" id="bulkRecordBranch">
+                                    <option value="">All Branches</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Tests Status</label>
+                                <select class="form-select" id="bulkRecordTestStatus">
+                                    <option value="">All Test Statuses</option>
+                                    <option value="registered">Registered Only</option>
+                                    <option value="Collected.html">Collected Only</option>
+                                    <option value="sent">Sent Only</option>
+                                    <option value="SendOut.html">Sendout Only</option>
+                                    <option value="recollected">Recollected Only</option>
+                                    <option value="completed">Completed Only</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Action Buttons -->
+                        <div class="row">
+                            <div class="col-md-12 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <button class="btn btn-outline-secondary" onclick="clearBulkRecordFilters()">
+                                        <i class="fas fa-redo me-2"></i> Clear Filters
+                                    </button>
+                                    <button class="btn btn-primary ms-2" onclick="loadBulkRecordOrders()">
+                                        <i class="fas fa-search me-2"></i> Search Orders
+                                    </button>
+                                </div>
+                                <div>
+                                    <button class="btn btn-success me-2" id="bulkSaveResultsBtn"
+                                        onclick="bulkSaveResults()" disabled>
+                                        <i class="fas fa-save me-2"></i> Bulk Save Results
+                                    </button>
+                                    <button class="btn btn-info" id="bulkAuthenticateOrdersBtn"
+                                        onclick="bulkAuthenticateOrders()" disabled>
+                                        <i class="fas fa-check-circle me-2"></i> Authenticate All Orders
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Orders Table -->
+            <div class="row mb-4 fade-in">
+                <div class="col-md-12">
+                    <div class="section-title">
+                        <i class="fas fa-list-ol me-2"></i>
+                        Filtered Orders
+                        <span class="badge bg-primary ms-2" id="bulkRecordFilteredOrdersCount">0</span>
+                    </div>
+                    <div class="bulk-patients-table" style="max-height: 600px; overflow-y: auto;">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Patient ID</th>
+                                    <th>Patient Name</th>
+                                    <th>Test Name</th>
+                                    <th>Result</th>
+                                    <th>Reference Range</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bulkRecordOrdersTable">
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <div class="text-muted">
+                                            <i class="fas fa-search fa-2x mb-3"></i><br>
+                                            Use the filters above to search for orders
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Other Bulk Sections (Placeholders) -->
+
+        <div id="bulkPrintSection" class="main-content" style="display: none;">
+            <h4 class="section-title">
+                <i class="fas fa-print me-2"></i>
+                Bulk Print Results
+            </h4>
+
+            <!-- Filter Controls -->
+            <div class="row mb-4 fade-in">
+                <div class="col-md-12">
+                    <div class="info-card">
+                        <h6 class="card-title mb-3">
+                            <i class="fas fa-filter me-2"></i>
+                            Filter Orders for Bulk Print
+                        </h6>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Date From</label>
+                                <input type="date" class="form-control" id="bulkPrintDateFrom">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Date To</label>
+                                <input type="date" class="form-control" id="bulkPrintDateTo">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Status</label>
+                                <select class="form-select" id="bulkPrintStatus">
+                                    <option value="">All</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="authenticated">Authenticated</option>
+                                    <option value="reported">Reported</option>
+                                    <option value="sent">Sent</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Branch</label>
+                                <select class="form-select" id="bulkPrintBranch">
+                                    <option value="">All</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Search (Patient Name / ID / Order ID)</label>
+                                <input type="text" class="form-control" id="bulkPrintSearch">
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end">
+                                <button class="btn btn-primary me-2" onclick="loadBulkPrintOrders()">
+                                    <i class="fas fa-search me-1"></i> Search
+                                </button>
+                                <button class="btn btn-secondary" onclick="clearBulkPrintFilters()">
+                                    <i class="fas fa-eraser me-1"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Table -->
+            <div class="row mb-4 fade-in">
+                <div class="col-md-12">
+                    <div class="section-title">
+                        <i class="fas fa-list-ol me-2"></i>
+                        Filtered Orders
+                        <span class="badge bg-primary ms-2" id="bulkPrintFilteredOrdersCount">0</span>
+                    </div>
+                    <div class="bulk-patients-table" style="max-height: 400px;">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="bulkPrintSelectAll"></th>
+                                    <th>Order #</th>
+                                    <th>Patient Name</th>
+                                    <th>Patient ID</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Tests</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bulkPrintOrdersTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bulk Print Button -->
+            <div class="row mb-4 fade-in">
+                <div class="col-md-12 text-end">
+                    <button class="btn btn-success" id="bulkPrintResultsBtn" onclick="printBulkResults()" disabled>
+                        <i class="fas fa-print me-2"></i> Print All Results
+                    </button>
+                </div>
+            </div>
+
+            <!-- Print Container (hidden) -->
+            <div id="bulkPrintResultsContainer" style="display:none;"></div>
+        </div>
+
+
+<!-- ...existing code... -->
+<div id="bulkExcelSection" class="main-content" style="display: none;">
+    <h4 class="section-title">
+        <i class="fas fa-file-excel me-2"></i>
+        Bulk Orders Excel Sheet & Results
+    </h4>
+    <!-- Filter Controls (copied from Bulk Barcode Section) -->
+    <div class="row mb-4 fade-in">
+        <div class="col-md-12">
+            <div class="info-card">
+                <h6 class="card-title mb-3">
+                    <i class="fas fa-filter me-2"></i>
+                    Filter Orders for Excel Export
+                </h6>
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Date From</label>
+                        <input type="date" class="form-control" id="excelDateFrom">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Date To</label>
+                        <input type="date" class="form-control" id="excelDateTo">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Time From</label>
+                        <input type="time" class="form-control" id="excelTimeFrom">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Time To</label>
+                        <input type="time" class="form-control" id="excelTimeTo">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Department</label>
+                        <select class="form-select" id="excelDepartment">
+                            <option value="">All Departments</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Tests Status</label>
+                        <select class="form-select" id="excelTestStatus">
+                            <option value="">All Test Statuses</option>
+                            <option value="registered">Registered Only</option>
+                            <option value="Collected.html">Collected Only</option>
+                            <option value="not_collected">Not Collected</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Patient Type</label>
+                        <select class="form-select" id="excelPatientType">
+                            <option value="">All Types</option>
+                            <option value="normal">Normal</option>
+                            <option value="packages">Packages</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Search by Patient ID/Name</label>
+                        <input type="text" class="form-control" id="excelSearch"
+                            placeholder="Enter patient ID, name, or mobile...">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Branch</label>
+                        <select class="form-select" id="excelBranch">
+                            <option value="">All Branches</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Tests Status</label>
+                        <select class="form-select" id="excelTestStatus2">
+                            <option value="">All Test Statuses</option>
+                            <option value="registered">Registered Only</option>
+                            <option value="Collected.html">Collected Only</option>
+                            <option value="not_collected">Not Collected</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 d-flex justify-content-between align-items-center">
+                        <button class="btn btn-outline-secondary" onclick="clearExcelFilters()">
+                            <i class="fas fa-redo me-2"></i> Clear Filters
+                        </button>
+                        <button class="btn btn-primary" onclick="loadExcelOrders()">
+                            <i class="fas fa-search me-2"></i> Search Orders
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Orders Table Preview -->
+    <div class="row mb-4 fade-in">
+        <div class="col-md-12">
+            <div class="section-title">
+                <i class="fas fa-list-ol me-2"></i>
+                Filtered Orders
+                <span class="badge bg-primary ms-2" id="excelFilteredOrdersCount">0</span>
+            </div>
+            <div class="bulk-patients-table" style="max-height: 400px;">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Patient Name</th>
+                            <th>Patient ID</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Tests</th>
+                            <th>Total Amount</th>
+                            <th>Total Paid</th>
+                            <th>Total Discount</th>
+                            <th>Total Remaining</th>
+                        </tr>
+                    </thead>
+                    <tbody id="excelOrdersTable">
+                        <tr>
+                            <td colspan="10" class="text-center py-4">
+                                <div class="text-muted">
+                                    <i class="fas fa-search fa-2x mb-3"></i><br>
+                                    Use the filters above to search for orders
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Action Buttons -->
+    <div class="row mb-4 fade-in">
+        <div class="col-md-12 text-end">
+            <button class="btn btn-success me-2" id="bulkExcelDataBtn" onclick="exportExcelOrdersData()" disabled>
+                <i class="fas fa-file-excel me-2"></i> Bulk Orders Excel Data
+            </button>
+            <button class="btn btn-info" id="bulkExcelResultsBtn" onclick="exportExcelOrdersResults()" disabled>
+                <i class="fas fa-file-excel me-2"></i> Bulk Orders Excel Results
+            </button>
+        </div>
+    </div>
+</div>
+<!-- ...existing code... -->
+        </div>
+<!-- ...existing code... -->
+<div id="bulkPdfSection" class="main-content" style="display: none;">
+    <h4 class="section-title">
+        <i class="fas fa-file-pdf me-2"></i>
+        Bulk Orders PDF Sheet & Results
+    </h4>
+    <!-- Filter Controls (same as Excel) -->
+    <div class="row mb-4 fade-in">
+        <div class="col-md-12">
+            <div class="info-card">
+                <h6 class="card-title mb-3">
+                    <i class="fas fa-filter me-2"></i>
+                    Filter Orders for PDF Export
+                </h6>
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Date From</label>
+                        <input type="date" class="form-control" id="pdfDateFrom">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Date To</label>
+                        <input type="date" class="form-control" id="pdfDateTo">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Time From</label>
+                        <input type="time" class="form-control" id="pdfTimeFrom">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Time To</label>
+                        <input type="time" class="form-control" id="pdfTimeTo">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Department</label>
+                        <select class="form-select" id="pdfDepartment">
+                            <option value="">All Departments</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Tests Status</label>
+                        <select class="form-select" id="pdfTestStatus">
+                            <option value="">All Test Statuses</option>
+                            <option value="registered">Registered Only</option>
+                            <option value="Collected.html">Collected Only</option>
+                            <option value="not_collected">Not Collected</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Patient Type</label>
+                        <select class="form-select" id="pdfPatientType">
+                            <option value="">All Types</option>
+                            <option value="normal">Normal</option>
+                            <option value="packages">Packages</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Search by Patient ID/Name</label>
+                        <input type="text" class="form-control" id="pdfSearch"
+                            placeholder="Enter patient ID, name, or mobile...">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Branch</label>
+                        <select class="form-select" id="pdfBranch">
+                            <option value="">All Branches</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Tests Status</label>
+                        <select class="form-select" id="pdfTestStatus2">
+                            <option value="">All Test Statuses</option>
+                            <option value="registered">Registered Only</option>
+                            <option value="Collected.html">Collected Only</option>
+                            <option value="not_collected">Not Collected</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 d-flex justify-content-between align-items-center">
+                        <button class="btn btn-outline-secondary" onclick="clearPdfFilters()">
+                            <i class="fas fa-redo me-2"></i> Clear Filters
+                        </button>
+                        <button class="btn btn-primary" onclick="loadPdfOrders()">
+                            <i class="fas fa-search me-2"></i> Search Orders
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Orders Table Preview -->
+    <div class="row mb-4 fade-in">
+        <div class="col-md-12">
+            <div class="section-title">
+                <i class="fas fa-list-ol me-2"></i>
+                Filtered Orders
+                <span class="badge bg-primary ms-2" id="pdfFilteredOrdersCount">0</span>
+            </div>
+            <div class="bulk-patients-table" style="max-height: 400px;">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Patient Name</th>
+                            <th>Patient ID</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Tests</th>
+                            <th>Total Amount</th>
+                            <th>Total Paid</th>
+                            <th>Total Discount</th>
+                            <th>Total Remaining</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pdfOrdersTable">
+                        <tr>
+                            <td colspan="10" class="text-center py-4">
+                                <div class="text-muted">
+                                    <i class="fas fa-search fa-2x mb-3"></i><br>
+                                    Use the filters above to search for orders
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Action Buttons -->
+    <div class="row mb-4 fade-in">
+        <div class="col-md-12 text-end">
+            <button class="btn btn-danger me-2" id="bulkPdfDataBtn" onclick="exportPdfOrdersData()" disabled>
+                <i class="fas fa-file-pdf me-2"></i> Bulk Orders PDF Data
+            </button>
+            <button class="btn btn-warning" id="bulkPdfResultsBtn" onclick="exportPdfOrdersResults()" disabled>
+                <i class="fas fa-file-pdf me-2"></i> Bulk Orders PDF Results
+            </button>
+        </div>
+    </div>
+</div>
+<!-- ...existing code... -->
+        <div id="bulkMoneySection" class="main-content" style="display: none;">
+            <!-- Bulk Money section -->
+        </div>
+    </div>
+
+
+
+    <!-- Models -->
+    <div class="modal fade" id="recollectReasonModal" tabindex="-1" aria-labelledby="recollectReasonModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="recollectReasonForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="recollectReasonModalLabel">Reason for Recollecting Sample</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="recollectReasonSelect" class="form-label">Select Reason</label>
+                        <select class="form-select" id="recollectReasonSelect" required>
+                            <option value="" disabled selected>Select reason...</option>
+                            <option value="Wrong Sample Type">Wrong Sample Type</option>
+                            <option value="Miss coding">Miss coding</option>
+                            <option value="Doctor Cannot sample collecting">Doctor Cannot sample collecting</option>
+                            <option value="Patient not fasting">Patient not fasting</option>
+                            <option value="Patient want only register">Patient want only register</option>
+                            <option value="Collected by mistake">Collected by mistake</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <div id="otherReasonDiv" style="display:none;" class="mt-2">
+                            <input type="text" class="form-control" id="otherReasonInput"
+                                placeholder="Type other reason...">
+                        </div>
+                    </div>
+
+                    <div id="recollectProgress" class="mb-2 text-primary"
+                        style="display:none;font-weight:bold; margin-left: 10px;"></div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save Reason & Recollect</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Firebase Config -->
+    <script src="../firebase_config.js"></script>
+
+    <!-- Import required scripts -->
+    <script>
+        // Define global variables
+        let bulkAllTests = [];
+        let bulkAllContracts = [];
+        let bulkAllServices = [];
+        let bulkSelectedTests = [];
+        let bulkSelectedServices = [];
+        let bulkPatientsData = [];
+        let bulkOrderIds = [];
+        let bulkIsSaving = false;
+        let bulkSaveCancelled = false;
+        let currentUserBranch = null;
+
+        let currentUserEmail = null;
+        let employeeBranchCode = null;
+
+    </script>
+
+    <!-- Import required functions from existing files -->
+    <script src="../patients/patient_request_features/new_patient.js"></script>
+    <script src="../patients/patient_request_features/orders_document_firstore_managment.js"></script>
+    <script src="bulkBarcodeSection.js"></script>
+    <script src="bulkRecordResults.js"></script>
+    <script src="bulkPrintSection.js"></script>
+    <script src="bulkExcelSection.js"></script>
+    <script src="bulkPdfSection.js"></script>
+    <!-- Main Bulk Entry Script -->
+    <script>
+
+
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set initial font size
+            document.body.style.fontSize = '14px';
+
+            // Check authentication
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    currentUserEmail = user.email;
+                    fetchDoctorProfile(user.email);
+                    loadBulkContracts();
+                    loadBulkTests();
+                    loadBulkServices();
+                    loadReferredDoctors();
+                    setupEventListeners();
+                    refreshPatientIds();
+                    refreshOrderIds();
+                } else {
+                    window.location.href = '../Login.html';
+                }
+            });
+
+            // Setup number of patients change listener
+            document.getElementById('numberOfPatients').addEventListener('input', function () {
+                updatePatientIdRange();
+                updateOrderIdRange();
+                generateManualInputTable();
+                calculateBulkTotals();
+            });
+        });
+
+        function fetchDoctorProfile(email) {
+            db.collection('employees').doc(email).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        document.getElementById('userFullName').textContent = `Dr. ${doc.data().fullName || 'User'}`;
+                        // Save employee_branchCode globally
+                        employeeBranchCode = doc.data().employee_branchCode || null;
+
+                        currentUserBranch = doc.data().branch || '';
+
+
+                    }
+                });
+        }
+
+        function showBulkSection(section) {
+            // Hide all sections first
+            document.getElementById('bulkOrdersSection').style.display = 'none';
+            document.getElementById('bulkPrintSection').style.display = 'none';
+            document.getElementById('bulkRecordResultsSection').style.display = 'none';
+
+            document.getElementById('bulkBarcodeSection').style.display = 'none';
+            document.getElementById('bulkExcelSection').style.display = 'none';
+            document.getElementById('bulkPdfSection').style.display = 'none';
+            document.getElementById('bulkMoneySection').style.display = 'none';
+
+            // Show selected section
+            document.getElementById(`bulk${section.charAt(0).toUpperCase() + section.slice(1)}Section`).style.display = 'block';
+        }
+
+        async function refreshPatientIds() {
+            try {
+                const counterRef = db.collection('counters').doc('patient_id');
+                const counterDoc = await counterRef.get();
+                let nextNumber = 1001;
+                const year = new Date().getFullYear();
+
+                if (counterDoc.exists && counterDoc.data().last_id) {
+                    nextNumber = parseInt(counterDoc.data().last_id, 10);
+                }
+
+                const fromPatientId = `DMS-${year}-${nextNumber}`;
+                document.getElementById('fromPatientId').value = fromPatientId;
+
+                updatePatientIdRange();
+            } catch (error) {
+                console.error('Error refreshing patient IDs:', error);
+            }
+        }
+
+        function updatePatientIdRange() {
+            const fromPatientId = document.getElementById('fromPatientId').value;
+            const numberOfPatients = parseInt(document.getElementById('numberOfPatients').value) || 0;
+
+            if (fromPatientId && numberOfPatients > 0) {
+                // Extract number from patient ID
+                const match = fromPatientId.match(/DMS-\d+-(\d+)/);
+                if (match) {
+                    const startNumber = parseInt(match[1]);
+                    const endNumber = startNumber + numberOfPatients - 1;
+                    const year = new Date().getFullYear();
+                    const toPatientId = `DMS-${year}-${endNumber}`;
+                    document.getElementById('toPatientId').value = toPatientId;
+                }
+            }
+
+            // Update summary
+            document.getElementById('summaryPatientsCount').textContent = numberOfPatients;
+        }
+
+        async function refreshOrderIds() {
+            try {
+                const currentYear = new Date().getFullYear();
+                const orderIdPrefix = `order_dms${currentYear}-`;
+                const counterRef = db.collection('counters').doc('order_ids');
+                const counterDoc = await counterRef.get();
+                let nextNumber = 1001;
+
+                if (counterDoc.exists) {
+                    const data = counterDoc.data() || {};
+                    let lastNumber = 1000;
+                    if (typeof data.last_order_id === 'number' && !isNaN(data.last_order_id)) {
+                        lastNumber = data.last_order_id;
+                    } else if (typeof data.last_order_id === 'string' && !isNaN(parseInt(data.last_order_id, 10))) {
+                        lastNumber = parseInt(data.last_order_id, 10);
+                    } else if (typeof data.last_number === 'number' && !isNaN(data.last_number)) {
+                        lastNumber = data.last_number;
+                    } else if (typeof data.last_number === 'string' && !isNaN(parseInt(data.last_number, 10))) {
+                        lastNumber = parseInt(data.last_number, 10);
+                    }
+                    nextNumber = lastNumber + 1;
+                }
+
+                const fromOrderId = `${orderIdPrefix}${nextNumber}`;
+                document.getElementById('fromOrderId').value = fromOrderId;
+
+                updateOrderIdRange();
+            } catch (error) {
+                console.error('Error refreshing order IDs:', error);
+            }
+        }
+
+        function updateOrderIdRange() {
+            const fromOrderId = document.getElementById('fromOrderId').value;
+            const numberOfPatients = parseInt(document.getElementById('numberOfPatients').value) || 0;
+
+            if (fromOrderId && numberOfPatients > 0) {
+                // Extract number from order ID
+                const match = fromOrderId.match(/order_dms\d+-(\d+)/);
+                if (match) {
+                    const startNumber = parseInt(match[1]);
+                    const endNumber = startNumber + numberOfPatients - 1;
+                    const year = new Date().getFullYear();
+                    const toOrderId = `order_dms${year}-${endNumber}`;
+                    document.getElementById('toOrderId').value = toOrderId;
+                }
+            }
+
+            // Update summary
+            document.getElementById('summaryOrdersCount').textContent = numberOfPatients;
+        }
+
+        function togglePatientDetailsMethod() {
+            const method = document.getElementById('patientDetailsMethod').value;
+
+            // Hide both sections first
+            document.getElementById('manualInputSection').style.display = 'none';
+            document.getElementById('excelUploadSection').style.display = 'none';
+
+            // Show selected section
+            if (method === 'manual') {
+                document.getElementById('manualInputSection').style.display = 'block';
+                generateManualInputTable();
+            } else if (method === 'excel') {
+                document.getElementById('excelUploadSection').style.display = 'block';
+            }
+        }
+
+        function generateManualInputTable() {
+            const numberOfPatients = parseInt(document.getElementById('numberOfPatients').value) || 0;
+            const fromPatientId = document.getElementById('fromPatientId').value;
+            const fromOrderId = document.getElementById('fromOrderId').value;
+
+            if (!fromPatientId || !fromOrderId || numberOfPatients <= 0) {
+                return;
+            }
+
+            const tableBody = document.getElementById('manualPatientsTable');
+            tableBody.innerHTML = '';
+
+            // Extract base numbers
+            const patientIdMatch = fromPatientId.match(/DMS-\d+-(\d+)/);
+            const orderIdMatch = fromOrderId.match(/order_dms\d+-(\d+)/);
+
+            if (!patientIdMatch || !orderIdMatch) return;
+
+            const patientStartNumber = parseInt(patientIdMatch[1]);
+            const orderStartNumber = parseInt(orderIdMatch[1]);
+            const year = new Date().getFullYear();
+
+            // Generate sample names
+            const sampleNames = [
+                ['Ahmed', 'Mohamed', 'Ali'],
+                ['Mohamed', 'Mahmoud', 'Hassan'],
+                ['Ali', 'Omar', 'Khalid'],
+                ['Fatima', 'Aisha', 'Zainab'],
+                ['Omar', 'Abdullah', 'Ibrahim'],
+                ['Hassan', 'Hussein', 'Youssef'],
+                ['Zainab', 'Mariam', 'Nour'],
+                ['Khalid', 'Saad', 'Fahad'],
+                ['Nour', 'Rana', 'Lama'],
+                ['Ibrahim', 'Ismail', 'Yaqub']
+            ];
+
+            // Sample mobile numbers
+            const sampleMobiles = [
+                '01012345678', '01123456789', '01234567890',
+                '01512345678', '01098765432', '01187654321',
+                '01276543210', '01598765432', '01011223344', '01122334455'
+            ];
+
+            for (let i = 0; i < numberOfPatients; i++) {
+                const patientId = `DMS-${year}-${patientStartNumber + i}`;
+                const orderId = `order_dms${year}-${orderStartNumber + i}`;
+
+                const nameIndex = i % sampleNames.length;
+                const mobileIndex = i % sampleMobiles.length;
+                const age = Math.floor(Math.random() * 50) + 20; // Age between 20-70
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${patientId}</td>
+                    <td>${orderId}</td>
+                    <td><input type="text" class="form-control form-control-sm" 
+                          data-field="firstName" data-index="${i}" value="${sampleNames[nameIndex][0]}" 
+                          onchange="updatePatientData(${i})"></td>
+                    <td><input type="text" class="form-control form-control-sm" 
+                          data-field="secondName" data-index="${i}" value="${sampleNames[nameIndex][1]}" 
+                          onchange="updatePatientData(${i})"></td>
+                    <td><input type="text" class="form-control form-control-sm" 
+                          data-field="thirdName" data-index="${i}" value="${sampleNames[nameIndex][2]}" 
+                          onchange="updatePatientData(${i})"></td>
+                    <td><input type="number" class="form-control form-control-sm" 
+                          data-field="ageYears" data-index="${i}" value="${age}" min="0" max="150"
+                          onchange="updatePatientData(${i})"></td>
+                    <td><input type="tel" class="form-control form-control-sm" 
+                          data-field="mobile" data-index="${i}" value="${sampleMobiles[mobileIndex]}" 
+                          onchange="updatePatientData(${i})"></td>
+                `;
+                tableBody.appendChild(row);
+
+                // Initialize patient data
+                bulkPatientsData[i] = {
+                    patient_id: patientId,
+                    order_id: orderId,
+                    firstName: sampleNames[nameIndex][0],
+                    secondName: sampleNames[nameIndex][1],
+                    thirdName: sampleNames[nameIndex][2],
+                    ageYears: age,
+                    mobile: sampleMobiles[mobileIndex]
+                };
+            }
+        }
+
+        function generateSampleNames() {
+            const tableBody = document.getElementById('manualPatientsTable');
+            const rows = tableBody.querySelectorAll('tr');
+
+            const sampleNames = [
+                ['Ahmed', 'Mohamed', 'Ali'],
+                ['Mohamed', 'Mahmoud', 'Hassan'],
+                ['Ali', 'Omar', 'Khalid'],
+                ['Fatima', 'Aisha', 'Zainab'],
+                ['Omar', 'Abdullah', 'Ibrahim'],
+                ['Hassan', 'Hussein', 'Youssef'],
+                ['Zainab', 'Mariam', 'Nour'],
+                ['Khalid', 'Saad', 'Fahad'],
+                ['Nour', 'Rana', 'Lama'],
+                ['Ibrahim', 'Ismail', 'Yaqub']
+            ];
+
+            const sampleMobiles = [
+                '01012345678', '01123456789', '01234567890',
+                '01512345678', '01098765432', '01187654321',
+                '01276543210', '01598765432', '01011223344', '01122334455'
+            ];
+
+            rows.forEach((row, index) => {
+                const nameIndex = index % sampleNames.length;
+                const mobileIndex = index % sampleMobiles.length;
+                const age = Math.floor(Math.random() * 50) + 20;
+
+                const inputs = row.querySelectorAll('input');
+                inputs[0].value = sampleNames[nameIndex][0]; // firstName
+                inputs[1].value = sampleNames[nameIndex][1]; // secondName
+                inputs[2].value = sampleNames[nameIndex][2]; // thirdName
+                inputs[3].value = age; // ageYears
+                inputs[4].value = sampleMobiles[mobileIndex]; // mobile
+
+                // Update bulkPatientsData
+                bulkPatientsData[index] = {
+                    ...bulkPatientsData[index],
+                    firstName: sampleNames[nameIndex][0],
+                    secondName: sampleNames[nameIndex][1],
+                    thirdName: sampleNames[nameIndex][2],
+                    ageYears: age,
+                    mobile: sampleMobiles[mobileIndex]
+                };
+            });
+
+            alert('Sample names generated successfully!');
+        }
+
+        function updatePatientData(index) {
+            const row = document.getElementById('manualPatientsTable').querySelectorAll('tr')[index];
+            if (!row) return;
+
+            const inputs = row.querySelectorAll('input');
+
+            bulkPatientsData[index] = {
+                ...bulkPatientsData[index],
+                firstName: inputs[2].value.trim(), // firstName input is 3rd (0-based index 2)
+                secondName: inputs[3].value.trim(),
+                thirdName: inputs[4].value.trim(),
+                ageYears: parseInt(inputs[5].value) || 0,
+                mobile: inputs[6].value.trim()
+            };
+        }
+
+        async function handleExcelUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Show loading
+            document.getElementById('excelPreview').innerHTML = `
+                <div class="spinner-container">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            `;
+
+            // Read Excel file
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+                    processExcelData(jsonData);
+                } catch (error) {
+                    document.getElementById('excelPreview').innerHTML = `
+                        <div class="alert alert-danger">
+                            Error reading Excel file: ${error.message}
+                        </div>
+                    `;
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function processExcelData(data) {
+            const numberOfPatients = parseInt(document.getElementById('numberOfPatients').value) || 0;
+            const fromPatientId = document.getElementById('fromPatientId').value;
+            const fromOrderId = document.getElementById('fromOrderId').value;
+
+            if (!fromPatientId || !fromOrderId) {
+                alert('Please generate patient and order IDs first');
+                return;
+            }
+
+            // Extract base numbers
+            const patientIdMatch = fromPatientId.match(/DMS-\d+-(\d+)/);
+            const orderIdMatch = fromOrderId.match(/order_dms\d+-(\d+)/);
+
+            if (!patientIdMatch || !orderIdMatch) {
+                alert('Invalid patient or order ID format');
+                return;
+            }
+
+            const patientStartNumber = parseInt(patientIdMatch[1]);
+            const orderStartNumber = parseInt(orderIdMatch[1]);
+            const year = new Date().getFullYear();
+
+            // Clear existing data
+            bulkPatientsData = [];
+
+            // Process each row
+            let html = '<table class="table table-bordered table-sm"><thead><tr>';
+            html += '<th>Patient ID</th><th>Order ID</th><th>Full Name</th><th>Age</th><th>Mobile</th><th>Split Names</th></tr></thead><tbody>';
+
+            for (let i = 0; i < Math.min(numberOfPatients, data.length); i++) {
+                const row = data[i];
+                const fullName = row.fullName || row['Full Name'] || row.name || '';
+                const ageYears = parseInt(row.age_years || row.age || row.Age || 0);
+                const mobile = row.mobile || row.Mobile || row.phone || '';
+
+                // Split Arabic name
+                const nameParts = fullName.trim().split(/\s+/);
+                let firstName = '', secondName = '', thirdName = '';
+
+                if (nameParts.length >= 1) firstName = nameParts[0];
+                if (nameParts.length >= 2) secondName = nameParts[1];
+                if (nameParts.length >= 3) thirdName = nameParts.slice(2).join(' ');
+
+                const patientId = `DMS-${year}-${patientStartNumber + i}`;
+                const orderId = `order_dms${year}-${orderStartNumber + i}`;
+
+                bulkPatientsData[i] = {
+                    patient_id: patientId,
+                    order_id: orderId,
+                    firstName: firstName,
+                    secondName: secondName,
+                    thirdName: thirdName,
+                    ageYears: ageYears,
+                    mobile: mobile
+                };
+
+                html += `<tr>
+                    <td>${patientId}</td>
+                    <td>${orderId}</td>
+                    <td>${fullName}</td>
+                    <td>${ageYears}</td>
+                    <td>${mobile}</td>
+                    <td>${firstName} | ${secondName} | ${thirdName}</td>
+                </tr>`;
+            }
+
+            html += '</tbody></table>';
+
+            document.getElementById('excelPreview').innerHTML = html;
+
+            if (data.length < numberOfPatients) {
+                alert(`Note: Excel file has only ${data.length} rows, but ${numberOfPatients} patients requested.`);
+            }
+        }
+
+        function loadBulkContracts() {
+            db.collection('contracts').get()
+                .then((querySnapshot) => {
+                    bulkAllContracts = [];
+                    const select = document.getElementById('bulkPatientType');
+
+                    // Add existing options
+                    const normalOption = select.options[0];
+                    const packagesOption = select.options[1];
+
+                    // Clear and re-add
+                    select.innerHTML = '';
+                    select.appendChild(normalOption);
+                    select.appendChild(packagesOption);
+
+                    querySnapshot.forEach((doc) => {
+                        const contract = doc.data();
+                        contract.id = doc.id;
+                        bulkAllContracts.push(contract);
+
+                        const option = document.createElement('option');
+                        option.value = contract.id;
+                        option.textContent = `Contract: ${contract.contract_name}`;
+                        select.appendChild(option);
+                    });
+                });
+        }
+
+        function loadBulkTests() {
+            db.collection('tests_list').doc('Tests.html').get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const testsObj = doc.data() || {};
+                        bulkAllTests = Object.entries(testsObj).map(([id, test]) => {
+                            test.id = id;
+                            return test;
+                        });
+
+                        displayBulkTestsTable();
+                        populateBulkGroupDropdown();
+                    }
+                });
+        }
+
+        function displayBulkTestsTable() {
+            const container = document.getElementById('bulkAllTestsTableContainer');
+            if (!container) return;
+
+            // Sort tests by test_id
+            const sortedTests = [...bulkAllTests].sort((a, b) => {
+                const idA = parseInt(a.test_id, 10);
+                const idB = parseInt(b.test_id, 10);
+                if (!isNaN(idA) && !isNaN(idB)) {
+                    return idA - idB;
+                }
+                return (a.test_id || '').localeCompare(b.test_id || '');
+            });
+
+            let html = '<table class="table table-bordered table-sm mb-0">';
+            html += '<thead><tr><th>ID</th><th>Name</th><th>Abbr</th><th>Sample Type</th><th>Group</th><th>Price</th><th>Action</th></tr></thead><tbody>';
+
+            sortedTests.forEach((test) => {
+                html += `<tr data-test-id="${test.test_id}" data-doc-id="${test.id}">
+                    <td>${test.test_id || ''}</td>
+                    <td>${test.test_name || ''}</td>
+                    <td>${test.abbreviation || ''}</td>
+                    <td>${test.sample_type || ''}</td>
+                    <td>${test.group || ''}</td>
+                    <td>${test.price || '0.00'} EGP</td>
+                    <td>
+                        <button class="btn btn-sm btn-success add-bulk-test" title="Add Test">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+
+            // Update count
+            document.getElementById('bulkAllTestsCount').textContent = bulkAllTests.length;
+
+            // Add event listeners
+            container.querySelectorAll('.add-bulk-test').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const tr = btn.closest('tr');
+                    const testId = tr.getAttribute('data-test-id');
+                    const docId = tr.getAttribute('data-doc-id');
+                    const test = bulkAllTests.find(t => t.test_id == testId || t.id == docId);
+                    if (!test) return;
+
+                    addBulkTest(test);
+                });
+            });
+        }
+
+        function populateBulkGroupDropdown() {
+            const groupSelect = document.getElementById('bulkQuickAddByGroup');
+            if (!groupSelect || !Array.isArray(bulkAllTests)) return;
+
+            const groups = [...new Set(bulkAllTests.map(t => t.group).filter(g => g && g.trim() !== ''))].sort();
+            groupSelect.innerHTML = '<option value="">Select Group</option>';
+            groups.forEach(group => {
+                const opt = document.createElement('option');
+                opt.value = group;
+                opt.textContent = group;
+                groupSelect.appendChild(opt);
+            });
+
+            // Add event listener
+            groupSelect.addEventListener('change', function () {
+                const selectedGroup = this.value;
+                if (!selectedGroup) return;
+
+                const groupTests = bulkAllTests.filter(t =>
+                    (t.group || '').toLowerCase() === selectedGroup.toLowerCase() &&
+                    !bulkSelectedTests.some(sel => sel.id === t.id)
+                );
+
+                groupTests.forEach(test => {
+                    addBulkTest(test);
+                });
+
+                this.value = '';
+            });
+        }
+
+        function addBulkTest(test) {
+            if (bulkSelectedTests.some(t => t.id === test.id)) {
+                alert('This test is already added!');
+                return;
+            }
+
+            bulkSelectedTests.push({
+                id: test.id,
+                test_id: test.test_id,
+                test_name: test.test_name,
+                sample_type: test.sample_type,
+                price: test.price || 0,
+                questions: test.questions || []
+            });
+
+            displayBulkSelectedTests();
+            calculateBulkTotals();
+        }
+
+        function displayBulkSelectedTests() {
+            const container = document.getElementById('bulkSelectedTestsList');
+            if (!container) return;
+
+            if (bulkSelectedTests.length === 0) {
+                container.innerHTML = '<div class="alert alert-info">No tests selected yet</div>';
+                document.getElementById('bulkSelectedTestsCount').textContent = '0';
+                return;
+            }
+
+            let html = '';
+            bulkSelectedTests.forEach((test, index) => {
+                html += `
+                <div class="test-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>${test.test_name}</strong>
+                            <div class="small mt-1">${test.sample_type} - ${test.test_id}</div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <input type="number" min="0" step="0.01" class="form-control form-control-sm me-2" 
+                                style="width: 100px;" value="${test.price.toFixed(2)}" 
+                                onchange="updateBulkTestPrice(${index}, this.value)">
+                            <span class="me-2">EGP</span>
+                            <button class="btn btn-sm btn-danger" onclick="removeBulkTest(${index})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+            });
+
+            container.innerHTML = html;
+            document.getElementById('bulkSelectedTestsCount').textContent = bulkSelectedTests.length;
+        }
+
+        function updateBulkTestPrice(index, newPrice) {
+            const price = parseFloat(newPrice) || 0;
+            bulkSelectedTests[index].price = price;
+            calculateBulkTotals();
+        }
+
+        function removeBulkTest(index) {
+            bulkSelectedTests.splice(index, 1);
+            displayBulkSelectedTests();
+            calculateBulkTotals();
+        }
+
+        function loadBulkServices() {
+            // Load services from all branches
+            db.collection('branches').get().then(async (branchesSnap) => {
+                bulkAllServices = [];
+                for (const branchDoc of branchesSnap.docs) {
+                    const branchName = branchDoc.id;
+                    const servicesSnap = await db.collection('branches').doc(branchName).collection('services').get();
+                    servicesSnap.forEach(serviceDoc => {
+                        const service = serviceDoc.data();
+                        service.branch = branchName;
+                        bulkAllServices.push(service);
+                    });
+                }
+            });
+        }
+
+        function loadReferredDoctors() {
+            db.collection('refered_by').orderBy('dr_name').get().then(snapshot => {
+                const select = document.getElementById('bulkReferredBySelect');
+                select.innerHTML = '<option value="">Select Doctor</option>';
+
+                snapshot.forEach(doc => {
+                    const drName = doc.id;
+                    const option = document.createElement('option');
+                    option.value = drName;
+                    option.textContent = drName;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        function calculateBulkTotals() {
+            const numberOfPatients = parseInt(document.getElementById('numberOfPatients').value) || 0;
+
+            // Calculate test cost per patient
+            let testCostPerPatient = 0;
+            bulkSelectedTests.forEach(test => {
+                testCostPerPatient += parseFloat(test.price) || 0;
+            });
+
+            // Calculate service cost per patient
+            let serviceCostPerPatient = 0;
+            bulkSelectedServices.forEach(service => {
+                serviceCostPerPatient += parseFloat(service.cost) || 0;
+            });
+
+            // Calculate total per patient
+            const totalPerPatient = testCostPerPatient + serviceCostPerPatient;
+
+            // Calculate grand total
+            const grandTotal = totalPerPatient * numberOfPatients;
+
+            // Update UI
+            document.getElementById('bulkTestCostPerPatient').value = testCostPerPatient.toFixed(2);
+            document.getElementById('bulkServiceCostPerPatient').value = serviceCostPerPatient.toFixed(2);
+            document.getElementById('bulkTotalPerPatient').value = totalPerPatient.toFixed(2);
+            document.getElementById('bulkGrandTotal').value = grandTotal.toFixed(2);
+
+            // Update payment amount
+            const paymentAmountPerPatient = document.getElementById('bulkPaymentAmountPerPatient').value;
+            const totalPaymentAmount = parseFloat(paymentAmountPerPatient || 0) * numberOfPatients;
+            document.getElementById('bulkTotalPaymentAmount').value = totalPaymentAmount.toFixed(2);
+
+            // Update summary
+            document.getElementById('summaryTestsCost').textContent = `${(testCostPerPatient * numberOfPatients).toFixed(2)} EGP`;
+            document.getElementById('summaryServicesCost').textContent = `${(serviceCostPerPatient * numberOfPatients).toFixed(2)} EGP`;
+            document.getElementById('summaryGrandTotal').textContent = `${grandTotal.toFixed(2)} EGP`;
+
+            // Validate if form is ready
+            validateBulkForm();
+        }
+
+        function validateBulkForm() {
+            const numberOfPatients = parseInt(document.getElementById('numberOfPatients').value) || 0;
+            const method = document.getElementById('patientDetailsMethod').value;
+            const patientType = document.getElementById('bulkPatientType').value;
+            const hasTests = bulkSelectedTests.length > 0;
+            const hasPatientData = bulkPatientsData.length >= numberOfPatients;
+
+            let isValid = true;
+            let errors = [];
+
+            if (numberOfPatients <= 0) {
+                isValid = false;
+                errors.push('Number of patients must be greater than 0');
+            }
+
+            if (!method) {
+                isValid = false;
+                errors.push('Please select a method to add patient details');
+            }
+
+            if (method === 'manual' && !hasPatientData) {
+                isValid = false;
+                errors.push('Please fill patient details in the table');
+            }
+
+            if (method === 'excel' && bulkPatientsData.length < numberOfPatients) {
+                isValid = false;
+                errors.push(`Excel file has only ${bulkPatientsData.length} patients, but ${numberOfPatients} requested`);
+            }
+
+            if (!patientType) {
+                isValid = false;
+                errors.push('Please select patient type');
+            }
+
+            if (!hasTests) {
+                isValid = false;
+                errors.push('Please add at least one test');
+            }
+
+            const saveBtn = document.getElementById('startBulkSaveBtn');
+            if (isValid) {
+                saveBtn.disabled = false;
+                saveBtn.classList.remove('btn-secondary');
+                saveBtn.classList.add('btn-success');
+
+                // Show success message
+                if (errors.length === 0) {
+                    showToast('success', 'Form is valid and ready for bulk save!');
+                }
+            } else {
+                saveBtn.disabled = true;
+                saveBtn.classList.remove('btn-success');
+                saveBtn.classList.add('btn-secondary');
+
+                // Show errors
+                if (errors.length > 0) {
+                    showToast('error', errors.join('<br>'));
+                }
+            }
+
+            return isValid;
+        }
+        // Fixed counter increment
+        async function incrementOrderIdCounter(orderId) {
+            try {
+                const counterRef = db.collection('counters').doc('order_ids');
+                // Extract the number from orderId (e.g., "order_dms2025-1002" -> 1002)
+                const match = orderId.match(/order_dms\d+-(\d+)$/);
+                if (match && match[1]) {
+                    const lastNumber = parseInt(match[1], 10);
+                    await counterRef.set({
+                        last_order_id: lastNumber,
+
+                    }, { merge: true });
+                    console.log("Counter updated with last_order_id:", lastNumber);
+                }
+            } catch (error) {
+                console.error("Error in incrementOrderIdCounter:", error);
+            }
+        }
+
+
+        async function startBulkSave() {
+            if (!validateBulkForm() || bulkIsSaving) {
+                return;
+            }
+
+            bulkIsSaving = true;
+            bulkSaveCancelled = false;
+
+            // Show progress section
+            document.getElementById('progressSection').style.display = 'block';
+            document.getElementById('startBulkSaveBtn').disabled = true;
+
+            const numberOfPatients = parseInt(document.getElementById('numberOfPatients').value) || 0;
+            let successCount = 0;
+            let failedCount = 0;
+
+            // Initialize progress
+            updateProgress(0, numberOfPatients, successCount, failedCount);
+
+            // Generate order IDs array
+            const fromOrderId = document.getElementById('fromOrderId').value;
+            const orderIdMatch = fromOrderId.match(/order_dms\d+-(\d+)/);
+            if (!orderIdMatch) {
+                alert('Invalid order ID format');
+                return;
+            }
+
+            const orderStartNumber = parseInt(orderIdMatch[1]);
+            const year = new Date().getFullYear();
+
+            // Prepare bulk order data
+            const bulkOrderData = {
+                patientType: document.getElementById('bulkPatientType').value,
+                discountType: document.getElementById('bulkDiscountType').value,
+                discountValue: document.getElementById('bulkDiscountValue').value,
+                referredBy: document.getElementById('bulkReferredBySelect').value,
+                paymentMethod: document.getElementById('bulkPaymentMethod').value,
+                tests: bulkSelectedTests,
+                services: bulkSelectedServices,
+                contractId: document.getElementById('bulkPatientContractId').value,
+                claimFormId: document.getElementById('bulkClaimFormId').value,
+                nestedTypeValue: document.getElementById('bulkNestedTypeValue').value
+            };
+
+            // Start saving patients and orders
+            for (let i = 0; i < numberOfPatients; i++) {
+                if (bulkSaveCancelled) {
+                    break;
+                }
+
+                try {
+                    // Get patient data
+                    const patientData = bulkPatientsData[i];
+                    if (!patientData) {
+                        failedCount++;
+                        logProgress(`Patient ${i + 1}: No data available`, 'error');
+                        continue;
+                    }
+
+                    // Update current patient/order display
+                    document.getElementById('currentPatientId').textContent = patientData.patient_id;
+                    document.getElementById('currentOrderId').textContent = patientData.order_id;
+                    document.getElementById('currentStatus').textContent = 'Processing...';
+                    document.getElementById('currentStatus').className = 'status-processing';
+
+                    // Save patient with part management (using existing function from new_patient.js)
+                    const patientDetails = {
+                        patient_id: patientData.patient_id,
+                        title: 'Mr.',
+                        firstName: patientData.firstName,
+                        secondName: patientData.secondName,
+                        thirdName: patientData.thirdName,
+                        gender: 'Male', // Default
+                        mobile: patientData.mobile,
+                        birth_date: '', // Will be calculated from age
+                        age_years: patientData.ageYears,
+                        age_months: 0,
+                        age_days: 0,
+                        branch: currentUserBranch,
+                        email: '',
+                        address: '',
+                        nationalId: '',
+                        bloodGroup: '',
+                        auto_password: generateAutoPasswordForRequest(patientData.mobile, patientData.patient_id),
+                        creation_profile_date: new Date().toISOString(),
+                        last_update_date: new Date().toISOString()
+                    };
+
+                    // Create patient data object
+                    const patientDataObj = {
+                        [patientData.patient_id]: {
+                            details: patientDetails,
+                            orders: []
+                        }
+                    };
+
+                    // Save patient using existing function
+                    await savePatientWithPartManagement(patientDataObj, false);
+
+                    // Prepare order data for this patient
+                    const orderDate = new Date();
+                    const orderData = {
+                        order_id: patientData.order_id,
+                        patient_id: patientData.patient_id,
+                        patient_name: `${patientDetails.title} ${patientData.firstName} ${patientData.secondName} ${patientData.thirdName}`,
+                        patient_type: bulkOrderData.patientType,
+                        patient_type_name: getPatientTypeName(bulkOrderData.patientType),
+                        tests: bulkOrderData.tests.map(test => ({
+                            test_id: test.test_id,
+                            test_name: test.test_name,
+                            sample_type: test.sample_type,
+                            price: test.price,
+                            department: test.department || '', // <-- Add this line
+                            status: 'registered',
+                            registeredTimestamp: new Date(),
+                            questions: test.questions || []
+                        })),
+                        total_amount: parseFloat(document.getElementById('bulkTotalPerPatient').value),
+                        total_discount: 0, // Calculate based on discount
+                        discount_type: bulkOrderData.discountType || null,
+                        discount_value: bulkOrderData.discountValue || null,
+                        total_paid: parseFloat(document.getElementById('bulkPaymentAmountPerPatient').value) || 0,
+                        payment_history: bulkOrderData.paymentMethod ? [{
+                            amount: parseFloat(document.getElementById('bulkPaymentAmountPerPatient').value) || 0,
+                            date: new Date(),
+                            processed_by: document.getElementById('userFullName').textContent,
+                            processed_by_email: currentUserEmail,
+                            payment_method: bulkOrderData.paymentMethod
+                        }] : [],
+                        status: 'Registered',
+                        ordered_by: document.getElementById('userFullName').textContent,
+                        ordered_by_email: currentUserEmail,
+                        order_date: orderDate,
+                        last_updated: orderDate,
+                        refered_by: bulkOrderData.referredBy || "",
+                        branch: currentUserBranch || '',
+                        branchCode: employeeBranchCode || '', // <-- Add this line
+                        department: "laboratory",
+                        patient_contract_id: bulkOrderData.contractId || null,
+                        claim_form_id: bulkOrderData.claimFormId || null,
+                        nested_type_value: bulkOrderData.nestedTypeValue || null,
+                        services: bulkOrderData.services
+                    };
+
+
+                    // Save order using existing function
+                    await saveOrderWithPartManagement(orderData, patientData.patient_id);
+
+                    // Increment counters
+                    await incrementPatientIdCounter(patientData.patient_id);
+                    await incrementOrderIdCounter(patientData.order_id);
+
+                    successCount++;
+                    logProgress(`Patient ${i + 1}: Saved successfully (${patientData.patient_id})`, 'success');
+
+                } catch (error) {
+                    failedCount++;
+                    logProgress(`Patient ${i + 1}: Error - ${error.message}`, 'error');
+                    console.error(`Error saving patient ${i + 1}:`, error);
+                }
+
+                // Update progress
+                updateProgress(i + 1, numberOfPatients, successCount, failedCount);
+
+                // Small delay to prevent overwhelming Firestore
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+
+            // Final update
+            bulkIsSaving = false;
+            document.getElementById('currentStatus').textContent = bulkSaveCancelled ? 'Cancelled' : 'Completed';
+            document.getElementById('currentStatus').className = bulkSaveCancelled ? 'status-error' : 'status-success';
+
+            // Show completion message
+            if (bulkSaveCancelled) {
+                showToast('warning', 'Bulk save was cancelled');
+            } else {
+                showToast('success', `Bulk save completed! Success: ${successCount}, Failed: ${failedCount}`);
+            }
+
+            // Re-enable save button
+            document.getElementById('startBulkSaveBtn').disabled = false;
+        }
+
+        function cancelBulkSave() {
+            bulkSaveCancelled = true;
+            logProgress('Bulk save cancelled by user', 'warning');
+        }
+
+        function updateProgress(current, total, success, failed) {
+            const percentage = total > 0 ? Math.round((current / total) * 100) : 0;
+
+            document.getElementById('progressCounter').textContent = `${current}/${total}`;
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+            document.getElementById('successCount').textContent = success;
+            document.getElementById('failedCount').textContent = failed;
+            document.getElementById('remainingCount').textContent = total - current;
+        }
+
+        function logProgress(message, type = 'info') {
+            const logContainer = document.getElementById('progressLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const colorClass = type === 'error' ? 'text-danger' : type === 'success' ? 'text-success' : 'text-info';
+
+            const logEntry = document.createElement('div');
+            logEntry.className = `small ${colorClass}`;
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function getPatientTypeName(patientType) {
+            if (patientType === 'normal') return 'Normal Patient';
+            if (patientType === 'packages') return 'DataLab Packages';
+
+            const contract = bulkAllContracts.find(c => c.id === patientType);
+            return contract ? `Contract: ${contract.contract_name}` : patientType;
+        }
+
+        function showToast(type, message) {
+            // Create toast container if it doesn't exist
+            let toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toastContainer';
+                toastContainer.style.position = 'fixed';
+                toastContainer.style.top = '20px';
+                toastContainer.style.right = '20px';
+                toastContainer.style.zIndex = '9999';
+                document.body.appendChild(toastContainer);
+            }
+
+            // Create toast
+            const toastId = 'toast-' + Date.now();
+            const bgColor = type === 'success' ? 'bg-success' : type === 'error' ? 'bg-danger' : 'bg-warning';
+            const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+
+            const toast = document.createElement('div');
+            toast.id = toastId;
+            toast.className = `toast ${bgColor} text-white border-0`;
+            toast.style.minWidth = '300px';
+            toast.style.marginBottom = '10px';
+
+            toast.innerHTML = `
+                <div class="toast-header ${bgColor} text-white border-0">
+                    <strong class="me-auto">
+                        <i class="fas ${icon} me-2"></i>
+                        ${type.charAt(0).toUpperCase() + type.slice(1)}
+                    </strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            `;
+
+            toastContainer.appendChild(toast);
+
+            // Initialize and show toast
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+
+            // Remove toast after it's hidden
+            toast.addEventListener('hidden.bs.toast', function () {
+                toast.remove();
+            });
+        }
+
+        function resetBulkForm() {
+            if (bulkIsSaving) {
+                if (!confirm('Bulk save is in progress. Are you sure you want to reset?')) {
+                    return;
+                }
+                cancelBulkSave();
+            }
+
+            // Reset form values
+            document.getElementById('numberOfPatients').value = '10';
+            document.getElementById('patientDetailsMethod').value = '';
+            document.getElementById('bulkPatientType').value = '';
+            document.getElementById('bulkDiscountType').value = '';
+            document.getElementById('bulkDiscountValue').value = '';
+            document.getElementById('bulkReferredBySelect').value = '';
+            document.getElementById('bulkNewReferredByInput').value = '';
+            document.getElementById('bulkPaymentMethod').value = 'cash';
+            document.getElementById('bulkPaymentAmountPerPatient').value = '';
+
+            // Clear data arrays
+            bulkPatientsData = [];
+            bulkSelectedTests = [];
+            bulkSelectedServices = [];
+
+            // Reset UI
+            document.getElementById('manualInputSection').style.display = 'none';
+            document.getElementById('excelUploadSection').style.display = 'none';
+            document.getElementById('excelPreview').innerHTML = '';
+            document.getElementById('manualPatientsTable').innerHTML = '';
+            document.getElementById('bulkSelectedTestsList').innerHTML = '<div class="alert alert-info">No tests selected yet</div>';
+            document.getElementById('bulkSelectedTestsCount').textContent = '0';
+            document.getElementById('progressSection').style.display = 'none';
+
+            // Refresh IDs
+            refreshPatientIds();
+            refreshOrderIds();
+
+            // Recalculate totals
+            calculateBulkTotals();
+
+            showToast('info', 'Form has been reset');
+        }
+
+        function setupEventListeners() {
+            // Test search
+            document.getElementById('bulkTestSearch').addEventListener('input', function () {
+                const query = this.value.trim().toLowerCase();
+                const container = document.getElementById('bulkAllTestsTableContainer');
+                if (!container) return;
+
+                const rows = container.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const testName = row.cells[1].textContent.toLowerCase();
+                    const display = testName.includes(query) ? '' : 'none';
+                    row.style.display = display;
+                });
+            });
+
+            // Quick add by ID
+            document.getElementById('bulkQuickAddTestId').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    const testId = this.value.trim();
+                    if (!testId) return;
+
+                    const test = bulkAllTests.find(t => t.test_id == testId);
+                    if (test) {
+                        addBulkTest(test);
+                        this.value = '';
+                    } else {
+                        this.classList.add('is-invalid');
+                        setTimeout(() => this.classList.remove('is-invalid'), 1000);
+                    }
+                }
+            });
+
+            // Quick add by abbreviation
+            document.getElementById('bulkQuickAddTestAbbr').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    const abbr = this.value.trim().toLowerCase();
+                    if (!abbr) return;
+
+                    const test = bulkAllTests.find(t => (t.abbreviation || '').toLowerCase() === abbr);
+                    if (test) {
+                        addBulkTest(test);
+                        this.value = '';
+                    } else {
+                        this.classList.add('is-invalid');
+                        setTimeout(() => this.classList.remove('is-invalid'), 1000);
+                    }
+                }
+            });
+
+            // Payment amount per patient
+            document.getElementById('bulkPaymentAmountPerPatient').addEventListener('input', calculateBulkTotals);
+
+            // Bulk patient type change
+            document.getElementById('bulkPatientType').addEventListener('change', handleBulkPatientTypeChange);
+        }
+
+        function handleBulkPatientTypeChange() {
+            const type = document.getElementById('bulkPatientType').value;
+            const isContract = type && type !== 'normal' && type !== 'packages';
+
+            // Show/hide contract fields
+            document.getElementById('bulkContractExtraFields').style.display = isContract ? 'block' : 'none';
+            document.getElementById('bulkContractShareRow').style.display = isContract ? 'block' : 'none';
+
+            // Enable/disable discount fields
+            const discountEnabled = type === 'normal' || type === 'packages';
+            document.getElementById('bulkDiscountType').disabled = !discountEnabled;
+            document.getElementById('bulkDiscountValue').disabled = !discountEnabled;
+        }
+
+        // Export functions for HTML onclick attributes
+        window.showBulkSection = showBulkSection;
+        window.refreshPatientIds = refreshPatientIds;
+        window.refreshOrderIds = refreshOrderIds;
+        window.togglePatientDetailsMethod = togglePatientDetailsMethod;
+        window.generateSampleNames = generateSampleNames;
+        window.updatePatientData = updatePatientData;
+        window.handleExcelUpload = handleExcelUpload;
+        window.startBulkSave = startBulkSave;
+        window.cancelBulkSave = cancelBulkSave;
+        window.resetBulkForm = resetBulkForm;
+        window.validateBulkForm = validateBulkForm;
+        window.handleBulkPatientTypeChange = handleBulkPatientTypeChange;
+    </script>
+
+    <!-- ExcelJS for reading Excel files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
